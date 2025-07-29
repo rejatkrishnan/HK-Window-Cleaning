@@ -2,10 +2,10 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>HK Window Cleaning</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
   <style>
     body {
       font-family: 'Roboto', sans-serif;
@@ -13,61 +13,159 @@
       padding: 0;
       background-color: #f4f4f4;
       color: #333;
+      line-height: 1.6;
     }
 
     header {
       background-color: #007BFF;
       color: white;
-      padding: 1rem;
+      padding: 1.5rem 1rem;
       text-align: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
     }
 
     nav {
       display: flex;
       justify-content: center;
       background-color: #0056b3;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     nav button {
       background: none;
       border: none;
       color: white;
-      padding: 1rem;
+      padding: 1rem 2rem;
       font-size: 1rem;
       cursor: pointer;
       transition: background-color 0.3s;
+      font-weight: 700;
     }
 
-    nav button:hover {
+    nav button:hover,
+    nav button:focus {
       background-color: #003f7f;
+      outline: none;
     }
 
     main {
-      padding: 2rem;
+      max-width: 900px;
+      margin: 2rem auto 5rem auto;
+      background: white;
+      padding: 2rem 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    main h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+      font-weight: 700;
+      color: #007BFF;
+    }
+
+    main p {
+      text-align: center;
+      font-size: 1.1rem;
+      max-width: 700px;
+      margin: 0 auto 2rem auto;
     }
 
     .team-container {
       display: flex;
       flex-wrap: wrap;
-      gap: 2rem;
       justify-content: center;
-      margin-top: 2rem;
+      gap: 2rem;
+      margin-bottom: 3rem;
     }
 
     .team-member {
-      background: white;
-      padding: 1rem;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      width: 250px;
+      background: #fafafa;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.07);
+      width: 260px;
+      padding: 1.5rem 1rem 2rem 1rem;
       text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .team-member:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
     }
 
     .team-member img {
-      width: 100%;
-      height: auto;
+      width: 140px;
+      height: 140px;
+      object-fit: cover;
       border-radius: 50%;
       margin-bottom: 1rem;
+      border: 4px solid #007BFF;
+    }
+
+    .team-member h3 {
+      margin: 0.5rem 0 0.3rem 0;
+      font-weight: 700;
+      color: #0056b3;
+    }
+
+    .team-member p {
+      font-size: 0.95rem;
+      color: #555;
+      margin: 0;
+    }
+
+    .areas-served {
+      max-width: 500px;
+      margin: 0 auto 2rem auto;
+      padding: 1rem 1.5rem;
+      background: #e8f0fe;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(0, 123, 255, 0.15);
+    }
+
+    .areas-served h3 {
+      text-align: center;
+      color: #0056b3;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .areas-served ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem 2rem;
+    }
+
+    .areas-served li {
+      background-color: #007BFF;
+      color: white;
+      padding: 0.5rem 1.3rem;
+      border-radius: 25px;
+      font-weight: 600;
+      font-size: 1rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      user-select: none;
+    }
+
+    .map-container {
+      max-width: 900px;
+      margin: 0 auto 2rem auto;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      height: 400px;
+    }
+
+    .map-container iframe {
+      border: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
     }
 
     footer {
@@ -77,6 +175,31 @@
       position: fixed;
       bottom: 0;
       width: 100%;
+      font-size: 0.9rem;
+      color: #555;
+      user-select: none;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 700px) {
+      .team-container {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      nav button {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+      }
+
+      main {
+        margin: 1rem 1rem 5rem 1rem;
+        padding: 1.5rem 1.5rem;
+      }
+
+      .areas-served ul {
+        gap: 0.8rem 1rem;
+      }
     }
   </style>
   <script>
@@ -100,27 +223,56 @@
 
   <main>
     <h2>About Us</h2>
-    <p>At HK Window Cleaning, we're more than just a service — we're a partnership built on trust, hard work, and community. Founded by two dedicated college students, we strive to bring crystal-clear views and smiles to homes and businesses in our local area.</p>
+    <p>
+      At HK Window Cleaning, we're more than just a service — we're a partnership built on trust, hard work,
+      and community. Founded by two dedicated college students, we strive to bring crystal-clear views and smiles
+      to homes and businesses in our local area.
+    </p>
 
     <div class="team-container">
       <div class="team-member">
-        <img src="you.jpg" alt="Your Photo">
+        <img src="you.jpg" alt="Rejat K. Krishnan" />
         <h3>Rejat K. Krishnan</h3>
-        <p>Rejat is a Penn State mechanical engineering and finance student with a knack for clean execution — both in business and on glass. He's passionate about delivering reliable and top-tier service.</p>
+        <p>
+          Rejat is a Penn State mechanical engineering and finance student with a knack for clean execution — both
+          in business and on glass. He's passionate about delivering reliable and top-tier service.
+        </p>
       </div>
 
       <div class="team-member">
-        <img src="cofounder.jpg" alt="Co-founder Photo">
+        <img src="cofounder.jpg" alt="Co-founder" />
         <h3>[Co-founder Name]</h3>
-        <p>[Your co-founder’s background, personality, or contribution to the business. For example: An operations genius with a great eye for detail and customer satisfaction.]</p>
+        <p>
+          [Your co-founder’s background, personality, or contribution to the business. For example: An operations
+          genius with a great eye for detail and customer satisfaction.]
+        </p>
       </div>
+    </div>
+
+    <section class="areas-served">
+      <h3>Areas We Serve</h3>
+      <ul>
+        <li>Woodbury</li>
+        <li>Afton</li>
+        <li>Stillwater</li>
+        <li>Hastings</li>
+        <li>Saint Paul</li>
+      </ul>
+    </section>
+
+    <div class="map-container">
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d11691.74226164858!2d-92.8341!3d44.9622!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x52b323c1d95bc5e9%3A0x9af006bf0b7f8e6a!2sWoodbury%2C%20MN!5e0!3m2!1sen!2sus!4v1690670000000!5m2!1sen!2sus"
+        allowfullscreen=""
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+      ></iframe>
     </div>
   </main>
 
-  <footer>
-    <p>&copy; 2025 HK Window Cleaning. All rights reserved.</p>
-  </footer>
+  <footer>&copy; 2025 HK Window Cleaning. All rights reserved.</footer>
 </body>
 
 </html>
+
 
