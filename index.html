@@ -46,6 +46,30 @@
       padding: 2rem;
     }
 
+    .team-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+
+    .team-member {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 250px;
+      text-align: center;
+    }
+
+    .team-member img {
+      width: 100%;
+      height: auto;
+      border-radius: 50%;
+      margin-bottom: 1rem;
+    }
+
     footer {
       text-align: center;
       padding: 1rem;
@@ -76,7 +100,21 @@
 
   <main>
     <h2>About Us</h2>
-    <p>Welcome to HK Window Cleaning! [Insert your company background, values, and mission statement here. Talk about your team, your commitment to quality, and your service area.]</p>
+    <p>At HK Window Cleaning, we're more than just a service — we're a partnership built on trust, hard work, and community. Founded by two dedicated college students, we strive to bring crystal-clear views and smiles to homes and businesses in our local area.</p>
+
+    <div class="team-container">
+      <div class="team-member">
+        <img src="you.jpg" alt="Your Photo">
+        <h3>Rejat K. Krishnan</h3>
+        <p>Rejat is a Penn State mechanical engineering and finance student with a knack for clean execution — both in business and on glass. He's passionate about delivering reliable and top-tier service.</p>
+      </div>
+
+      <div class="team-member">
+        <img src="cofounder.jpg" alt="Co-founder Photo">
+        <h3>[Co-founder Name]</h3>
+        <p>[Your co-founder’s background, personality, or contribution to the business. For example: An operations genius with a great eye for detail and customer satisfaction.]</p>
+      </div>
+    </div>
   </main>
 
   <footer>
@@ -85,3 +123,4 @@
 </body>
 
 </html>
+
