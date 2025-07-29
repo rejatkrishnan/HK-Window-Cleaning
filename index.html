@@ -28,14 +28,17 @@
       background-color: #0056b3;
     }
 
-    nav a {
+    nav button {
+      background: none;
+      border: none;
       color: white;
       padding: 1rem;
-      text-decoration: none;
+      font-size: 1rem;
+      cursor: pointer;
       transition: background-color 0.3s;
     }
 
-    nav a:hover {
+    nav button:hover {
       background-color: #003f7f;
     }
 
@@ -52,6 +55,11 @@
       width: 100%;
     }
   </style>
+  <script>
+    function navigateTo(page) {
+      window.location.href = page;
+    }
+  </script>
 </head>
 
 <body>
@@ -61,14 +69,14 @@
   </header>
 
   <nav>
-    <a href="index.html">Home</a>
-    <a href="pricing.html">Pricing</a>
-    <a href="contact.html">Contact</a>
+    <button onclick="navigateTo('index.html')">Home</button>
+    <button onclick="navigateTo('pricing.html')">Pricing</button>
+    <button onclick="navigateTo('contact.html')">Contact</button>
   </nav>
 
   <main>
     <h2>About Us</h2>
-    <p>Welcome to HK Window Cleaning! We are dedicated to providing top-quality residential and commercial window cleaning services. Our experienced team is committed to leaving every window streak-free and crystal clear, ensuring customer satisfaction every time. Serving the Penn State and Minneapolis areas year-round, our mission is to deliver reliable and affordable window care with professional results.</p>
+    <p>Welcome to HK Window Cleaning! [Insert your company background, values, and mission statement here. Talk about your team, your commitment to quality, and your service area.]</p>
   </main>
 
   <footer>
@@ -77,4 +85,3 @@
 </body>
 
 </html>
-
