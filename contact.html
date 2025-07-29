@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Contact | HK Window Cleaning</title>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
@@ -22,17 +22,68 @@
       <h2 class="text-4xl font-bold text-center mb-8">Contact Us</h2>
 
       <div class="bg-white p-6 rounded-xl shadow mb-8">
-        <p class="text-lg mb-2">📞 <strong>Text:</strong> Rejat: (612)-513-2564 or Nick: (612)-655-3425 </p>
-        <p class="text-lg mb-4">📧 <strong>Email:</strong> hkwindowcleaning@email.com </p>
+        <p class="text-lg mb-2">📞 <strong>Text:</strong> Rejat: (612)-513-2564 or Nick: (612)-655-3425</p>
+        <p class="text-lg mb-4">📧 <strong>Email:</strong> hkwindowcleaning@email.com</p>
         <p class="text-gray-600">We're happy to answer any questions or schedule your next window cleaning!</p>
       </div>
 
-      <form class="bg-white p-6 rounded-xl shadow space-y-4">
-        <input type="text" placeholder="Full Name" class="w-full border p-3 rounded" required />
-        <input type="email" placeholder="Email Address" class="w-full border p-3 rounded" required />
-        <input type="text" placeholder="Phone Number" class="w-full border p-3 rounded" required />
-        <textarea placeholder="Your message..." class="w-full border p-3 rounded" rows="4" required></textarea>
-        <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700">Send Message</button>
+      <form
+        action="https://formspree.io/f/mrblkywl"
+        method="POST"
+        class="bg-white p-6 rounded-xl shadow space-y-4"
+      >
+        <label for="name" class="block font-semibold">Full Name</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          placeholder="Your Full Name"
+          class="w-full border p-3 rounded"
+          required
+        />
+
+        <label for="email" class="block font-semibold">Email Address</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="you@example.com"
+          class="w-full border p-3 rounded"
+          required
+        />
+
+        <label for="phone" class="block font-semibold">Phone Number</label>
+        <input
+          type="tel"
+          id="phone"
+          name="phone"
+          placeholder="(123) 456-7890"
+          class="w-full border p-3 rounded"
+          required
+        />
+
+        <label for="message" class="block font-semibold">Message</label>
+        <textarea
+          id="message"
+          name="message"
+          placeholder="Your message..."
+          class="w-full border p-3 rounded"
+          rows="4"
+          required
+        ></textarea>
+
+        <!-- Anti-spam hidden field -->
+        <input type="text" name="_gotcha" style="display:none" />
+
+        <!-- Optional: redirect to thank-you page -->
+        <!-- <input type="hidden" name="_next" value="https://www.hkwindowpros.com/thank-you.html" /> -->
+
+        <button
+          type="submit"
+          class="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700"
+        >
+          Send Message
+        </button>
       </form>
     </main>
 
