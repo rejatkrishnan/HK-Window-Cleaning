@@ -18,24 +18,55 @@
 
     header {
       background-color: #007BFF;
-      color: white;
-      padding: 1.5rem 1rem;
-      text-align: center;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      padding: 0;
+      color: white;
+    }
+
+    .header-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo-title {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .logo-title img {
+      height: 50px;
+      width: auto;
+      display: block;
+    }
+
+    .logo-text h1 {
+      margin: 0;
+      font-weight: 700;
+      font-size: 1.8rem;
+    }
+
+    .logo-text p {
+      margin: 0;
+      font-size: 0.9rem;
+      font-weight: 500;
+      opacity: 0.85;
     }
 
     nav {
       display: flex;
-      justify-content: center;
-      background-color: #0056b3;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      gap: 1rem;
     }
 
     nav button {
       background: none;
       border: none;
       color: white;
-      padding: 1rem 2rem;
+      padding: 1rem 1.5rem;
       font-size: 1rem;
       cursor: pointer;
       transition: background-color 0.3s;
@@ -211,15 +242,21 @@
 
 <body>
   <header>
-    <h1>HK Window Cleaning</h1>
-    <p>Reliable. Affordable. Professional.</p>
+    <div class="header-container">
+      <div class="logo-title">
+        <img src="images/logo.png" alt="HK Window Cleaning Logo" />
+        <div class="logo-text">
+          <h1>HK Window Cleaning</h1>
+          <p>Reliable. Affordable. Professional.</p>
+        </div>
+      </div>
+      <nav>
+        <button onclick="navigateTo('index.html')">Home</button>
+        <button onclick="navigateTo('pricing.html')">Pricing</button>
+        <button onclick="navigateTo('contact.html')">Contact</button>
+      </nav>
+    </div>
   </header>
-
-  <nav>
-    <button onclick="navigateTo('index.html')">Home</button>
-    <button onclick="navigateTo('pricing.html')">Pricing</button>
-    <button onclick="navigateTo('contact.html')">Contact</button>
-  </nav>
 
   <main>
     <h2>About Us</h2>
@@ -229,7 +266,6 @@
       to homes and businesses in our local area.
     </p>
 
-</style>
     <div class="team-container">
       <div class="team-member">
         <img src="you.jpg" alt="Rejat Krishnan" />
@@ -273,5 +309,3 @@
 </body>
 
 </html>
-
-
