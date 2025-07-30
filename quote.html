@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Quote Estimator | HK Window Pros</title>
+  <title>Get a Quote | HK Window Pros</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
   <style>
     body {
@@ -12,6 +13,7 @@
       padding: 0;
       background-color: #f4f8ff;
       color: #333;
+      line-height: 1.6;
     }
 
     header {
@@ -27,6 +29,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      flex-wrap: wrap;
     }
 
     .logo-title {
@@ -37,6 +40,7 @@
 
     .logo-title img {
       height: 50px;
+      width: auto;
     }
 
     .menu-icon {
@@ -51,17 +55,25 @@
       top: 70px;
       right: 1rem;
       background-color: white;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       border-radius: 8px;
       overflow: hidden;
+      z-index: 1000;
+      width: 180px;
     }
 
     nav a {
       display: block;
-      padding: 1rem 2rem;
+      padding: 1rem 1.5rem;
       text-decoration: none;
       color: #333;
       font-weight: 500;
+      border-bottom: 1px solid #eee;
+      transition: background-color 0.3s;
+    }
+
+    nav a:last-child {
+      border-bottom: none;
     }
 
     nav a:hover {
@@ -70,71 +82,107 @@
 
     main {
       max-width: 600px;
-      margin: 2rem auto;
+      margin: 3rem auto 6rem auto;
       background: white;
-      padding: 2rem;
+      padding: 2.5rem 3rem;
       border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
       text-align: center;
     }
 
     main h2 {
-      margin-bottom: 1rem;
+      margin-bottom: 2rem;
+      font-weight: 700;
       color: #0056b3;
+      font-size: 2.2rem;
     }
 
     label {
       display: block;
-      margin-top: 1rem;
       font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      color: #003f7f;
       text-align: left;
     }
 
-    input {
+    input[type='number'] {
       width: 100%;
       padding: 0.8rem;
-      margin-top: 0.5rem;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 1rem;
+      font-size: 1.1rem;
+      border-radius: 8px;
+      border: 1.5px solid #007BFF;
+      margin-bottom: 2rem;
+      box-sizing: border-box;
     }
 
-    .estimate-result {
-      margin-top: 1.5rem;
-      font-size: 1.2rem;
-      font-weight: bold;
-      color: #007BFF;
+    .estimate {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #0056b3;
+      margin-bottom: 2rem;
     }
 
-    .note {
-      font-size: 0.9rem;
-      color: #666;
-      margin-top: 0.5rem;
+    .notice {
+      font-style: italic;
+      color: #555;
+      font-size: 0.95rem;
+      margin-bottom: 1.5rem;
     }
 
-    .buttons {
-      margin-top: 2rem;
+    .btn-container {
       display: flex;
-      gap: 1rem;
       justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
     }
 
-    .buttons button {
+    button {
       background-color: #007BFF;
       color: white;
+      padding: 1rem 2.5rem;
+      font-size: 1.1rem;
+      font-weight: 700;
       border: none;
-      padding: 0.8rem 1.5rem;
-      font-size: 1rem;
-      border-radius: 6px;
+      border-radius: 10px;
       cursor: pointer;
       transition: background-color 0.3s;
+      box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+      flex: 1 1 150px;
+      max-width: 200px;
     }
 
-    .buttons button:hover {
+    button:hover {
       background-color: #0056b3;
+      box-shadow: 0 6px 20px rgba(0, 86, 179, 0.6);
     }
   </style>
+
+  <script>
+    function toggleMenu() {
+      const menu = document.getElementById('menu');
+      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    window.onclick = function (event) {
+      const menu = document.getElementById('menu');
+      if (!event.target.closest('.menu-icon') && !event.target.closest('#menu')) {
+        menu.style.display = 'none';
+      }
+    }
+
+    function calculateEstimate() {
+      const firstFloorCount = parseInt(document.getElementById('first-floor').value) || 0;
+      const upperFloorCount = parseInt(document.getElementById('upper-floor').value) || 0;
+
+      // Pricing logic: $5 for first floor, $10 for upper floors
+      const estimate = (firstFloorCount * 5) + (upperFloorCount * 10);
+
+      document.getElementById('estimate').textContent = `Estimated Price: $${estimate.toFixed(2)}`;
+    }
+  </script>
 </head>
+
 <body>
   <header>
     <div class="header-container">
@@ -153,60 +201,27 @@
   </header>
 
   <main>
-    <h2>Instant Quote Estimator</h2>
-    <p>Fill in your window count to get an estimated price.</p>
+    <h2>Window Cleaning Quote Estimator</h2>
 
-    <label for="firstFloor">Number of 1st Floor Windows ($5 each):</label>
-    <input type="number" id="firstFloor" min="0" value="0" />
+    <form oninput="calculateEstimate()">
+      <label for="first-floor">Number of First Floor Windows</label>
+      <input type="number" id="first-floor" name="first-floor" min="0" value="0" />
 
-    <label for="secondFloor">Number of 2nd+ Floor Windows ($10 each):</label>
-    <input type="number" id="secondFloor" min="0" value="0" />
+      <label for="upper-floor">Number of Second Floor or Higher Windows</label>
+      <input type="number" id="upper-floor" name="upper-floor" min="0" value="0" />
+    </form>
 
-    <div class="estimate-result" id="estimate">$0.00</div>
-    <div class="note">* This is an estimate. Final price may vary.</div>
-    <div class="note" style="margin-top: 1rem; font-style: italic; color: #444;">
-      This quote estimator is for <strong>residential properties only</strong>. For commercial or company estimates, please contact us directly.
-    </div>
+    <div class="estimate" id="estimate">Estimated Price: $0.00</div>
 
-    <div class="buttons">
-      <button onclick="checkout()">Checkout</button>
-      <button onclick="contactUs()">Contact Us</button>
+    <p class="notice">*This is an estimate and not the exact price. For a detailed quote, please contact us.</p>
+
+    <div class="btn-container">
+      <button type="button" onclick="alert('Checkout page coming soon!')">Checkout</button>
+      <button type="button" onclick="window.location.href='contact.html'">Contact Us</button>
     </div>
   </main>
 
-  <script>
-    const firstFloorInput = document.getElementById('firstFloor');
-    const secondFloorInput = document.getElementById('secondFloor');
-    const estimateDisplay = document.getElementById('estimate');
-
-    function updateEstimate() {
-      const firstFloorCount = parseInt(firstFloorInput.value) || 0;
-      const secondFloorCount = parseInt(secondFloorInput.value) || 0;
-      const total = (firstFloorCount * 5) + (secondFloorCount * 10);
-      estimateDisplay.textContent = `$${total.toFixed(2)}`;
-    }
-
-    firstFloorInput.addEventListener('input', updateEstimate);
-    secondFloorInput.addEventListener('input', updateEstimate);
-
-    function toggleMenu() {
-      const menu = document.getElementById('menu');
-      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-    }
-
-    window.onclick = function(event) {
-      if (!event.target.matches('.menu-icon')) {
-        document.getElementById('menu').style.display = 'none';
-      }
-    }
-
-    function checkout() {
-      alert('Checkout page coming soon!');
-    }
-
-    function contactUs() {
-      alert('Contact page coming soon!');
-    }
-  </script>
+  <footer>&copy; 2025 HK Window Pros. All rights reserved.</footer>
 </body>
+
 </html>
