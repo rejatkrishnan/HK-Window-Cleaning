@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -9,161 +10,150 @@
     body {
       font-family: 'Roboto', sans-serif;
       margin: 0;
-      background-color: #f7faff;
+      padding: 0;
+      background-color: #f4f8ff;
       color: #333;
+      line-height: 1.6;
     }
 
-    /* HEADER */
     header {
-      background: linear-gradient(90deg, #0066cc, #004d99);
+      background: linear-gradient(90deg, #007BFF, #0056b3);
       color: white;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      padding: 1rem;
+      position: relative;
     }
 
     .header-container {
-      max-width: 1200px;
+      max-width: 1100px;
       margin: auto;
-      padding: 1rem 2rem;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      position: relative;
+      justify-content: space-between;
+      flex-wrap: wrap;
     }
 
     .logo-title {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 1rem;
     }
 
     .logo-title img {
-      height: 60px;
+      height: 50px;
+      width: auto;
     }
 
-    .logo-text h1 {
-      margin: 0;
-      font-size: 1.5rem;
-      font-weight: bold;
+    .menu-icon {
+      font-size: 1.8rem;
+      cursor: pointer;
+      display: block;
     }
 
-    /* NAVIGATION (hidden by default) */
     nav {
+      display: none;
       position: absolute;
       top: 70px;
-      right: 2rem;
-      background-color: #004d99;
-      flex-direction: column;
-      width: 200px;
-      padding: 1rem;
+      right: 1rem;
+      background-color: white;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       border-radius: 8px;
-      display: none;
-      gap: 1rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-
-    nav.show {
-      display: flex;
-      animation: slideDown 0.3s ease forwards;
-    }
-
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
+      overflow: hidden;
+      z-index: 1000;
+      width: 180px;
     }
 
     nav a {
+      display: block;
+      padding: 1rem 1.5rem;
       text-decoration: none;
-      color: white;
+      color: #333;
       font-weight: 500;
-      transition: opacity 0.3s;
-    }
-
-    nav a:hover {
-      opacity: 0.8;
-    }
-
-    /* QUOTE BUTTON */
-    .quote-btn {
-      background-color: #0099ff;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      color: white;
-      font-weight: bold;
-      border: none;
-      cursor: pointer;
+      border-bottom: 1px solid #eee;
       transition: background-color 0.3s;
     }
 
-    .quote-btn:hover {
-      background-color: #007acc;
+    nav a:last-child {
+      border-bottom: none;
     }
 
-    /* HAMBURGER MENU */
-    .hamburger {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      cursor: pointer;
-      z-index: 1100;
+    nav a:hover {
+      background-color: #f4f4f4;
     }
 
-    .hamburger div {
-      width: 25px;
-      height: 3px;
-      background-color: white;
-      transition: transform 0.3s, opacity 0.3s;
-    }
-
-    /* HERO SECTION */
-    .hero {
-      background: linear-gradient(180deg, #e6f0ff, #f7faff);
+    main {
+      max-width: 900px;
+      margin: 3rem auto 5rem auto;
+      background: white;
+      padding: 2.5rem 3rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
       text-align: center;
-      padding: 3rem 1rem;
     }
 
-    .hero h2 {
-      font-size: 2rem;
-      color: #004d99;
+    main h2 {
       margin-bottom: 1rem;
+      font-weight: 700;
+      color: #0056b3;
+      font-size: 2.5rem;
     }
 
-    /* ABOUT SECTION */
-    .about {
-      max-width: 1100px;
-      margin: 3rem auto;
-      padding: 0 1rem;
-      text-align: center;
+    main p {
+      font-size: 1.2rem;
+      max-width: 700px;
+      margin: 0 auto 2rem auto;
+      color: #444;
     }
 
-    .about h2 {
-      color: #004d99;
-      margin-bottom: 2rem;
-      font-size: 2rem;
+    .quote-button-container {
+      margin: 2rem 0 1rem 0;
+    }
+
+    .quote-button {
+      background-color: #007BFF;
+      color: white;
+      padding: 1rem 2.5rem;
+      font-size: 1.3rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+    }
+
+    .quote-button:hover {
+      background-color: #0056b3;
+      box-shadow: 0 6px 20px rgba(0, 86, 179, 0.6);
+    }
+
+    .quote-note {
+      font-style: italic;
+      color: #555;
+      font-size: 0.95rem;
+      margin-top: 0.8rem;
     }
 
     .team-container {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 2rem;
+      gap: 2.5rem;
+      margin-top: 3rem;
     }
 
     .team-member {
-      background: white;
+      background: #e9f0ff;
       border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-      width: 300px;
-      padding: 1.5rem;
+      box-shadow: 0 4px 10px rgba(0, 86, 179, 0.15);
+      width: 280px;
+      padding: 2rem 1.5rem;
       text-align: center;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      transition: transform 0.3s ease;
     }
 
     .team-member:hover {
       transform: translateY(-5px);
-      box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+      box-shadow: 0 8px 25px rgba(0, 86, 179, 0.3);
     }
 
     .team-member img {
@@ -171,106 +161,127 @@
       height: 140px;
       object-fit: cover;
       border-radius: 50%;
-      margin-bottom: 1rem;
-      border: 4px solid #0066cc;
+      margin-bottom: 1.2rem;
+      border: 5px solid #007BFF;
+      box-shadow: 0 0 15px rgba(0, 123, 255, 0.3);
     }
 
     .team-member h3 {
-      margin: 0.5rem 0;
+      margin: 0.5rem 0 0.5rem 0;
       font-weight: 700;
-      color: #004d99;
+      color: #003f7f;
+      font-size: 1.3rem;
     }
 
     .team-member p {
-      font-size: 0.95rem;
-      color: #555;
+      font-size: 1rem;
+      color: #333;
+      line-height: 1.4;
     }
 
-    /* FOOTER */
     footer {
-      background-color: #004d99;
-      color: white;
       text-align: center;
-      padding: 1.5rem;
-      margin-top: 3rem;
+      padding: 1.2rem 1rem;
+      background-color: #e0e7ff;
+      color: #444;
+      font-size: 0.9rem;
+      user-select: none;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+      position: fixed;
+      width: 100%;
+      bottom: 0;
+      left: 0;
+      z-index: 500;
     }
 
-    footer p {
-      margin: 0.3rem 0;
+    /* Responsive */
+
+    @media (max-width: 900px) {
+      main {
+        padding: 2rem 1.5rem;
+        margin: 2rem 1rem 6rem 1rem;
+      }
+
+      .team-container {
+        flex-direction: column;
+        align-items: center;
+      }
     }
   </style>
-</head>
-<body>
 
-<header>
-  <div class="header-container">
-    <div class="logo-title">
-      <img src="logo.png" alt="HK Window Pros Logo">
-      <div class="logo-text">
+  <script>
+    function toggleMenu() {
+      const menu = document.getElementById('menu');
+      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    window.onclick = function(event) {
+      const menu = document.getElementById('menu');
+      if (!event.target.closest('.menu-icon') && !event.target.closest('#menu')) {
+        menu.style.display = 'none';
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <header>
+    <div class="header-container">
+      <div class="logo-title">
+        <img src="logo.png" alt="HK Window Pros Logo" />
         <h1>HK Window Pros</h1>
       </div>
+      <div class="menu-icon" onclick="toggleMenu()">☰</div>
+      <nav id="menu">
+        <a href="index.html">Home</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="contact.html">Contact</a>
+        <a href="quote.html">Get a Quote</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <h2>Welcome to HK Window Pros</h2>
+    <p>
+      At HK Window Pros, we’re dedicated to delivering crystal-clear views with unmatched professionalism. Founded by
+      passionate students, we combine expertise, reliability, and a strong community commitment to brighten your home.
+    </p>
+
+    <div class="quote-button-container">
+      <button class="quote-button" onclick="window.location.href='quote.html'">Get a Free Quote Now</button>
+      <p class="quote-note">
+        * Quote estimator is for residential properties only. Commercial clients, please
+        <a href="contact.html" style="color:#0056b3; text-decoration: underline;">contact us</a> for a custom estimate.
+      </p>
     </div>
 
-    <button class="quote-btn" onclick="window.location.href='contact.html'">Get a Free Quote</button>
+    <div class="team-container">
+      <div class="team-member">
+        <img src="you.jpg" alt="Rejat Krishnan" />
+        <h3>Rejat Krishnan</h3>
+        <p>
+          Hi! I'm Rejat, an undergraduate at Penn State entering my sophomore year, majoring in Mechanical Engineering
+          and Business. I bring the same precision and problem-solving skills from engineering, combined with a sharp
+          business mindset, to provide top-quality window cleaning services. My commitment is to deliver spotless
+          results with reliability and professionalism every time.
+        </p>
+      </div>
 
-    <div class="hamburger" onclick="toggleMenu(event)">
-      <div></div>
-      <div></div>
-      <div></div>
+      <div class="team-member">
+        <img src="cofounder.jpg" alt="Nick Hafner" />
+        <h3>Nick Hafner</h3>
+        <p>
+          Hi! I’m Nick, a sophomore studying Mechanical Engineering with a Business minor at the University of Minnesota.
+          I bring a blend of technical expertise and practical business knowledge to our window cleaning services,
+          ensuring every job is done with precision and professionalism. I’m passionate about delivering spotless results
+          and excellent customer satisfaction.
+        </p>
+      </div>
     </div>
-  </div>
+  </main>
 
-  <nav id="nav-menu">
-    <a href="index.html">Home</a>
-    <a href="pricing.html">Pricing</a>
-    <a href="contact.html">Contact</a>
-  </nav>
-</header>
-
-<section class="hero">
-  <h2>Crystal Clear Views, Every Time</h2>
-  <p>Reliable. Affordable. Professional window cleaning services you can trust.</p>
-</section>
-
-<section class="about">
-  <h2>About Us</h2>
-  <div class="team-container">
-    <div class="team-member">
-      <img src="you.jpg" alt="Rejat Krishnan">
-      <h3>Rejat Krishnan</h3>
-      <p>Hi! I'm Rejat, an undergraduate at Penn State entering my sophomore year, majoring in Mechanical Engineering and Business. I bring the same precision and problem-solving skills from engineering, combined with a sharp business mindset, to provide top-quality window cleaning services. My commitment is to deliver spotless results with reliability and professionalism every time.</p>
-    </div>
-
-    <div class="team-member">
-      <img src="cofounder.jpg" alt="Nick Hafner">
-      <h3>Nick Hafner</h3>
-      <p>Hi! I’m Nick, a sophomore studying Mechanical Engineering with a Business minor at the University of Minnesota. I bring a blend of technical expertise and practical business knowledge to our window cleaning services, ensuring every job is done with precision and professionalism. I’m passionate about delivering spotless results and excellent customer satisfaction.</p>
-    </div>
-  </div>
-</section>
-
-<footer>
-  <p>Email: hkwindowpros@email.com</p>
-  <p>Phone: (612)-513-2564 | (612)-655-3425</p>
-  <p>&copy; 2025 HK Window Pros</p>
-</footer>
-
-<script>
-  const navMenu = document.getElementById('nav-menu');
-  const hamburger = document.querySelector('.hamburger');
-
-  function toggleMenu(event) {
-    event.stopPropagation();
-    navMenu.classList.toggle('show');
-  }
-
-  // Close menu when clicking outside
-  document.addEventListener('click', (e) => {
-    if (!navMenu.contains(e.target) && !hamburger.contains(e.target)) {
-      navMenu.classList.remove('show');
-    }
-  });
-</script>
-
+  <footer>&copy; 2025 HK Window Pros. All rights reserved.</footer>
 </body>
+
 </html>
