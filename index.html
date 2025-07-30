@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>HK Window Cleaning</title>
+  <title>HK Window Pros</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
   <style>
     body {
@@ -13,7 +13,7 @@
       color: #333;
     }
 
-    /* Header */
+    /* HEADER */
     header {
       background: linear-gradient(90deg, #0066cc, #004d99);
       color: white;
@@ -48,10 +48,25 @@
       font-weight: bold;
     }
 
-    /* Navigation */
+    /* NAVIGATION */
     nav {
+      position: absolute;
+      top: 70px;
+      right: 0;
+      background-color: #004d99;
+      flex-direction: column;
+      width: 200px;
+      padding: 1rem;
+      border-radius: 0 0 0 12px;
+      overflow: hidden;
+      max-height: 0;
       display: flex;
-      gap: 1.5rem;
+      gap: 1rem;
+      transition: max-height 0.4s ease;
+    }
+
+    nav.active {
+      max-height: 300px;
     }
 
     nav a {
@@ -65,7 +80,7 @@
       opacity: 0.8;
     }
 
-    /* Free Quote Button */
+    /* QUOTE BUTTON */
     .quote-btn {
       background-color: #0099ff;
       padding: 0.5rem 1rem;
@@ -81,43 +96,23 @@
       background-color: #007acc;
     }
 
-    /* Hamburger Menu */
+    /* HAMBURGER MENU */
     .hamburger {
-      display: none;
+      display: flex;
       flex-direction: column;
       gap: 5px;
       cursor: pointer;
+      z-index: 1100;
     }
 
     .hamburger div {
       width: 25px;
       height: 3px;
       background-color: white;
+      transition: transform 0.3s, opacity 0.3s;
     }
 
-    @media (max-width: 768px) {
-      nav {
-        display: none;
-        flex-direction: column;
-        background-color: #004d99;
-        position: absolute;
-        top: 70px;
-        right: 0;
-        width: 200px;
-        padding: 1rem;
-        border-radius: 0 0 0 12px;
-      }
-
-      nav.active {
-        display: flex;
-      }
-
-      .hamburger {
-        display: flex;
-      }
-    }
-
-    /* Hero Section */
+    /* HERO SECTION */
     .hero {
       background: linear-gradient(180deg, #e6f0ff, #f7faff);
       text-align: center;
@@ -130,7 +125,7 @@
       margin-bottom: 1rem;
     }
 
-    /* About Us */
+    /* ABOUT SECTION */
     .about {
       max-width: 1100px;
       margin: 3rem auto;
@@ -186,7 +181,7 @@
       color: #555;
     }
 
-    /* Footer */
+    /* FOOTER */
     footer {
       background-color: #004d99;
       color: white;
@@ -205,26 +200,26 @@
 <header>
   <div class="header-container">
     <div class="logo-title">
-      <img src="logo.png" alt="HK Window Cleaning Logo">
+      <img src="logo.png" alt="HK Window Pros Logo">
       <div class="logo-text">
-        <h1>HK Window Cleaning</h1>
+        <h1>HK Window Pros</h1>
       </div>
     </div>
 
-    <nav id="nav-menu">
-      <a href="index.html">Home</a>
-      <a href="pricing.html">Pricing</a>
-      <a href="contact.html">Contact</a>
-    </nav>
-
     <button class="quote-btn" onclick="window.location.href='contact.html'">Get a Free Quote</button>
 
-    <div class="hamburger" onclick="document.getElementById('nav-menu').classList.toggle('active')">
+    <div class="hamburger" onclick="toggleMenu()">
       <div></div>
       <div></div>
       <div></div>
     </div>
   </div>
+
+  <nav id="nav-menu">
+    <a href="index.html">Home</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="contact.html">Contact</a>
+  </nav>
 </header>
 
 <section class="hero">
@@ -250,10 +245,16 @@
 </section>
 
 <footer>
-  <p>Email: hkwindowcleaning@email.com</p>
+  <p>Email: hkwindowpros@email.com</p>
   <p>Phone: (612)-513-2564 | (612)-655-3425</p>
-  <p>&copy; 2025 HK Window Cleaning</p>
+  <p>&copy; 2025 HK Window Pros</p>
 </footer>
+
+<script>
+  function toggleMenu() {
+    document.getElementById('nav-menu').classList.toggle('active');
+  }
+</script>
 
 </body>
 </html>
