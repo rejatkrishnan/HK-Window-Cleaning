@@ -30,6 +30,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      position: relative;
     }
 
     .logo-title {
@@ -48,25 +49,29 @@
       font-weight: bold;
     }
 
-    /* NAVIGATION */
+    /* NAVIGATION (hidden by default) */
     nav {
       position: absolute;
       top: 70px;
-      right: 0;
+      right: 2rem;
       background-color: #004d99;
       flex-direction: column;
       width: 200px;
       padding: 1rem;
-      border-radius: 0 0 0 12px;
-      overflow: hidden;
-      max-height: 0;
-      display: flex;
+      border-radius: 8px;
+      display: none;
       gap: 1rem;
-      transition: max-height 0.4s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
 
-    nav.active {
-      max-height: 300px;
+    nav.show {
+      display: flex;
+      animation: slideDown 0.3s ease forwards;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     nav a {
@@ -208,7 +213,7 @@
 
     <button class="quote-btn" onclick="window.location.href='contact.html'">Get a Free Quote</button>
 
-    <div class="hamburger" onclick="toggleMenu()">
+    <div class="hamburger" onclick="toggleMenu(event)">
       <div></div>
       <div></div>
       <div></div>
@@ -251,9 +256,20 @@
 </footer>
 
 <script>
-  function toggleMenu() {
-    document.getElementById('nav-menu').classList.toggle('active');
+  const navMenu = document.getElementById('nav-menu');
+  const hamburger = document.querySelector('.hamburger');
+
+  function toggleMenu(event) {
+    event.stopPropagation();
+    navMenu.classList.toggle('show');
   }
+
+  // Close menu when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!navMenu.contains(e.target) && !hamburger.contains(e.target)) {
+      navMenu.classList.remove('show');
+    }
+  });
 </script>
 
 </body>
