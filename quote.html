@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Get a Free Quote | HK Window Pros</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
-
   <style>
     body {
       font-family: 'Roboto', sans-serif;
@@ -190,104 +189,6 @@
       user-select: none;
     }
   </style>
-
-  <!-- EmailJS SDK -->
-  <script src="https://cdn.emailjs.com/sdk/3.2/email.min.js"></script>
-
-  <script>
-    // Initialize EmailJS with your new public key
-    emailjs.init('_-iJBJuay9T60hC04');
-
-    function toggleMenu() {
-      const menu = document.getElementById('menu');
-      if (menu.style.display === 'block') {
-        menu.style.display = 'none';
-      } else {
-        menu.style.display = 'block';
-      }
-    }
-
-    window.onclick = function (event) {
-      const menu = document.getElementById('menu');
-      if (!event.target.closest('.menu-icon') && !event.target.closest('#menu')) {
-        menu.style.display = 'none';
-      }
-    };
-
-    function updateEstimate() {
-      const firstFloor = parseInt(document.getElementById('firstFloor').value) || 0;
-      const secondFloor = parseInt(document.getElementById('secondFloor').value) || 0;
-
-      const total = (firstFloor * 5) + (secondFloor * 10);
-      const totalText = `Estimated total: $${total}`;
-      document.getElementById('totalEstimate').textContent = totalText;
-    }
-
-    function validateEmail(email) {
-      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return re.test(email);
-    }
-
-    function submitForm(event) {
-      event.preventDefault();
-
-      const name = document.getElementById('name').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const phone = document.getElementById('phone').value.trim();
-      const firstFloor = document.getElementById('firstFloor').value.trim();
-      const secondFloor = document.getElementById('secondFloor').value.trim();
-      const acceptTerms = document.getElementById('acceptTerms').checked;
-
-      if (!name || !email || !phone || !firstFloor || !secondFloor) {
-        alert('Please fill in all required fields.');
-        return;
-      }
-
-      if (!validateEmail(email)) {
-        alert('Please enter a valid email address.');
-        return;
-      }
-
-      if (!acceptTerms) {
-        alert('Please accept the terms and conditions.');
-        return;
-      }
-
-      const totalEstimate = `$${(parseInt(firstFloor) * 5) + (parseInt(secondFloor) * 10)}`;
-
-      // Prepare parameters for admin email
-      const adminParams = {
-        from_name: name,
-        from_email: email,
-        phone: phone,
-        first_floor: firstFloor,
-        second_floor: secondFloor,
-        total_estimate: totalEstimate,
-      };
-
-      // Prepare parameters for customer email
-      const customerParams = {
-        to_name: name,
-        total_estimate: totalEstimate,
-      };
-
-      // Send email to admin
-      emailjs.send('service_itqn635', 'template_mrc33ra', adminParams)
-        .then(() => {
-          // Send confirmation email to customer
-          return emailjs.send('service_itqn635', 'template_zenc7k6', customerParams);
-        })
-        .then(() => {
-          alert('Thank you! Your quote request has been submitted and a confirmation email was sent.');
-          document.getElementById('quoteForm').reset();
-          updateEstimate();
-        })
-        .catch((error) => {
-          console.error('FAILED...', error);
-          alert('Oops! Something went wrong while sending your request. Please try again later.');
-        });
-    }
-  </script>
 </head>
 
 <body>
@@ -319,7 +220,7 @@
       This quote estimator is designed for residential homes up to two stories (two floors plus a basement). If your property is different, please <strong>call us</strong> for a free consultation.
     </div>
 
-    <form id="quoteForm" onsubmit="submitForm(event)" novalidate>
+    <form id="quoteForm" novalidate>
       <label for="name" class="required">Full Name</label>
       <input type="text" id="name" name="name" required aria-required="true" />
 
@@ -332,7 +233,7 @@
       <label for="firstFloor" class="required">Number of First Floor Windows (Can see inside from eye level)</label>
       <input type="number" id="firstFloor" name="firstFloor" min="0" required aria-required="true" oninput="updateEstimate()" />
 
-      <label for="secondFloor" class="required">Number of Second Floor or Higher Windows (Cannot see inside from eye level)</label>
+      <label for="secondFloor" class="required">Number of Second Floor or Higher Windows (Can not see inside from eye level)</label>
       <input type="number" id="secondFloor" name="secondFloor" min="0" required aria-required="true" oninput="updateEstimate()" />
 
       <div id="totalEstimate" class="total-estimate">Estimated total: $0</div>
@@ -347,6 +248,106 @@
       </div>
     </form>
   </main>
+
+  <!-- Load EmailJS SDK -->
+  <script src="https://cdn.emailjs.com/sdk/3.2/email.min.js"></script>
+
+  <script>
+    // Initialize EmailJS with your public key
+    emailjs.init('_-iJBJuay9T60hC04');
+
+    function toggleMenu() {
+      const menu = document.getElementById('menu');
+      if (menu.style.display === 'block') {
+        menu.style.display = 'none';
+      } else {
+        menu.style.display = 'block';
+      }
+    }
+
+    window.onclick = function (event) {
+      const menu = document.getElementById('menu');
+      if (!event.target.closest('.menu-icon') && !event.target.closest('#menu')) {
+        menu.style.display = 'none';
+      }
+    };
+
+    function updateEstimate() {
+      const firstFloor = parseInt(document.getElementById('firstFloor').value) || 0;
+      const secondFloor = parseInt(document.getElementById('secondFloor').value) || 0;
+
+      const total = (firstFloor * 5) + (secondFloor * 10);
+      document.getElementById('totalEstimate').textContent = `Estimated total: $${total}`;
+    }
+
+    function validateEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email);
+    }
+
+    document.getElementById('quoteForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const firstFloor = document.getElementById('firstFloor').value.trim();
+      const secondFloor = document.getElementById('secondFloor').value.trim();
+      const acceptTerms = document.getElementById('acceptTerms').checked;
+
+      if (!name || !email || !phone || !firstFloor || !secondFloor) {
+        alert('Please fill in all required fields.');
+        return;
+      }
+
+      if (!validateEmail(email)) {
+        alert('Please enter a valid email address.');
+        return;
+      }
+
+      if (!acceptTerms) {
+        alert('Please accept the terms and conditions.');
+        return;
+      }
+
+      const totalEstimate = (parseInt(firstFloor) * 5) + (parseInt(secondFloor) * 10);
+
+      // Prepare params for admin email
+      const adminParams = {
+        from_name: name,
+        from_email: email,
+        phone: phone,
+        first_floor: firstFloor,
+        second_floor: secondFloor,
+        total_estimate: `$${totalEstimate}`
+      };
+
+      // Prepare params for customer confirmation email
+      const customerParams = {
+        to_name: name,
+        total_estimate: `$${totalEstimate}`
+      };
+
+      // Send admin notification
+      emailjs.send('service_itqn635', 'template_mrc33ra', adminParams)
+        .then(function () {
+          // After admin email sent, send confirmation to customer
+          return emailjs.send('service_itqn635', 'template_zenc7k6', {
+            ...customerParams,
+            to_email: email
+          });
+        })
+        .then(function () {
+          alert('Thank you! Your quote request has been submitted. A confirmation email has been sent to you.');
+          document.getElementById('quoteForm').reset();
+          updateEstimate();
+        })
+        .catch(function (error) {
+          console.error('Email sending error:', error);
+          alert('Oops! Something went wrong while sending your request. Please try again later.');
+        });
+    });
+  </script>
 </body>
 
 </html>
