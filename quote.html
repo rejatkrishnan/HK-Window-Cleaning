@@ -1,337 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Get a Quote | HK Window Pros</title>
-  <style>
-    /* Reset & basics */
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-        Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-      background: #f0f5fc;
-      color: #1c1c1e;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    function calculateEstimate() {
+      let firstFloor = parseInt(document.getElementById('firstFloor').value) || 0;
+      let secondFloor = parseInt(document.getElementById('secondFloor').value) || 0;
+      
+      let total = (firstFloor * 5) + (secondFloor * 10);
+      document.getElementById('estimate').innerText = 
+        `Estimated Price: $${total} (Residential only - Venmo, Zelle, or Cash accepted)`;
     }
-
-    a, button {
-      font-family: inherit;
-      cursor: pointer;
-      border: none;
-      background: none;
-      padding: 0;
-      color: inherit;
-    }
-
-    /* Header */
-    header {
-      background-color: #0a66c2;
-      color: white;
-      padding: 1rem 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: relative;
-      user-select: none;
-    }
-
-    .logo-title {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .logo-title img {
-      height: 50px;
-      width: auto;
-      display: block;
-    }
-
-    .logo-title h1 {
-      font-weight: 700;
-      font-size: 1.5rem;
-      margin: 0;
-      letter-spacing: 0.04em;
-    }
-
-    /* Hamburger menu button */
-    .hamburger {
-      display: block;
-      font-size: 1.8rem;
-      background: none;
-      border: none;
-      color: white;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    /* Navigation menu */
-    nav {
-      position: absolute;
-      top: 60px;
-      right: 1.5rem;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
-      overflow: hidden;
-      display: none;
-      flex-direction: column;
-      min-width: 160px;
-      z-index: 999;
-    }
-
-    nav.show {
-      display: flex;
-    }
-
-    nav button {
-      background: none;
-      border: none;
-      padding: 12px 20px;
-      font-size: 1rem;
-      text-align: left;
-      color: #0a66c2;
-      font-weight: 600;
-      transition: background 0.2s;
-      width: 100%;
-    }
-
-    nav button:hover,
-    nav button:focus {
-      background-color: #d7e5fb;
-      outline: none;
-    }
-
-    /* Main content */
-    main {
-      flex-grow: 1;
-      max-width: 500px;
-      margin: 2rem auto 3rem auto;
-      background: white;
-      border-radius: 12px;
-      padding: 2rem 2.5rem;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-    }
-
-    main h2 {
-      text-align: center;
-      color: #0a66c2;
-      font-weight: 700;
-      margin-bottom: 1rem;
-      font-size: 2rem;
-      letter-spacing: 0.03em;
-    }
-
-    main p.note {
-      max-width: 320px;
-      margin: 0 auto 2rem auto;
-      font-size: 0.9rem;
-      color: #555;
-      text-align: center;
-    }
-
-    /* Form layout */
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-      color: #222;
-    }
-
-    input[type="number"] {
-      width: 100%;
-      padding: 0.5rem 0.75rem;
-      font-size: 1.1rem;
-      border: 1.5px solid #ccc;
-      border-radius: 8px;
-      outline-offset: 2px;
-      transition: border-color 0.2s;
-    }
-
-    input[type="number"]:focus {
-      border-color: #0a66c2;
-      box-shadow: 0 0 5px #0a66c2aa;
-    }
-
-    /* Total section */
-    .total {
-      margin-top: 2rem;
-      text-align: center;
-      font-weight: 700;
-      font-size: 1.4rem;
-      color: #0a66c2;
-    }
-
-    /* Buttons container */
-    .buttons {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin-top: 2.5rem;
-      flex-wrap: wrap;
-    }
-
-    button.action {
-      background-color: #0a66c2;
-      color: white;
-      padding: 0.85rem 2.2rem;
-      font-weight: 700;
-      font-size: 1.1rem;
-      border-radius: 10px;
-      user-select: none;
-      transition: background-color 0.25s;
-      border: none;
-    }
-
-    button.action:hover {
-      background-color: #084bab;
-    }
-
-    button.secondary {
-      background-color: #e1e9f8;
-      color: #0a66c2;
-      padding: 0.85rem 2.2rem;
-      font-weight: 700;
-      font-size: 1.1rem;
-      border-radius: 10px;
-      user-select: none;
-      border: none;
-      transition: background-color 0.25s;
-    }
-
-    button.secondary:hover {
-      background-color: #cddbf7;
-    }
-
-    /* Responsive */
-    @media (min-width: 600px) {
-      nav {
-        top: 70px;
-      }
-    }
-  </style>
+  </script>
 </head>
 <body>
   <header>
-    <div class="logo-title">
-      <img src="logo.png" alt="HK Window Pros Logo" />
-      <h1>HK Window Pros</h1>
-    </div>
-    <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">&#9776;</button>
-    <nav aria-label="Primary Navigation">
-      <button onclick="navigateTo('index.html')">Home</button>
-      <button onclick="navigateTo('pricing.html')">Pricing</button>
-      <button onclick="navigateTo('contact.html')">Contact</button>
-      <button onclick="navigateTo('quote.html')">Get a Quote</button>
-    </nav>
+    <h1>HK Window Pros</h1>
+    <p>Get Your Free Estimate</p>
   </header>
 
   <main>
-    <h2>Get Your Estimate</h2>
-    <p class="note">* Residential properties only. For commercial or companies, please <a href="contact.html" style="color:#0a66c2; text-decoration:underline;">contact us</a> for a custom estimate.</p>
+    <form id="quoteForm" method="POST" action="/api/new-job">
+      <label>Name: <input type="text" name="name" required></label><br>
+      <label>Email: <input type="email" name="email" required></label><br>
+      <label>Phone: <input type="text" name="phone" required></label><br>
+      <label>Address: <input type="text" name="address" required></label><br>
 
-    <form id="quote-form" onsubmit="return false;">
-      <label for="first-floor">Number of first floor windows</label>
-      <input type="number" id="first-floor" name="first-floor" min="0" value="0" />
+      <label>First Floor Windows:
+        <input type="number" id="firstFloor" name="firstFloor" value="0" min="0" oninput="calculateEstimate()">
+      </label><br>
 
-      <label for="upper-floors">Number of second floor or higher windows</label>
-      <input type="number" id="upper-floors" name="upper-floors" min="0" value="0" />
+      <label>Second or Higher Floor Windows:
+        <input type="number" id="secondFloor" name="secondFloor" value="0" min="0" oninput="calculateEstimate()">
+      </label><br>
 
-      <div class="total" id="total-display">Estimate total: $0</div>
+      <label>Payment Method:
+        <select name="paymentMethod" required>
+          <option value="Cash">Cash</option>
+          <option value="Venmo">Venmo</option>
+          <option value="Zelle">Zelle</option>
+        </select>
+      </label><br>
 
-      <div class="buttons">
-        <button class="action" id="checkout-credit">Checkout (Credit Card)</button>
-        <button class="secondary" id="checkout-cash">Checkout (Cash on Service)</button>
-      </div>
+      <p id="estimate">Estimated Price: $0 (Residential only - Venmo, Zelle, or Cash accepted)</p>
+
+      <button type="submit">Submit Request</button>
     </form>
   </main>
-
-<script>
-  // Hamburger toggle
-  const hamburger = document.querySelector('.hamburger');
-  const nav = document.querySelector('nav');
-
-  hamburger.addEventListener('click', () => {
-    const isExpanded = hamburger.getAttribute('aria-expanded') === 'true';
-    hamburger.setAttribute('aria-expanded', !isExpanded);
-    nav.classList.toggle('show');
-  });
-
-  // Close nav if clicking outside
-  document.addEventListener('click', (e) => {
-    if (!nav.contains(e.target) && !hamburger.contains(e.target)) {
-      nav.classList.remove('show');
-      hamburger.setAttribute('aria-expanded', false);
-    }
-  });
-
-  // Navigation function
-  function navigateTo(page) {
-    window.location.href = page;
-  }
-
-  // Price constants
-  const priceFirstFloor = 5;
-  const priceUpperFloors = 10;
-
-  // Elements
-  const firstFloorInput = document.getElementById('first-floor');
-  const upperFloorsInput = document.getElementById('upper-floors');
-  const totalDisplay = document.getElementById('total-display');
-  const checkoutCreditBtn = document.getElementById('checkout-credit');
-  const checkoutCashBtn = document.getElementById('checkout-cash');
-
-  function calculateTotal() {
-    const firstFloorCount = parseInt(firstFloorInput.value, 10) || 0;
-    const upperFloorsCount = parseInt(upperFloorsInput.value, 10) || 0;
-
-    const total = (firstFloorCount * priceFirstFloor) + (upperFloorsCount * priceUpperFloors);
-    totalDisplay.textContent = `Estimate total: $${total}`;
-    return total;
-  }
-
-  firstFloorInput.addEventListener('input', calculateTotal);
-  upperFloorsInput.addEventListener('input', calculateTotal);
-
-  // Initially calculate
-  calculateTotal();
-
-  // Checkout Credit Card: call backend API with data, then redirect to Stripe checkout
-  checkoutCreditBtn.addEventListener('click', async () => {
-    const firstFloorCount = parseInt(firstFloorInput.value, 10) || 0;
-    const upperFloorsCount = parseInt(upperFloorsInput.value, 10) || 0;
-
-    if (firstFloorCount + upperFloorsCount === 0) {
-      alert("Please enter the number of windows before checking out.");
-      return;
-    }
-
-    // Disable buttons during processing
-    checkoutCreditBtn.disabled = true;
-    checkoutCashBtn.disabled = true;
-    checkoutCreditBtn.textContent = "Processing...";
-
-    try {
-      const response = await fetch('/create-checkout-session', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          firstFloor: firstFloorCount,
-          upperFloors: upperFloorsCount
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.url) {
-        window.location.href = data.url; // Redirect to Stripe checkout page
-      } else {
-        throw new Error("No checkout URL returned.");
-      }
-    } catch (error) {
-      alert("Failed to start checkout. Please try again.");
-      console.error(error);
-     
+</body>
+</html>
