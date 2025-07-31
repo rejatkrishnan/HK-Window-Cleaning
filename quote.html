@@ -48,6 +48,7 @@
       top: 60px;
       right: 0;
       width: 200px;
+      z-index: 1000;
     }
     nav a {
       color: white;
@@ -108,6 +109,15 @@
       const nav = document.querySelector('nav');
       nav.style.display = nav.style.display === 'flex' ? 'none' : 'flex';
     }
+
+    // Close menu if clicked outside
+    document.addEventListener('click', function(event) {
+      const nav = document.querySelector('nav');
+      const menuBtn = document.querySelector('.menu-btn');
+      if (!nav.contains(event.target) && !menuBtn.contains(event.target)) {
+        nav.style.display = 'none';
+      }
+    });
 
     function calculateEstimate() {
       let firstFloor = parseInt(document.getElementById('firstFloor').value) || 0;
