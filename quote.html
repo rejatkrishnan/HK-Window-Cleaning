@@ -6,9 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Get a Free Quote | HK Window Pros</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
-
   <style>
-    /* Your existing CSS (unchanged) */
     body {
       font-family: 'Roboto', sans-serif;
       margin: 0;
@@ -17,111 +15,180 @@
       color: #0a2540;
       line-height: 1.6;
     }
-    header { background-color: #1a40af; box-shadow: 0 2px 6px rgba(0,0,0,0.15); padding: 1rem 0; color: white; position: relative; z-index: 1000; }
-    .header-container { max-width: 900px; margin: 0 auto; padding: 0 1rem; display: flex; align-items: center; justify-content: space-between; }
-    .logo-title a { display: flex; align-items: center; gap: 1rem; text-decoration: none; color: white; user-select: none; }
-    .logo-title img { height: 70px; width: auto; display: block; }
-    .logo-text h1 { margin: 0; font-weight: 700; font-size: 1.8rem; }
-    .menu-icon { font-size: 1.8rem; cursor: pointer; user-select: none; }
-    nav { display: none; position: absolute; top: 60px; right: 1rem; background-color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.15); border-radius: 8px; overflow: hidden; z-index: 1001; width: 180px; }
-    nav a { display: block; padding: 1rem 1.5rem; text-decoration: none; color: #0a2540; font-weight: 600; border-bottom: 1px solid #ddd; transition: background-color 0.3s; }
-    nav a:last-child { border-bottom: none; }
-    nav a:hover { background-color: #dbe7ff; }
-    main { max-width: 600px; margin: 3rem auto 5rem auto; background: white; padding: 2rem 2.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(26,64,175,0.2); }
-    main h2 { text-align: center; margin-bottom: 1rem; font-weight: 700; color: #1a40af; }
-    .info-note { background-color: #dbe7ff; border-left: 5px solid #1a40af; padding: 1rem 1.5rem; font-weight: 600; color: #1a40af; margin-bottom: 1.5rem; border-radius: 6px; font-size: 1rem; user-select: none; }
-    form label { display: block; margin-bottom: 0.25rem; font-weight: 700; color: #0a2540; }
-    form label.required::after { content: " *"; color: red; }
-    form input[type="text"], form input[type="email"], form input[type="number"] { width: 100%; padding: 0.6rem 0.8rem; margin-bottom: 1.2rem; border: 2px solid #a8b7d9; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s; }
-    form input[type="text"]:focus, form input[type="email"]:focus, form input[type="number"]:focus { border-color: #1a40af; outline: none; }
-    .button-container { display: flex; gap: 1rem; justify-content: center; margin-top: 1rem; flex-wrap: wrap; }
-    button { background-color: #1a40af; color: white; border: none; padding: 0.75rem 2rem; font-size: 1.1rem; font-weight: 700; border-radius: 8px; cursor: pointer; transition: background-color 0.3s ease; flex: 1 1 150px; user-select: none; }
-    button:hover, button:focus { background-color: #15327a; outline: none; }
-    .total-estimate { margin-top: 1rem; font-weight: 700; font-size: 1.25rem; text-align: center; color: #1a40af; user-select: none; }
+
+    header {
+      background-color: #1a40af;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      padding: 1rem 0;
+      color: white;
+      position: relative;
+      z-index: 1000;
+    }
+
+    .header-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo-title a {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      text-decoration: none;
+      color: white;
+      user-select: none;
+    }
+
+    .logo-title img {
+      height: 70px;
+      width: auto;
+      display: block;
+    }
+
+    .logo-text h1 {
+      margin: 0;
+      font-weight: 700;
+      font-size: 1.8rem;
+    }
+
+    /* Hamburger menu */
+    .menu-icon {
+      font-size: 1.8rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    nav {
+      display: none;
+      position: absolute;
+      top: 60px;
+      right: 1rem;
+      background-color: white;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      border-radius: 8px;
+      overflow: hidden;
+      z-index: 1001;
+      width: 180px;
+    }
+
+    nav a {
+      display: block;
+      padding: 1rem 1.5rem;
+      text-decoration: none;
+      color: #0a2540;
+      font-weight: 600;
+      border-bottom: 1px solid #ddd;
+      transition: background-color 0.3s;
+    }
+
+    nav a:last-child {
+      border-bottom: none;
+    }
+
+    nav a:hover {
+      background-color: #dbe7ff;
+    }
+
+    main {
+      max-width: 600px;
+      margin: 3rem auto 5rem auto;
+      background: white;
+      padding: 2rem 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(26, 64, 175, 0.2);
+    }
+
+    main h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+      font-weight: 700;
+      color: #1a40af;
+    }
+
+    .info-note {
+      background-color: #dbe7ff;
+      border-left: 5px solid #1a40af;
+      padding: 1rem 1.5rem;
+      font-weight: 600;
+      color: #1a40af;
+      margin-bottom: 1.5rem;
+      border-radius: 6px;
+      font-size: 1rem;
+      user-select: none;
+    }
+
+    form label {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-weight: 700;
+      color: #0a2540;
+    }
+
+    form label.required::after {
+      content: " *";
+      color: red;
+    }
+
+    form input[type="text"],
+    form input[type="email"],
+    form input[type="number"] {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      margin-bottom: 1.2rem;
+      border: 2px solid #a8b7d9;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    form input[type="text"]:focus,
+    form input[type="email"]:focus,
+    form input[type="number"]:focus {
+      border-color: #1a40af;
+      outline: none;
+    }
+
+    .button-container {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    button {
+      background-color: #1a40af;
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      flex: 1 1 150px;
+      user-select: none;
+    }
+
+    button:hover,
+    button:focus {
+      background-color: #15327a;
+      outline: none;
+    }
+
+    .total-estimate {
+      margin-top: 1rem;
+      font-weight: 700;
+      font-size: 1.25rem;
+      text-align: center;
+      color: #1a40af;
+      user-select: none;
+    }
   </style>
-
-  <!-- EmailJS SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script>
-    (function () {
-      emailjs.init("veg0rYQP-7Fln0TWp"); // Your Public Key
-    })();
-
-    function toggleMenu() {
-      const menu = document.getElementById('menu');
-      menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
-    }
-
-    window.onclick = function (event) {
-      const menu = document.getElementById('menu');
-      if (!event.target.closest('.menu-icon') && !event.target.closest('#menu')) {
-        menu.style.display = 'none';
-      }
-    };
-
-    function updateEstimate() {
-      const firstFloor = parseInt(document.getElementById('firstFloor').value) || 0;
-      const secondFloor = parseInt(document.getElementById('secondFloor').value) || 0;
-      const total = (firstFloor * 5) + (secondFloor * 10);
-      document.getElementById('totalEstimate').textContent = `Estimated total: $${total}`;
-    }
-
-    function validateEmail(email) {
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    }
-
-    function submitForm(event) {
-      event.preventDefault();
-
-      const name = document.getElementById('name').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const phone = document.getElementById('phone').value.trim();
-      const firstFloor = document.getElementById('firstFloor').value.trim();
-      const secondFloor = document.getElementById('secondFloor').value.trim();
-      const acceptTerms = document.getElementById('acceptTerms').checked;
-      const totalEstimate = document.getElementById('totalEstimate').textContent;
-
-      if (!name || !email || !phone || !firstFloor || !secondFloor) {
-        alert('Please fill in all required fields.');
-        return;
-      }
-      if (!validateEmail(email)) {
-        alert('Please enter a valid email address.');
-        return;
-      }
-      if (!acceptTerms) {
-        alert('Please accept the terms and conditions.');
-        return;
-      }
-
-      // Send email to admin
-      emailjs.send("service_itqn635", "template_mrc33ra", {
-        from_name: name,
-        from_email: email,
-        phone_number: phone,
-        first_floor_windows: firstFloor,
-        second_floor_windows: secondFloor,
-        estimate: totalEstimate
-      })
-      .then(() => {
-        console.log("Admin email sent");
-      })
-      .catch((err) => console.error("Error sending admin email", err));
-
-      // Send confirmation to customer
-      emailjs.send("service_itqn635", "template_zenc7k6", {
-        to_email: email,
-        customer_name: name,
-        estimate: totalEstimate
-      })
-      .then(() => {
-        alert("Thank you! Your quote request has been submitted. A confirmation email has been sent.");
-        document.getElementById('quoteForm').reset();
-        document.getElementById('totalEstimate').textContent = "Estimated total: $0";
-      })
-      .catch((err) => console.error("Error sending customer email", err));
-    }
-  </script>
 </head>
 
 <body>
@@ -130,9 +197,12 @@
       <div class="logo-title">
         <a href="index.html">
           <img src="logo.png" alt="HK Window Pros Logo" />
-          <div class="logo-text"><h1>HK Window Pros</h1></div>
+          <div class="logo-text">
+            <h1>HK Window Pros</h1>
+          </div>
         </a>
       </div>
+
       <div class="menu-icon" onclick="toggleMenu()">☰</div>
       <nav id="menu">
         <a href="index.html">Home</a>
@@ -145,11 +215,12 @@
 
   <main>
     <h2>Get a Free Quote</h2>
-    <div class="info-note" role="alert">
-      This quote estimator is designed for residential homes up to two stories (two floors plus a basement).
+
+    <div class="info-note">
+      This quote estimator is designed for residential homes up to two stories (two floors plus a basement). If your property is different, please <strong>call us</strong> for a free consultation.
     </div>
 
-    <form id="quoteForm" onsubmit="submitForm(event)" novalidate>
+    <form id="quoteForm" novalidate>
       <label for="name" class="required">Full Name</label>
       <input type="text" id="name" name="name" required />
 
@@ -168,14 +239,87 @@
       <div id="totalEstimate" class="total-estimate">Estimated total: $0</div>
 
       <label>
-        <input type="checkbox" id="acceptTerms" required />
-        I understand this is an estimate and may not be the final price.
+        <input type="checkbox" id="acceptTerms" required /> I understand this is an estimate and may not be the final price.
       </label>
 
       <div class="button-container">
-        <button type="submit" id="cashBtn">Confirm and Book Appointment (Cash, Venmo, or Zelle)</button>
+        <button type="submit">Confirm and Book Appointment</button>
       </div>
     </form>
   </main>
+
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
+    function toggleMenu() {
+      const menu = document.getElementById('menu');
+      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+    window.onclick = function (event) {
+      const menu = document.getElementById('menu');
+      if (!event.target.closest('.menu-icon') && !event.target.closest('#menu')) {
+        menu.style.display = 'none';
+      }
+    };
+
+    function updateEstimate() {
+      const firstFloor = parseInt(document.getElementById('firstFloor').value) || 0;
+      const secondFloor = parseInt(document.getElementById('secondFloor').value) || 0;
+      const total = (firstFloor * 5) + (secondFloor * 10);
+      document.getElementById('totalEstimate').textContent = `Estimated total: $${total}`;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      emailjs.init("veg0rYQP-7Fln0TWp");
+
+      document.getElementById("quoteForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const firstFloor = document.getElementById('firstFloor').value.trim();
+        const secondFloor = document.getElementById('secondFloor').value.trim();
+        const totalEstimate = document.getElementById('totalEstimate').textContent;
+        const acceptTerms = document.getElementById('acceptTerms').checked;
+
+        if (!name || !email || !phone || !firstFloor || !secondFloor) {
+          alert('Please fill in all required fields.');
+          return;
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          alert('Please enter a valid email address.');
+          return;
+        }
+        if (!acceptTerms) {
+          alert('Please accept the terms and conditions.');
+          return;
+        }
+
+        // Send email to admin
+        emailjs.send("service_itqn635", "template_mrc33ra", {
+          from_name: name,
+          from_email: email,
+          phone: phone,
+          first_floor: firstFloor,
+          second_floor: secondFloor,
+          total_estimate: totalEstimate
+        }).then(() => {
+          console.log("Admin email sent");
+        }).catch(err => console.error("Admin email error:", err));
+
+        // Send confirmation to customer
+        emailjs.send("service_itqn635", "template_zenc7k6", {
+          to_name: name,
+          to_email: email,
+          total_estimate: totalEstimate
+        }).then(() => {
+          alert("Thank you! Your quote has been submitted. A confirmation email has been sent.");
+          document.getElementById("quoteForm").reset();
+          document.getElementById("totalEstimate").textContent = "Estimated total: $0";
+        }).catch(err => console.error("Customer email error:", err));
+      });
+    });
+  </script>
 </body>
 </html>
