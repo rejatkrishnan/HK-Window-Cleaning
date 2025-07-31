@@ -32,15 +32,24 @@
       flex-wrap: wrap;
     }
 
-    .logo-title {
-      display: flex;
+    .logo-title a {
+      display: inline-flex;
       align-items: center;
       gap: 1rem;
+      text-decoration: none;
+      user-select: none;
+      color: white;
     }
 
     .logo-title img {
-      height: 50px;
+      height: 80px;
       width: auto;
+    }
+
+    .logo-title h1 {
+      margin: 0;
+      font-weight: 700;
+      font-size: 2rem;
     }
 
     .menu-icon {
@@ -228,8 +237,10 @@
   <header>
     <div class="header-container">
       <div class="logo-title">
-        <img src="logo.png" alt="HK Window Pros Logo" />
-        <h1>HK Window Pros</h1>
+        <a href="index.html">
+          <img src="logo.png" alt="HK Window Pros Logo" />
+          <h1>HK Window Pros</h1>
+        </a>
       </div>
       <div class="menu-icon" onclick="toggleMenu()">☰</div>
       <nav id="menu">
