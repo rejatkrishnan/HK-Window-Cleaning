@@ -34,14 +34,17 @@
       justify-content: space-between;
     }
 
-    .logo-title {
+    .logo-title a {
       display: flex;
       align-items: center;
       gap: 1rem;
+      text-decoration: none;
+      color: white;
+      user-select: none;
     }
 
     .logo-title img {
-      height: 50px;
+      height: 70px;
       width: auto;
       display: block;
     }
@@ -50,10 +53,45 @@
       margin: 0;
       font-weight: 700;
       font-size: 1.8rem;
+    }
+
+    /* Hamburger menu styles */
+    .menu-icon {
+      font-size: 1.8rem;
+      cursor: pointer;
       user-select: none;
     }
 
-    /* Hamburger menu styles omitted for brevity, assume same as before */
+    nav {
+      display: none;
+      position: absolute;
+      top: 60px;
+      right: 1rem;
+      background-color: white;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      border-radius: 8px;
+      overflow: hidden;
+      z-index: 1001;
+      width: 180px;
+    }
+
+    nav a {
+      display: block;
+      padding: 1rem 1.5rem;
+      text-decoration: none;
+      color: #0a2540;
+      font-weight: 600;
+      border-bottom: 1px solid #ddd;
+      transition: background-color 0.3s;
+    }
+
+    nav a:last-child {
+      border-bottom: none;
+    }
+
+    nav a:hover {
+      background-color: #dbe7ff;
+    }
 
     main {
       max-width: 600px;
@@ -152,9 +190,21 @@
     }
   </style>
   <script>
-    function navigateTo(page) {
-      window.location.href = page;
+    function toggleMenu() {
+      const menu = document.getElementById('menu');
+      if (menu.style.display === 'block') {
+        menu.style.display = 'none';
+      } else {
+        menu.style.display = 'block';
+      }
     }
+
+    window.onclick = function (event) {
+      const menu = document.getElementById('menu');
+      if (!event.target.closest('.menu-icon') && !event.target.closest('#menu')) {
+        menu.style.display = 'none';
+      }
+    };
 
     function updateEstimate() {
       const firstFloor = parseInt(document.getElementById('firstFloor').value) || 0;
@@ -207,15 +257,22 @@
 <body>
   <header>
     <div class="header-container">
-      <div class="logo-title" style="display: flex; align-items: center; gap: 1rem;">
-        <img src="logo.png" alt="HK Window Pros Logo" />
-        <div class="logo-text">
-          <h1>HK Window Pros</h1>
-        </div>
+      <div class="logo-title">
+        <a href="index.html">
+          <img src="logo.png" alt="HK Window Pros Logo" />
+          <div class="logo-text">
+            <h1>HK Window Pros</h1>
+          </div>
+        </a>
       </div>
 
-      <!-- Hamburger menu and nav omitted for brevity - assume your existing working code here -->
-
+      <div class="menu-icon" onclick="toggleMenu()">☰</div>
+      <nav id="menu">
+        <a href="index.html">Home</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="contact.html">Contact</a>
+        <a href="quote.html">Get a Quote</a>
+      </nav>
     </div>
   </header>
 
@@ -251,12 +308,9 @@
 
       <div class="button-container">
         <button type="submit" id="cashBtn">Checkout (Cash, Venmo, or Zelle)</button>
-        <!-- You can add other buttons here later if needed -->
       </div>
     </form>
   </main>
-
-  <!-- Footer can go here -->
 
 </body>
 
