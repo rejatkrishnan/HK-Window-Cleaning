@@ -6,193 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Get a Free Quote | HK Window Pros</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
-  <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f0f6ff;
-      color: #0a2540;
-      line-height: 1.6;
-    }
 
-    header {
-      background-color: #1a40af;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-      padding: 1rem 0;
-      color: white;
-      position: relative;
-      z-index: 1000;
-    }
-
-    .header-container {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 0 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .logo-title a {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      text-decoration: none;
-      color: white;
-      user-select: none;
-    }
-
-    .logo-title img {
-      height: 70px;
-      width: auto;
-      display: block;
-    }
-
-    .logo-text h1 {
-      margin: 0;
-      font-weight: 700;
-      font-size: 1.8rem;
-    }
-
-    /* Hamburger menu styles */
-    .menu-icon {
-      font-size: 1.8rem;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    nav {
-      display: none;
-      position: absolute;
-      top: 60px;
-      right: 1rem;
-      background-color: white;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-      border-radius: 8px;
-      overflow: hidden;
-      z-index: 1001;
-      width: 180px;
-    }
-
-    nav a {
-      display: block;
-      padding: 1rem 1.5rem;
-      text-decoration: none;
-      color: #0a2540;
-      font-weight: 600;
-      border-bottom: 1px solid #ddd;
-      transition: background-color 0.3s;
-    }
-
-    nav a:last-child {
-      border-bottom: none;
-    }
-
-    nav a:hover {
-      background-color: #dbe7ff;
-    }
-
-    main {
-      max-width: 600px;
-      margin: 3rem auto 5rem auto;
-      background: white;
-      padding: 2rem 2.5rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(26, 64, 175, 0.2);
-    }
-
-    main h2 {
-      text-align: center;
-      margin-bottom: 1rem;
-      font-weight: 700;
-      color: #1a40af;
-    }
-
-    .info-note {
-      background-color: #dbe7ff;
-      border-left: 5px solid #1a40af;
-      padding: 1rem 1.5rem;
-      font-weight: 600;
-      color: #1a40af;
-      margin-bottom: 1.5rem;
-      border-radius: 6px;
-      font-size: 1rem;
-      user-select: none;
-    }
-
-    form label {
-      display: block;
-      margin-bottom: 0.25rem;
-      font-weight: 700;
-      color: #0a2540;
-    }
-
-    form label.required::after {
-      content: " *";
-      color: red;
-    }
-
-    form input[type="text"],
-    form input[type="email"],
-    form input[type="number"] {
-      width: 100%;
-      padding: 0.6rem 0.8rem;
-      margin-bottom: 1.2rem;
-      border: 2px solid #a8b7d9;
-      border-radius: 8px;
-      font-size: 1rem;
-      transition: border-color 0.3s;
-    }
-
-    form input[type="text"]:focus,
-    form input[type="email"]:focus,
-    form input[type="number"]:focus {
-      border-color: #1a40af;
-      outline: none;
-    }
-
-    .button-container {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      margin-top: 1rem;
-      flex-wrap: wrap;
-    }
-
-    button {
-      background-color: #1a40af;
-      color: white;
-      border: none;
-      padding: 0.75rem 2rem;
-      font-size: 1.1rem;
-      font-weight: 700;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      flex: 1 1 150px;
-      user-select: none;
-    }
-
-    button:hover,
-    button:focus {
-      background-color: #15327a;
-      outline: none;
-    }
-
-    .total-estimate {
-      margin-top: 1rem;
-      font-weight: 700;
-      font-size: 1.25rem;
-      text-align: center;
-      color: #1a40af;
-      user-select: none;
-    }
-  </style>
-  <!-- Include EmailJS SDK -->
+  <!-- EmailJS SDK -->
   <script src="https://cdn.emailjs.com/sdk/3.2/email.min.js"></script>
+
+  <style>
+    /* Your existing CSS styles (omitted here for brevity) */
+    /* Include all your styles exactly as before */
+  </style>
+
   <script>
-    // Initialize EmailJS with your user/public key
+    // Initialize EmailJS with your new public key
     emailjs.init('_-iJBJuay9T60hC04');
 
     function toggleMenu() {
@@ -250,42 +74,45 @@
         return;
       }
 
-      // Calculate total estimate for sending in email templates
       const totalEstimate = `$${(parseInt(firstFloor) * 5) + (parseInt(secondFloor) * 10)}`;
 
-      // Prepare data for admin email
-      const adminParams = {
+      // Prepare the parameters to send to EmailJS templates
+      const templateParams = {
         from_name: name,
         from_email: email,
         phone: phone,
         first_floor: firstFloor,
         second_floor: secondFloor,
         total_estimate: totalEstimate,
-        to_email: "hkwindowpros@gmail.com" // If your EmailJS template supports it
+        to_name: name
       };
 
-      // Prepare data for customer confirmation email
-      const customerParams = {
-        to_name: name,
-        to_email: email,
-        total_estimate: totalEstimate,
-      };
+      // Send email to admin
+      emailjs.send('service_itqn635', 'template_mrc33ra', templateParams)
+        .then(function (response) {
+          console.log('Admin email sent!', response.status, response.text);
 
-      // Send admin notification email
-      emailjs.send('service_itqn635', 'template_mrc33ra', adminParams)
-        .then(function () {
-          // On success, send customer confirmation email
-          return emailjs.send('service_itqn635', 'template_zenc7k6', customerParams);
-        })
-        .then(function () {
-          alert('Thank you! Your quote request has been submitted. A confirmation email has been sent to you.');
-          document.getElementById('quoteForm').reset();
-          updateEstimate();
+          // Send confirmation email to customer
+          emailjs.send('service_itqn635', 'template_zenc7k6', templateParams)
+            .then(function (response) {
+              console.log('Customer confirmation email sent!', response.status, response.text);
+              alert('Thank you! Your quote request has been submitted. Confirmation email sent.');
+              document.getElementById('quoteForm').reset();
+              updateEstimate(); // reset estimate display
+            }, function (error) {
+              console.error('Error sending customer confirmation email:', error);
+              alert('Quote submitted, but failed to send confirmation email.');
+            });
         }, function (error) {
-          console.error('FAILED...', error);
-          alert('Oops! Something went wrong while sending your request. Please try again later.');
+          console.error('Error sending admin email:', error);
+          alert('Failed to send quote request. Please try again later.');
         });
     }
+
+    window.onload = function () {
+      document.getElementById('quoteForm').addEventListener('submit', submitForm);
+      updateEstimate();
+    };
   </script>
 </head>
 
@@ -318,7 +145,7 @@
       This quote estimator is designed for residential homes up to two stories (two floors plus a basement). If your property is different, please <strong>call us</strong> for a free consultation.
     </div>
 
-    <form id="quoteForm" onsubmit="submitForm(event)" novalidate>
+    <form id="quoteForm" novalidate>
       <label for="name" class="required">Full Name</label>
       <input type="text" id="name" name="name" required aria-required="true" />
 
