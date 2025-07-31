@@ -3,168 +3,113 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Get a Free Quote | HK Window Pros</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <title>Get a Quote | HK Window Pros</title>
+  <script src="https://js.stripe.com/v3/"></script>
   <style>
     body {
-      font-family: 'Roboto', sans-serif;
-      background: #f0f5ff;
+      font-family: Arial, sans-serif;
+      background: #f8faff;
       margin: 0;
-      padding: 2rem;
-      color: #003366;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
+      padding: 20px;
+      text-align: center;
     }
     h1 {
-      margin-bottom: 2rem;
-      font-weight: 700;
-      font-size: 2.5rem;
+      color: #004c97;
     }
-    form {
+    .quote-box {
       background: white;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 8px 24px rgba(0,0,50,0.1);
-      width: 100%;
+      padding: 20px;
       max-width: 400px;
+      margin: 20px auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
-    label {
-      font-weight: 600;
-      margin-top: 1rem;
-      display: block;
-      font-size: 1.1rem;
-    }
-    input[type=number] {
-      width: 100%;
-      padding: 0.5rem;
-      margin-top: 0.3rem;
-      font-size: 1rem;
-      border-radius: 6px;
-      border: 1.5px solid #0073e6;
-      box-sizing: border-box;
-      outline-color: #005bb5;
+    input {
+      padding: 10px;
+      margin: 5px;
+      width: 80%;
+      border: 1px solid #ccc;
+      border-radius: 5px;
     }
     button {
-      margin-top: 2rem;
-      background: #0073e6;
+      background: #007BFF;
       color: white;
-      font-weight: 700;
-      font-size: 1.2rem;
-      padding: 0.75rem;
-      width: 100%;
+      padding: 12px 20px;
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
+      font-size: 16px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      margin-top: 10px;
     }
     button:hover {
-      background-color: #005bb5;
+      background: #0056b3;
     }
-    p.note {
-      margin-top: 1rem;
-      font-size: 0.9rem;
-      color: #555;
-      text-align: center;
-      max-width: 400px;
+    .total {
+      font-size: 18px;
+      margin-top: 15px;
+      font-weight: bold;
     }
-    p.total-estimate {
-      margin-top: 1rem;
-      font-size: 1.3rem;
-      font-weight: 700;
-      text-align: center;
-      color: #004080;
+    .note {
+      margin-top: 15px;
+      font-size: 14px;
+      color: gray;
     }
   </style>
 </head>
 <body>
-  <h1>Get Your Free Quote</h1>
 
-  <form id="quoteForm">
-    <label for="firstFloor">Number of 1st Floor Windows</label>
-    <input type="number" id="firstFloor" name="firstFloor" min="0" value="0" />
+  <h1>Get Your Residential Quote</h1>
+  <div class="quote-box">
+    <input type="number" id="firstFloor" placeholder="First floor windows" min="0" />
+    <input type="number" id="secondFloor" placeholder="Second floor or higher windows" min="0" />
+    <div class="total" id="totalDisplay">Estimated Total: $0</div>
+    <div class="note">* This is an estimate for residential properties only. Businesses please contact us.</div>
+    <button id="checkoutBtn">Checkout</button>
+  </div>
 
-    <label for="upperFloor">Number of 2nd Floor or Higher Windows</label>
-    <input type="number" id="upperFloor" name="upperFloor" min="0" value="0" />
-
-    <p class="total-estimate" id="totalEstimate">$0.00</p>
-
-    <button type="submit" id="checkoutBtn">Checkout</button>
-  </form>
-
-  <p class="note">
-    This quote estimator is for residential properties only.<br />
-    For commercial or company estimates, please <a href="contact.html">contact us</a>.
-  </p>
-
-  <script src="https://js.stripe.com/v3/"></script>
   <script>
-    const stripe = Stripe('pk_test_51RqjbVKxYUoiOeyG0ozCo2avTnfTixilPD6eK8jDaUyxpLbbpk3dtroGtAjfM6AR4T6zy8Igwpn0PqgiPql7EAOm008fzzxDSG');
+    const stripe = Stripe("YOUR_PUBLISHABLE_KEY_HERE"); // Replace with your pk_test key
+    const firstFloorInput = document.getElementById("firstFloor");
+    const secondFloorInput = document.getElementById("secondFloor");
+    const totalDisplay = document.getElementById("totalDisplay");
 
-    const firstFloorInput = document.getElementById('firstFloor');
-    const upperFloorInput = document.getElementById('upperFloor');
-    const totalEstimateEl = document.getElementById('totalEstimate');
-
-    // Prices per window
-    const priceFirstFloor = 5;
-    const priceUpperFloor = 10;
-
-    function updateEstimate() {
+    function updateTotal() {
       const firstFloor = parseInt(firstFloorInput.value) || 0;
-      const upperFloor = parseInt(upperFloorInput.value) || 0;
-      const total = firstFloor * priceFirstFloor + upperFloor * priceUpperFloor;
-      totalEstimateEl.textContent = `Estimated Price: $${total.toFixed(2)} (not exact)`;
+      const secondFloor = parseInt(secondFloorInput.value) || 0;
+      const total = firstFloor * 5 + secondFloor * 10;
+      totalDisplay.textContent = `Estimated Total: $${total}`;
       return total;
     }
 
-    // Update estimate when inputs change
-    firstFloorInput.addEventListener('input', updateEstimate);
-    upperFloorInput.addEventListener('input', updateEstimate);
+    firstFloorInput.addEventListener("input", updateTotal);
+    secondFloorInput.addEventListener("input", updateTotal);
 
-    document.getElementById('quoteForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
+    document.getElementById("checkoutBtn").addEventListener("click", async () => {
+      const total = updateTotal();
 
-      const firstFloorWindows = parseInt(firstFloorInput.value) || 0;
-      const upperFloorWindows = parseInt(upperFloorInput.value) || 0;
-
-      const total = updateEstimate();
-
-      if (firstFloorWindows === 0 && upperFloorWindows === 0) {
-        alert('Please enter at least one window to get a quote.');
+      if (total <= 0) {
+        alert("Please enter at least 1 window.");
         return;
       }
 
       try {
-        const response = await fetch('http://localhost:4242/create-checkout-session', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ firstFloorWindows, upperFloorWindows })
+        const response = await fetch("http://localhost:4242/create-checkout-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ total })
         });
 
-        if (!response.ok) {
-          alert('Failed to create checkout session.');
-          return;
+        const data = await response.json();
+        if (!data.id) {
+          throw new Error("Checkout session ID not returned.");
         }
 
-        const session = await response.json();
-
-        if (session.id) {
-          const result = await stripe.redirectToCheckout({ sessionId: session.id });
-          if (result.error) {
-            alert(result.error.message);
-          }
-        } else {
-          alert('Checkout session ID not returned.');
-        }
+        await stripe.redirectToCheckout({ sessionId: data.id });
       } catch (error) {
-        alert('Error connecting to server. Please try again later.');
         console.error(error);
+        alert("Something went wrong while starting checkout.");
       }
     });
-
-    // Initialize estimate on page load
-    updateEstimate();
   </script>
 </body>
 </html>
