@@ -236,10 +236,10 @@
       <label for="phone" class="required">Phone Number</label>
       <input type="text" id="phone" name="phone" required aria-required="true" />
 
-      <label for="firstFloor" class="required">Number of First Floor Windows</label>
+      <label for="firstFloor" class="required">Number of First Floor Windows (Can look inside from the ground)</label>
       <input type="number" id="firstFloor" name="firstFloor" min="0" required aria-required="true" oninput="updateEstimate()" />
 
-      <label for="secondFloor" class="required">Number of Second Floor or Higher Windows</label>
+      <label for="secondFloor" class="required">Number of Second Floor or Higher Windows (Can not see inside from the ground)</label>
       <input type="number" id="secondFloor" name="secondFloor" min="0" required aria-required="true" oninput="updateEstimate()" />
 
       <div id="totalEstimate" class="total-estimate">Estimated total: $0</div>
