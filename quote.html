@@ -69,6 +69,13 @@
       text-align: center;
       max-width: 400px;
     }
+    p.total-estimate {
+      margin-top: 1rem;
+      font-size: 1.3rem;
+      font-weight: 700;
+      text-align: center;
+      color: #004080;
+    }
   </style>
 </head>
 <body>
@@ -81,6 +88,8 @@
     <label for="upperFloor">Number of 2nd Floor or Higher Windows</label>
     <input type="number" id="upperFloor" name="upperFloor" min="0" value="0" />
 
+    <p class="total-estimate" id="totalEstimate">$0.00</p>
+
     <button type="submit" id="checkoutBtn">Checkout</button>
   </form>
 
@@ -91,13 +100,40 @@
 
   <script src="https://js.stripe.com/v3/"></script>
   <script>
-    const stripe = Stripe('sk_test_51RqjbVKxYUoiOeyGY2T4eb5ZsoTTzZfskcgdWifjHzNlvElspIWJf9bcMD9cITlUmq4NPoH3oxaJUqZE6otbD9Vn00P6odcwKa');
+    const stripe = Stripe('pk_test_51RqjbVKxYUoiOeyG0ozCo2avTnfTixilPD6eK8jDaUyxpLbbpk3dtroGtAjfM6AR4T6zy8Igwpn0PqgiPql7EAOm008fzzxDSG');
+
+    const firstFloorInput = document.getElementById('firstFloor');
+    const upperFloorInput = document.getElementById('upperFloor');
+    const totalEstimateEl = document.getElementById('totalEstimate');
+
+    // Prices per window
+    const priceFirstFloor = 5;
+    const priceUpperFloor = 10;
+
+    function updateEstimate() {
+      const firstFloor = parseInt(firstFloorInput.value) || 0;
+      const upperFloor = parseInt(upperFloorInput.value) || 0;
+      const total = firstFloor * priceFirstFloor + upperFloor * priceUpperFloor;
+      totalEstimateEl.textContent = `Estimated Price: $${total.toFixed(2)} (not exact)`;
+      return total;
+    }
+
+    // Update estimate when inputs change
+    firstFloorInput.addEventListener('input', updateEstimate);
+    upperFloorInput.addEventListener('input', updateEstimate);
 
     document.getElementById('quoteForm').addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const firstFloorWindows = parseInt(document.getElementById('firstFloor').value) || 0;
-      const upperFloorWindows = parseInt(document.getElementById('upperFloor').value) || 0;
+      const firstFloorWindows = parseInt(firstFloorInput.value) || 0;
+      const upperFloorWindows = parseInt(upperFloorInput.value) || 0;
+
+      const total = updateEstimate();
+
+      if (firstFloorWindows === 0 && upperFloorWindows === 0) {
+        alert('Please enter at least one window to get a quote.');
+        return;
+      }
 
       try {
         const response = await fetch('http://localhost:4242/create-checkout-session', {
@@ -105,6 +141,11 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ firstFloorWindows, upperFloorWindows })
         });
+
+        if (!response.ok) {
+          alert('Failed to create checkout session.');
+          return;
+        }
 
         const session = await response.json();
 
@@ -114,13 +155,16 @@
             alert(result.error.message);
           }
         } else {
-          alert('Failed to create checkout session.');
+          alert('Checkout session ID not returned.');
         }
       } catch (error) {
         alert('Error connecting to server. Please try again later.');
         console.error(error);
       }
     });
+
+    // Initialize estimate on page load
+    updateEstimate();
   </script>
 </body>
 </html>
