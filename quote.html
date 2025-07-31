@@ -110,7 +110,6 @@
       nav.style.display = nav.style.display === 'flex' ? 'none' : 'flex';
     }
 
-    // Close menu if clicked outside
     document.addEventListener('click', function(event) {
       const nav = document.querySelector('nav');
       const menuBtn = document.querySelector('.menu-btn');
@@ -152,19 +151,20 @@
       <input type="email" name="email" required>
 
       <label>Phone:</label>
-      <input type="text" name="phone" required>
+      <input type="tel" name="phone" pattern="[0-9]{7,}" placeholder="At least 7 digits" required>
 
       <label>Address:</label>
       <input type="text" name="address" required>
 
       <label>First Floor Windows:</label>
-      <input type="number" id="firstFloor" name="firstFloor" min="0" value="0" oninput="calculateEstimate()">
+      <input type="number" id="firstFloor" name="firstFloor" min="0" value="0" required oninput="calculateEstimate()">
 
       <label>Second or Higher Floor Windows:</label>
-      <input type="number" id="secondFloor" name="secondFloor" min="0" value="0" oninput="calculateEstimate()">
+      <input type="number" id="secondFloor" name="secondFloor" min="0" value="0" required oninput="calculateEstimate()">
 
       <label>Payment Method:</label>
       <select name="paymentMethod" required>
+        <option value="">-- Select --</option>
         <option value="Cash">Cash</option>
         <option value="Venmo">Venmo</option>
         <option value="Zelle">Zelle</option>
