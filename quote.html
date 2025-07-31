@@ -220,7 +220,7 @@
       This quote estimator is designed for residential homes up to two stories (two floors plus a basement). If your property is different, please <strong>call us</strong> for a free consultation.
     </div>
 
-    <form id="quoteForm" novalidate>
+    <form id="quoteForm" onsubmit="submitForm(event)" novalidate>
       <label for="name" class="required">Full Name</label>
       <input type="text" id="name" name="name" required aria-required="true" />
 
@@ -249,11 +249,9 @@
     </form>
   </main>
 
-  <!-- Load EmailJS SDK -->
+  <!-- Load EmailJS SDK first -->
   <script src="https://cdn.emailjs.com/sdk/3.2/email.min.js"></script>
-
   <script>
-    // Initialize EmailJS with your public key
     emailjs.init('_-iJBJuay9T60hC04');
 
     function toggleMenu() {
@@ -277,7 +275,8 @@
       const secondFloor = parseInt(document.getElementById('secondFloor').value) || 0;
 
       const total = (firstFloor * 5) + (secondFloor * 10);
-      document.getElementById('totalEstimate').textContent = `Estimated total: $${total}`;
+      const totalText = `Estimated total: $${total}`;
+      document.getElementById('totalEstimate').textContent = totalText;
     }
 
     function validateEmail(email) {
@@ -285,7 +284,7 @@
       return re.test(email);
     }
 
-    document.getElementById('quoteForm').addEventListener('submit', function (event) {
+    function submitForm(event) {
       event.preventDefault();
 
       const name = document.getElementById('name').value.trim();
@@ -310,43 +309,48 @@
         return;
       }
 
-      const totalEstimate = (parseInt(firstFloor) * 5) + (parseInt(secondFloor) * 10);
+      const totalEstimate = `$${(parseInt(firstFloor) * 5) + (parseInt(secondFloor) * 10)}`;
 
-      // Prepare params for admin email
+      // Prepare template params for admin email
       const adminParams = {
         from_name: name,
         from_email: email,
         phone: phone,
         first_floor: firstFloor,
         second_floor: secondFloor,
-        total_estimate: `$${totalEstimate}`
+        total_estimate: totalEstimate,
       };
 
-      // Prepare params for customer confirmation email
+      // Prepare template params for customer email
       const customerParams = {
         to_name: name,
-        total_estimate: `$${totalEstimate}`
+        total_estimate: totalEstimate,
       };
 
-      // Send admin notification
-      emailjs.send('service_itqn635', 'template_mrc33ra', adminParams)
-        .then(function () {
+      const serviceID = 'service_itqn635'; // Your service ID
+      const adminTemplateID = 'template_mrc33ra'; // Admin template ID
+      const customerTemplateID = 'template_zenc7k6'; // Customer template ID
+
+      // Send admin notification email
+      emailjs.send(serviceID, adminTemplateID, adminParams)
+        .then(function (response) {
+          console.log('Admin Email Sent!', response.status, response.text);
+
           // After admin email sent, send confirmation to customer
-          return emailjs.send('service_itqn635', 'template_zenc7k6', {
-            ...customerParams,
-            to_email: email
-          });
+          return emailjs.send(serviceID, customerTemplateID, customerParams);
         })
-        .then(function () {
-          alert('Thank you! Your quote request has been submitted. A confirmation email has been sent to you.');
+        .then(function (response) {
+          console.log('Customer Email Sent!', response.status, response.text);
+          alert('Thank you! Your quote request has been submitted. Confirmation email sent.');
+          // Optionally reset the form:
           document.getElementById('quoteForm').reset();
           updateEstimate();
         })
         .catch(function (error) {
-          console.error('Email sending error:', error);
+          console.error('Failed to send emails:', error);
           alert('Oops! Something went wrong while sending your request. Please try again later.');
         });
-    });
+    }
   </script>
 </body>
 
