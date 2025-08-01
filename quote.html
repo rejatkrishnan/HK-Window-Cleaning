@@ -22,9 +22,28 @@
       border-radius: 10px;
       box-shadow: 0 4px 15px rgba(26,64,175,0.2);
     }
-    h2 { text-align: center; color: #1a40af; }
-    label { display: block; margin-top: 1rem; font-weight: bold; }
-    input, button {
+    h2 {
+      text-align: center;
+      color: #1a40af;
+    }
+    .note {
+      font-size: 0.9rem;
+      color: #444;
+      background: #e6efff;
+      padding: 0.8rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    label span {
+      color: red;
+    }
+    input, select, button {
       width: 100%;
       padding: 0.6rem;
       margin-top: 0.5rem;
@@ -38,10 +57,22 @@
       cursor: pointer;
       margin-top: 1rem;
     }
-    button:hover { background: #15327a; }
-    .total-estimate { margin-top: 1rem; font-weight: bold; text-align: center; color: #1a40af; }
-    .checkbox-inline { display: flex; align-items: center; gap: 0.5rem; }
-    .date-options, .time-options { display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.5rem; }
+    button:hover {
+      background: #15327a;
+    }
+    .total-estimate {
+      margin-top: 1rem;
+      font-weight: bold;
+      text-align: center;
+      color: #1a40af;
+    }
+    .terms {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      font-weight: normal;
+    }
 
     /* Hamburger menu styles */
     .menu-icon {
@@ -75,8 +106,12 @@
       border-bottom: 1px solid #ddd;
       transition: background-color 0.3s;
     }
-    nav a:last-child { border-bottom: none; }
-    nav a:hover { background-color: #dbe7ff; }
+    nav a:last-child {
+      border-bottom: none;
+    }
+    nav a:hover {
+      background-color: #dbe7ff;
+    }
   </style>
 </head>
 <body>
@@ -92,42 +127,43 @@
 
   <main>
     <h2>Get Your Free Quote</h2>
+    <div class="note">
+      This quote generator is made for houses up to two stories (2 floors + basement).  
+      For larger properties, please call us at (XXX) XXX-XXXX or email hkwindowpros@gmail.com.
+    </div>
+
     <form id="quoteForm">
-      <label>Full Name</label>
+      <label>Full Name <span>*</span></label>
       <input type="text" id="name" name="name" required>
 
-      <label>Email</label>
+      <label>Email <span>*</span></label>
       <input type="email" id="email" name="email" required>
 
-      <label>Phone Number</label>
+      <label>Phone Number <span>*</span></label>
       <input type="text" id="phone" name="phone" required>
 
-      <label>First Floor Windows</label>
+      <label>First Floor Windows <span>*</span></label>
       <input type="number" id="firstFloor" name="firstFloor" min="0" required oninput="updateEstimate()">
 
-      <label>Second Floor or Higher Windows</label>
+      <label>Second Floor or Higher Windows <span>*</span></label>
       <input type="number" id="secondFloor" name="secondFloor" min="0" required oninput="updateEstimate()">
+
+      <label>Preferred Service Date <span>*</span></label>
+      <select id="serviceDate" name="serviceDate" required></select>
+
+      <label>Preferred Time Slot <span>*</span></label>
+      <select id="timeSlot" name="timeSlot" required>
+        <option value="">Select a time</option>
+        <option value="Morning (9AM-2PM)">Morning (9AM-2PM)</option>
+        <option value="Afternoon (2PM-7PM)">Afternoon (2PM-7PM)</option>
+      </select>
 
       <div class="total-estimate" id="totalEstimate">Estimated total: $0</div>
 
-      <!-- Preferred Date -->
-      <label>Preferred Service Date</label>
-      <div class="date-options" id="dateOptions"></div>
-
-      <!-- Preferred Time -->
-      <label>Preferred Time Slot</label>
-      <div class="time-options">
-        <label class="checkbox-inline">
-          <input type="radio" name="timeSlot" value="Morning (9-2)" required> Morning (9 AM - 2 PM)
-        </label>
-        <label class="checkbox-inline">
-          <input type="radio" name="timeSlot" value="Afternoon (2-7)" required> Afternoon (2 PM - 7 PM)
-        </label>
+      <div class="terms">
+        <input type="checkbox" id="acceptTerms" required>
+        <label for="acceptTerms">I understand this is an estimate and may not be the final price.</label>
       </div>
-
-      <label class="checkbox-inline">
-        <input type="checkbox" id="acceptTerms" required> I understand this is an estimate and may not be the final price.
-      </label>
 
       <button type="submit">Confirm and Book Appointment</button>
     </form>
@@ -147,19 +183,21 @@
       document.getElementById("totalEstimate").textContent = `Estimated total: $${total}`;
     }
 
-    // Populate next 7 days
-    const dateOptionsContainer = document.getElementById("dateOptions");
-    const today = new Date();
-    for (let i = 0; i < 7; i++) {
-      const date = new Date();
-      date.setDate(today.getDate() + i);
-      const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
-      const dateStr = date.toISOString().split('T')[0];
-      const label = document.createElement("label");
-      label.className = "checkbox-inline";
-      label.innerHTML = `<input type="radio" name="serviceDate" value="${dateStr}" required> ${dayName} (${dateStr})`;
-      dateOptionsContainer.appendChild(label);
+    function populateDates() {
+      const dateSelect = document.getElementById("serviceDate");
+      const today = new Date();
+      for (let i = 0; i < 7; i++) {
+        const optionDate = new Date();
+        optionDate.setDate(today.getDate() + i);
+        const dayName = optionDate.toLocaleDateString('en-US', { weekday: 'long' });
+        const formattedDate = optionDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+        const option = document.createElement("option");
+        option.value = `${dayName}, ${formattedDate}`;
+        option.textContent = `${dayName} - ${formattedDate}`;
+        dateSelect.appendChild(option);
+      }
     }
+    populateDates();
 
     function toggleMenu() {
       const menu = document.getElementById('menu');
@@ -181,9 +219,14 @@
       const phone = document.getElementById("phone").value.trim();
       const first = document.getElementById("firstFloor").value.trim();
       const second = document.getElementById("secondFloor").value.trim();
-      const serviceDate = document.querySelector("input[name='serviceDate']:checked").value;
-      const timeSlot = document.querySelector("input[name='timeSlot']:checked").value;
+      const date = document.getElementById("serviceDate").value.trim();
+      const time = document.getElementById("timeSlot").value.trim();
       const totalEstimate = `$${(parseInt(first) * 5) + (parseInt(second) * 10)}`;
+
+      if (!name || !email || !phone || !first || !second || !date || !time) {
+        alert("Please fill out all fields.");
+        return;
+      }
 
       // Admin email parameters
       const adminParams = {
@@ -192,18 +235,18 @@
         phone: phone,
         first_floor: first,
         second_floor: second,
-        total_estimate: totalEstimate,
-        service_date: serviceDate,
-        time_slot: timeSlot
+        service_date: date,
+        service_time: time,
+        total_estimate: totalEstimate
       };
 
       // Customer confirmation email parameters
       const customerParams = {
         to_name: name,
         total_estimate: totalEstimate,
-        email: email,
-        service_date: serviceDate,
-        time_slot: timeSlot
+        service_date: date,
+        service_time: time,
+        email: email
       };
 
       const serviceID = "service_itqn635";
@@ -211,8 +254,12 @@
       const customerTemplateID = "template_zenc7k6";
 
       emailjs.send(serviceID, adminTemplateID, adminParams)
-        .then(() => emailjs.send(serviceID, customerTemplateID, customerParams))
-        .then(() => { window.location.href = "thankyou.html"; })
+        .then(() => {
+          return emailjs.send(serviceID, customerTemplateID, customerParams);
+        })
+        .then(() => {
+          window.location.href = "thankyou.html";
+        })
         .catch((err) => {
           console.error("EmailJS error:", err);
           window.location.href = "failed.html";
