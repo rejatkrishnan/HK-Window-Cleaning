@@ -278,12 +278,13 @@
   </main>
 
   <footer>
-    Contact us: <a href="tel:+16125132564">651-689-5866</a> | <a href="mailto:hkwindowpros@gmail.com">hkwindowpros@gmail.com</a>
+    Contact us: <a href="tel:+16125132564">612-513-2564</a> | <a href="mailto:hkwindowpros@gmail.com">hkwindowpros@gmail.com</a>
   </footer>
 
   <script src="https://cdn.emailjs.com/sdk/3.2/email.min.js"></script>
   <script>
-    emailjs.init('service_itqn635'); // Use your actual user ID or service ID
+    // initialize EmailJS with your user ID (NOT service ID)
+    emailjs.init('_-iJBJuay9T60hC04');
 
     function toggleMenu() {
       const menu = document.getElementById('menu');
@@ -300,7 +301,6 @@
     function updateEstimate() {
       const firstFloor = parseInt(document.getElementById('firstFloor').value) || 0;
       const secondFloor = parseInt(document.getElementById('secondFloor').value) || 0;
-
       const total = (firstFloor * 5) + (secondFloor * 10);
       document.getElementById('totalEstimate').textContent = `Estimated total: $${total}`;
     }
@@ -337,11 +337,7 @@
 
       const totalEstimate = `$${(parseInt(firstFloor) * 5) + (parseInt(secondFloor) * 10)}`;
 
-      const serviceID = 'service_itqn635'; // Your service ID
-      const adminTemplateID = 'template_mrc33ra'; // Admin email template ID
-      const customerTemplateID = 'template_zenc7k6'; // Customer confirmation template ID
-
-      // Params for admin email
+      // Prepare template params for admin email
       const adminParams = {
         from_name: name,
         from_email: email,
@@ -351,29 +347,28 @@
         total_estimate: totalEstimate
       };
 
-      // Params for customer email
+      // Prepare template params for customer email
       const customerParams = {
         to_name: name,
         total_estimate: totalEstimate,
         email: email
       };
 
-      // Send email to admin first
+      const serviceID = 'service_itqn635'; // Your EmailJS service ID
+      const adminTemplateID = 'template_mrc33ra'; // Admin email template ID
+      const customerTemplateID = 'template_zenc7k6'; // Customer confirmation template ID
+
       emailjs.send(serviceID, adminTemplateID, adminParams)
         .then(function (response) {
           console.log('Admin Email Sent!', response.status, response.text);
-
-          // Then send confirmation email to customer
           return emailjs.send(serviceID, customerTemplateID, customerParams);
         })
         .then(function (response) {
           console.log('Customer Email Sent!', response.status, response.text);
-          // Redirect to thank you page
           window.location.href = 'thankyou.html';
         })
         .catch(function (error) {
           console.error('Failed to send emails:', error);
-          // Redirect to failure page if sending fails
           window.location.href = 'failure.html';
         });
     }
