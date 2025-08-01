@@ -1,27 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Get a Free Quote | HK Window Pros</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
   <style>
-    /* Your CSS styles (same as before) */
     body {
       font-family: 'Roboto', sans-serif;
-      margin: 0; padding: 0;
+      margin: 0;
+      padding: 0;
       background-color: #f0f6ff;
       color: #0a2540;
       line-height: 1.6;
     }
+
     header {
       background-color: #1a40af;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
       padding: 1rem 0;
       color: white;
       position: relative;
       z-index: 1000;
     }
+
     .header-container {
       max-width: 900px;
       margin: 0 auto;
@@ -30,6 +33,7 @@
       align-items: center;
       justify-content: space-between;
     }
+
     .logo-title a {
       display: flex;
       align-items: center;
@@ -38,33 +42,39 @@
       color: white;
       user-select: none;
     }
+
     .logo-title img {
       height: 70px;
       width: auto;
       display: block;
     }
+
     .logo-text h1 {
       margin: 0;
       font-weight: 700;
       font-size: 1.8rem;
     }
+
+    /* Hamburger menu styles */
     .menu-icon {
       font-size: 1.8rem;
       cursor: pointer;
       user-select: none;
     }
+
     nav {
       display: none;
       position: absolute;
       top: 60px;
       right: 1rem;
       background-color: white;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
       border-radius: 8px;
       overflow: hidden;
       z-index: 1001;
       width: 180px;
     }
+
     nav a {
       display: block;
       padding: 1rem 1.5rem;
@@ -74,26 +84,31 @@
       border-bottom: 1px solid #ddd;
       transition: background-color 0.3s;
     }
+
     nav a:last-child {
       border-bottom: none;
     }
+
     nav a:hover {
       background-color: #dbe7ff;
     }
+
     main {
       max-width: 600px;
       margin: 3rem auto 5rem auto;
       background: white;
       padding: 2rem 2.5rem;
       border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(26,64,175,0.2);
+      box-shadow: 0 4px 15px rgba(26, 64, 175, 0.2);
     }
+
     main h2 {
       text-align: center;
       margin-bottom: 1rem;
       font-weight: 700;
       color: #1a40af;
     }
+
     .info-note {
       background-color: #dbe7ff;
       border-left: 5px solid #1a40af;
@@ -105,16 +120,19 @@
       font-size: 1rem;
       user-select: none;
     }
+
     form label {
       display: block;
       margin-bottom: 0.25rem;
       font-weight: 700;
       color: #0a2540;
     }
+
     form label.required::after {
       content: " *";
       color: red;
     }
+
     form input[type="text"],
     form input[type="email"],
     form input[type="number"] {
@@ -126,12 +144,14 @@
       font-size: 1rem;
       transition: border-color 0.3s;
     }
+
     form input[type="text"]:focus,
     form input[type="email"]:focus,
     form input[type="number"]:focus {
       border-color: #1a40af;
       outline: none;
     }
+
     .button-container {
       display: flex;
       gap: 1rem;
@@ -139,6 +159,7 @@
       margin-top: 1rem;
       flex-wrap: wrap;
     }
+
     button {
       background-color: #1a40af;
       color: white;
@@ -152,11 +173,13 @@
       flex: 1 1 150px;
       user-select: none;
     }
+
     button:hover,
     button:focus {
       background-color: #15327a;
       outline: none;
     }
+
     .total-estimate {
       margin-top: 1rem;
       font-weight: 700;
@@ -167,6 +190,7 @@
     }
   </style>
 </head>
+
 <body>
   <header>
     <div class="header-container">
@@ -178,6 +202,7 @@
           </div>
         </a>
       </div>
+
       <div class="menu-icon" onclick="toggleMenu()">☰</div>
       <nav id="menu">
         <a href="index.html">Home</a>
@@ -195,45 +220,65 @@
       This quote estimator is designed for residential homes up to two stories (two floors plus a basement). If your property is different, please <strong>call us</strong> for a free consultation.
     </div>
 
-    <!-- FORM SUBMIT STARTS HERE -->
-    <form id="quoteForm" 
-          action="https://formsubmit.co/el/wijixi" 
-          method="POST" 
-          accept-charset="UTF-8"
-          onsubmit="return validateForm()"
-          >
-      
+    <form
+      id="quoteForm"
+      method="POST"
+      action="https://formsubmit.co/el/wijixi"
+      enctype="multipart/form-data"
+      onsubmit="return validateForm()"
+      novalidate
+    >
+      <!-- FormSubmit config inputs -->
+      <input type="hidden" name="_next" value="https://hkwindowpros.com/thankyou.html" />
+      <input type="hidden" name="_subject" value="New Quote Request from HK Window Pros" />
+      <input type="hidden" name="_captcha" value="false" />
+      <input
+        type="hidden"
+        name="_autoresponse"
+        value="Hi! Thanks for requesting a quote with HK Window Pros. We will get back to you shortly."
+      />
+      <input type="hidden" name="_template" value="table" />
+
       <label for="name" class="required">Full Name</label>
       <input type="text" id="name" name="name" required aria-required="true" />
 
       <label for="email" class="required">Email</label>
-      <input type="email" id="email" name="email" required aria-required="true" placeholder="your.email@example.com" />
+      <input type="email" id="email" name="email" required aria-required="true" />
 
       <label for="phone" class="required">Phone Number</label>
       <input type="text" id="phone" name="phone" required aria-required="true" />
 
       <label for="firstFloor" class="required">Number of First Floor Windows (Can see inside from eye level)</label>
-      <input type="number" id="firstFloor" name="first_floor" min="0" required aria-required="true" oninput="updateEstimate()" />
+      <input
+        type="number"
+        id="firstFloor"
+        name="firstFloor"
+        min="0"
+        required
+        aria-required="true"
+        oninput="updateEstimate()"
+      />
 
-      <label for="secondFloor" class="required">Number of Second Floor or Higher Windows (Cannot see inside from eye level)</label>
-      <input type="number" id="secondFloor" name="second_floor" min="0" required aria-required="true" oninput="updateEstimate()" />
+      <label for="secondFloor" class="required">Number of Second Floor or Higher Windows (Can not see inside from eye level)</label>
+      <input
+        type="number"
+        id="secondFloor"
+        name="secondFloor"
+        min="0"
+        required
+        aria-required="true"
+        oninput="updateEstimate()"
+      />
 
       <div id="totalEstimate" class="total-estimate">Estimated total: $0</div>
 
       <label>
-        <input type="checkbox" id="acceptTerms" name="acceptTerms" required aria-required="true" />
+        <input type="checkbox" id="acceptTerms" required aria-required="true" />
         I understand this is an estimate and may not be the final price.
       </label>
 
-      <!-- FormSubmit hidden inputs -->
-      <input type="hidden" name="_next" value="https://hkwindowpros.com/thankyou.html" />
-      <input type="hidden" name="_subject" value="New Quote Request from Website" />
-      <input type="hidden" name="_autoresponse" value="Thank you for requesting a quote from HK Window Pros! We will contact you shortly." />
-      <input type="hidden" name="_template" value="table" />
-      <input type="hidden" name="_captcha" value="true" />
-      
       <div class="button-container">
-        <button type="submit">Confirm and Book Appointment (Cash, Venmo, or Zelle)</button>
+        <button type="submit" id="submitBtn">Confirm and Book Appointment (Cash, Venmo, or Zelle)</button>
       </div>
     </form>
   </main>
@@ -244,7 +289,7 @@
       menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
     }
 
-    window.onclick = function(event) {
+    window.onclick = function (event) {
       const menu = document.getElementById('menu');
       if (!event.target.closest('.menu-icon') && !event.target.closest('#menu')) {
         menu.style.display = 'none';
@@ -254,8 +299,13 @@
     function updateEstimate() {
       const firstFloor = parseInt(document.getElementById('firstFloor').value) || 0;
       const secondFloor = parseInt(document.getElementById('secondFloor').value) || 0;
-      const total = (firstFloor * 5) + (secondFloor * 10);
+      const total = firstFloor * 5 + secondFloor * 10;
       document.getElementById('totalEstimate').textContent = `Estimated total: $${total}`;
+    }
+
+    function validateEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email);
     }
 
     function validateForm() {
@@ -271,9 +321,7 @@
         return false;
       }
 
-      // Simple email validation regex
-      const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRe.test(email)) {
+      if (!validateEmail(email)) {
         alert('Please enter a valid email address.');
         return false;
       }
@@ -283,8 +331,9 @@
         return false;
       }
 
-      return true; // allow submit
+      return true; // allow form submit
     }
   </script>
 </body>
+
 </html>
