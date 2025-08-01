@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Login | HK Window Pros</title>
+<style>
+  body {
+    font-family: 'Roboto', sans-serif;
+    background: #f0f6ff;
+    display: flex;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+  }
+  .login-container {
+    background: white;
+    padding: 2rem 3rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(26,64,175,0.2);
+    width: 320px;
+  }
+  h2 {
+    text-align: center;
+    color: #1a40af;
+    margin-bottom: 1.5rem;
+  }
+  label {
+    font-weight: bold;
+    display: block;
+    margin-top: 1rem;
+  }
+  input {
+    width: 100%;
+    padding: 0.6rem;
+    margin-top: 0.5rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  button {
+    width: 100%;
+    margin-top: 1.5rem;
+    padding: 0.7rem;
+    background: #1a40af;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #15327a;
+  }
+  .error {
+    margin-top: 1rem;
+    color: red;
+    font-weight: bold;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>Employee/Admin Login</h2>
+    <form id="loginForm">
+      <label for="username">Username</label>
+      <input type="text" id="username" required autocomplete="off" />
+      <label for="password">Password</label>
+      <input type="password" id="password" required />
+      <button type="submit">Login</button>
+      <div class="error" id="errorMsg" style="display:none;"></div>
+    </form>
+  </div>
+
+<script>
+  const users = {
+    "rejat": "rejat123",
+    "nick": "nick123"
+  };
+
+  document.getElementById("loginForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value;
+
+    if (users[username] && users[username] === password) {
+      // Save login state
+      localStorage.setItem("loggedInUser", username);
+      window.location.href = "dashboard.html";
+    } else {
+      const errorDiv = document.getElementById("errorMsg");
+      errorDiv.textContent = "Invalid username or password";
+      errorDiv.style.display = "block";
+    }
+  });
+
+  // If already logged in, redirect directly to dashboard
+  if(localStorage.getItem("loggedInUser")) {
+    window.location.href = "dashboard.html";
+  }
+</script>
+</body>
+</html>
