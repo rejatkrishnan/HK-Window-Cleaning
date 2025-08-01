@@ -1,91 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Get a Free Quote | HK Window Pros</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-      background-color: #f0f6ff;
-      color: #0a2540;
-      margin: 0;
-      padding: 0;
-    }
-    main {
-      max-width: 600px;
-      margin: 3rem auto;
-      background: white;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(26, 64, 175, 0.2);
-    }
-    h2 {
-      text-align: center;
-      color: #1a40af;
-      margin-bottom: 1.5rem;
-    }
-    label {
-      font-weight: bold;
-      display: block;
-      margin-top: 1rem;
-    }
-    input, button {
-      width: 100%;
-      padding: 0.75rem;
-      margin-top: 0.5rem;
-      border-radius: 8px;
-      border: 2px solid #a8b7d9;
-      font-size: 1rem;
-    }
-    button {
-      background-color: #1a40af;
-      color: white;
-      font-weight: bold;
-      border: none;
-      cursor: pointer;
-      margin-top: 1.5rem;
-    }
-    button:hover {
-      background-color: #15327a;
-    }
+    body { font-family: 'Roboto', sans-serif; background-color: #f0f6ff; margin: 0; padding: 0; color: #0a2540; }
+    header { background-color: #1a40af; padding: 1rem 0; color: white; text-align: center; }
+    header h1 { margin: 0; font-size: 1.8rem; }
+    main { max-width: 600px; margin: 3rem auto; background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(26, 64, 175, 0.2); }
+    h2 { text-align: center; color: #1a40af; }
+    label { display: block; margin-top: 1rem; font-weight: 700; }
+    input, button { width: 100%; padding: 0.6rem; margin-top: 0.4rem; border-radius: 8px; border: 2px solid #a8b7d9; font-size: 1rem; }
+    button { background-color: #1a40af; color: white; font-weight: 700; cursor: pointer; border: none; margin-top: 1.5rem; }
+    button:hover { background-color: #15327a; }
+    .note { background: #dbe7ff; padding: 1rem; border-left: 5px solid #1a40af; border-radius: 6px; margin-bottom: 1.5rem; font-weight: 600; }
   </style>
 </head>
 <body>
 
+  <header>
+    <h1>HK Window Pros</h1>
+  </header>
+
   <main>
     <h2>Get a Free Quote</h2>
 
+    <div class="note">
+      This quote estimator is designed for residential homes up to two stories. If your property is different, please <strong>call us</strong> for a free consultation.
+    </div>
+
     <form action="https://formsubmit.co/el/wijixi" method="POST">
-      <!-- Full Name -->
+
+      <!-- Redirect after submission -->
+      <input type="hidden" name="_next" value="https://www.hkwindowpros.com/thankyou.html">
+
+      <!-- Email subject -->
+      <input type="hidden" name="_subject" value="New Quote Request - HK Window Pros">
+
+      <!-- Disable CAPTCHA -->
+      <input type="hidden" name="_captcha" value="false">
+
+      <!-- Autoresponse to customer -->
+      <input type="hidden" name="_autoresponse" value="Thank you for your quote request with HK Window Pros! We will be in touch soon.">
+
+      <!-- Send CC to yourself -->
+      <input type="hidden" name="_cc" value="hkwindowpros@gmail.com">
+
+      <!-- Fields -->
       <label for="name">Full Name *</label>
       <input type="text" id="name" name="name" required>
 
-      <!-- Email -->
-      <label for="email">Email Address *</label>
+      <label for="email">Email *</label>
       <input type="email" id="email" name="email" required>
 
-      <!-- Phone -->
       <label for="phone">Phone Number *</label>
-      <input type="tel" id="phone" name="phone" required>
+      <input type="text" id="phone" name="phone" required>
 
-      <!-- First Floor -->
-      <label for="firstFloor">Number of First Floor Windows *</label>
-      <input type="number" id="firstFloor" name="first_floor" min="0" required>
+      <label for="first_floor">Number of First Floor Windows *</label>
+      <input type="number" id="first_floor" name="first_floor" min="0" required>
 
-      <!-- Second Floor -->
-      <label for="secondFloor">Number of Second Floor or Higher Windows *</label>
-      <input type="number" id="secondFloor" name="second_floor" min="0" required>
+      <label for="second_floor">Number of Second Floor Windows *</label>
+      <input type="number" id="second_floor" name="second_floor" min="0" required>
 
-      <!-- Hidden Fields for FormSubmit -->
-      <input type="hidden" name="_next" value="https://www.hkwindowpros.com/thankyou.html">
-      <input type="hidden" name="_subject" value="New Quote Request from HK Window Pros">
-      <input type="hidden" name="_autoresponse" value="Thank you for requesting a quote with HK Window Pros! We’ll be in touch soon with your final details.">
-      <input type="hidden" name="_template" value="table">
-      <input type="hidden" name="_captcha" value="false">
-
-      <!-- Submit Button -->
       <button type="submit">Confirm and Book Appointment</button>
     </form>
   </main>
