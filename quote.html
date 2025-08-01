@@ -1,279 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Get a Free Quote | HK Window Pros</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
   <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f0f6ff;
-      color: #0a2540;
-      line-height: 1.6;
-    }
-
-    header {
-      background-color: #1a40af;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-      padding: 1rem 0;
-      color: white;
-      position: relative;
-      z-index: 1000;
-    }
-
-    .header-container {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 0 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .logo-title a {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      text-decoration: none;
-      color: white;
-      user-select: none;
-    }
-
-    .logo-title img {
-      height: 70px;
-      width: auto;
-      display: block;
-    }
-
-    .logo-text h1 {
-      margin: 0;
-      font-weight: 700;
-      font-size: 1.8rem;
-    }
-
-    /* Hamburger menu styles */
-    .menu-icon {
-      font-size: 1.8rem;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    nav {
-      display: none;
-      position: absolute;
-      top: 60px;
-      right: 1rem;
-      background-color: white;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-      border-radius: 8px;
-      overflow: hidden;
-      z-index: 1001;
-      width: 180px;
-    }
-
-    nav a {
-      display: block;
-      padding: 1rem 1.5rem;
-      text-decoration: none;
-      color: #0a2540;
-      font-weight: 600;
-      border-bottom: 1px solid #ddd;
-      transition: background-color 0.3s;
-    }
-
-    nav a:last-child {
-      border-bottom: none;
-    }
-
-    nav a:hover {
-      background-color: #dbe7ff;
-    }
-
-    main {
-      max-width: 600px;
-      margin: 3rem auto 5rem auto;
-      background: white;
-      padding: 2rem 2.5rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(26, 64, 175, 0.2);
-    }
-
-    main h2 {
-      text-align: center;
-      margin-bottom: 0.5rem;
-      font-weight: 700;
-      color: #1a40af;
-    }
-
-    main p.note {
-      max-width: 500px;
-      margin: 0 auto 2rem auto;
-      background-color: #dbe7ff;
-      border-left: 5px solid #1a40af;
-      padding: 1rem 1.5rem;
-      font-weight: 600;
-      color: #1a40af;
-      border-radius: 6px;
-      font-size: 1rem;
-      user-select: none;
-      text-align: center;
-    }
-
-    form label {
-      display: block;
-      margin-bottom: 0.25rem;
-      font-weight: 700;
-      color: #0a2540;
-    }
-
-    form label.required::after {
-      content: " *";
-      color: red;
-    }
-
-    form input[type="text"],
-    form input[type="email"],
-    form input[type="number"] {
-      width: 100%;
-      padding: 0.6rem 0.8rem;
-      margin-bottom: 1.2rem;
-      border: 2px solid #a8b7d9;
-      border-radius: 8px;
-      font-size: 1rem;
-      transition: border-color 0.3s;
-    }
-
-    form input[type="text"]:focus,
-    form input[type="email"]:focus,
-    form input[type="number"]:focus {
-      border-color: #1a40af;
-      outline: none;
-    }
-
+    body { font-family: 'Roboto', sans-serif; background-color: #f0f6ff; margin: 0; padding: 0; }
+    header { background-color: #1a40af; padding: 1rem; color: white; text-align: center; }
+    main { max-width: 600px; margin: 2rem auto; background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 15px rgba(26,64,175,0.2); }
+    h2 { text-align: center; color: #1a40af; margin-bottom: 0.2rem; }
+    p.note { text-align: center; font-weight: 600; color: #1a40af; margin-bottom: 1.5rem; }
+    label { display: block; margin-top: 1rem; font-weight: bold; }
+    label.required::after { content: " *"; color: red; }
+    input, button { width: 100%; padding: 0.6rem; margin-top: 0.5rem; border-radius: 5px; border: 1px solid #ccc; box-sizing: border-box; }
+    button { background: #1a40af; color: white; border: none; cursor: pointer; margin-top: 1rem; }
+    button:hover { background: #15327a; }
+    .total-estimate { margin-top: 1rem; font-weight: bold; text-align: center; color: #1a40af; }
+    /* checkbox inline */
     .checkbox-container {
+      margin-top: 1rem;
       display: flex;
       align-items: center;
-      margin-bottom: 1.2rem;
       gap: 0.5rem;
-      font-weight: 600;
-      color: #0a2540;
-      user-select: none;
+      font-weight: bold;
     }
-
     .checkbox-container input[type="checkbox"] {
+      width: auto;
       margin: 0;
-      width: 18px;
-      height: 18px;
       cursor: pointer;
     }
-
-    .button-container {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      margin-top: 1rem;
-      flex-wrap: wrap;
-    }
-
-    button {
-      background-color: #1a40af;
-      color: white;
-      border: none;
-      padding: 0.75rem 2rem;
-      font-size: 1.1rem;
-      font-weight: 700;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      flex: 1 1 150px;
-      user-select: none;
-    }
-
-    button:hover,
-    button:focus {
-      background-color: #15327a;
-      outline: none;
-    }
-
-    .total-estimate {
-      margin-top: 1rem;
-      font-weight: 700;
-      font-size: 1.25rem;
-      text-align: center;
-      color: #1a40af;
-      user-select: none;
-    }
-
     footer {
       max-width: 600px;
       margin: 3rem auto 3rem auto;
       text-align: center;
       font-size: 0.9rem;
       color: #555;
+      font-weight: 600;
       user-select: none;
       border-top: 1px solid #ddd;
       padding-top: 1rem;
-      font-weight: 600;
+    }
+    footer a {
+      color: #1a40af;
+      text-decoration: none;
+      font-weight: 700;
+    }
+    footer a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
-
 <body>
   <header>
-    <div class="header-container">
-      <div class="logo-title">
-        <a href="index.html">
-          <img src="logo.png" alt="HK Window Pros Logo" />
-          <div class="logo-text">
-            <h1>HK Window Pros</h1>
-          </div>
-        </a>
-      </div>
-
-      <div class="menu-icon" onclick="toggleMenu()">☰</div>
-      <nav id="menu">
-        <a href="index.html">Home</a>
-        <a href="pricing.html">Pricing</a>
-        <a href="contact.html">Contact</a>
-        <a href="quote.html">Get a Quote</a>
-      </nav>
-    </div>
+    <h1>HK Window Pros - Free Quote</h1>
   </header>
 
   <main>
-    <h2>Get a Free Quote</h2>
+    <h2>Get Your Free Quote</h2>
     <p class="note">This generator is made for houses up to two stories (2 floors and basement). For larger properties, please call or email us directly.</p>
 
-    <form id="quoteForm" onsubmit="submitForm(event)" novalidate>
+    <form id="quoteForm">
       <label for="name" class="required">Full Name</label>
-      <input type="text" id="name" name="name" required aria-required="true" />
+      <input type="text" id="name" name="name" required>
 
       <label for="email" class="required">Email</label>
-      <input type="email" id="email" name="email" required aria-required="true" />
+      <input type="email" id="email" name="email" required>
 
       <label for="phone" class="required">Phone Number</label>
-      <input type="text" id="phone" name="phone" required aria-required="true" />
+      <input type="text" id="phone" name="phone" required>
 
-      <label for="firstFloor" class="required">Number of First Floor Windows (Can see inside from eye level)</label>
-      <input type="number" id="firstFloor" name="firstFloor" min="0" required aria-required="true" oninput="updateEstimate()" />
+      <label for="firstFloor" class="required">First Floor Windows</label>
+      <input type="number" id="firstFloor" name="firstFloor" min="0" required oninput="updateEstimate()">
 
-      <label for="secondFloor" class="required">Number of Second Floor or Higher Windows (Cannot see inside from eye level)</label>
-      <input type="number" id="secondFloor" name="secondFloor" min="0" required aria-required="true" oninput="updateEstimate()" />
+      <label for="secondFloor" class="required">Second Floor or Higher Windows</label>
+      <input type="number" id="secondFloor" name="secondFloor" min="0" required oninput="updateEstimate()">
 
-      <div id="totalEstimate" class="total-estimate">Estimated total: $0</div>
+      <div class="total-estimate" id="totalEstimate">Estimated total: $0</div>
 
       <div class="checkbox-container">
-        <input type="checkbox" id="acceptTerms" required aria-required="true" />
+        <input type="checkbox" id="acceptTerms" required>
         <label for="acceptTerms">I understand this is an estimate and may not be the final price.</label>
       </div>
 
-      <div class="button-container">
-        <button type="submit" id="cashBtn">Confirm and Book Appointment (Cash, Venmo, or Zelle)</button>
-      </div>
+      <button type="submit">Confirm and Book Appointment</button>
     </form>
   </main>
 
@@ -281,98 +91,70 @@
     Contact us: <a href="tel:+16125132564">612-513-2564</a> | <a href="mailto:hkwindowpros@gmail.com">hkwindowpros@gmail.com</a>
   </footer>
 
-  <script src="https://cdn.emailjs.com/sdk/3.2/email.min.js"></script>
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
   <script>
-    // initialize EmailJS with your user ID (NOT service ID)
-    emailjs.init('_-iJBJuay9T60hC04');
-
-    function toggleMenu() {
-      const menu = document.getElementById('menu');
-      menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
-    }
-
-    window.onclick = function (event) {
-      const menu = document.getElementById('menu');
-      if (!event.target.closest('.menu-icon') && !event.target.closest('#menu')) {
-        menu.style.display = 'none';
-      }
-    };
+    (function() {
+      emailjs.init("_-iJBJuay9T60hC04");
+    })();
 
     function updateEstimate() {
-      const firstFloor = parseInt(document.getElementById('firstFloor').value) || 0;
-      const secondFloor = parseInt(document.getElementById('secondFloor').value) || 0;
-      const total = (firstFloor * 5) + (secondFloor * 10);
-      document.getElementById('totalEstimate').textContent = `Estimated total: $${total}`;
+      const first = parseInt(document.getElementById("firstFloor").value) || 0;
+      const second = parseInt(document.getElementById("secondFloor").value) || 0;
+      const total = (first * 5) + (second * 10);
+      document.getElementById("totalEstimate").textContent = `Estimated total: $${total}`;
     }
 
-    function validateEmail(email) {
-      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return re.test(email);
-    }
-
-    function submitForm(event) {
+    document.getElementById("quoteForm").addEventListener("submit", function(event) {
       event.preventDefault();
 
-      const name = document.getElementById('name').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const phone = document.getElementById('phone').value.trim();
-      const firstFloor = document.getElementById('firstFloor').value.trim();
-      const secondFloor = document.getElementById('secondFloor').value.trim();
-      const acceptTerms = document.getElementById('acceptTerms').checked;
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const first = document.getElementById("firstFloor").value.trim();
+      const second = document.getElementById("secondFloor").value.trim();
+      const totalEstimate = `$${(parseInt(first) * 5) + (parseInt(second) * 10)}`;
 
-      if (!name || !email || !phone || !firstFloor || !secondFloor) {
-        alert('Please fill in all required fields.');
+      if (!name || !email || !phone || !first || !second) {
+        alert("Please fill out all fields.");
         return;
       }
 
-      if (!validateEmail(email)) {
-        alert('Please enter a valid email address.');
-        return;
-      }
-
-      if (!acceptTerms) {
-        alert('Please accept the terms and conditions.');
-        return;
-      }
-
-      const totalEstimate = `$${(parseInt(firstFloor) * 5) + (parseInt(secondFloor) * 10)}`;
-
-      // Prepare template params for admin email
+      // Admin email parameters
       const adminParams = {
         from_name: name,
         from_email: email,
         phone: phone,
-        first_floor: firstFloor,
-        second_floor: secondFloor,
+        first_floor: first,
+        second_floor: second,
         total_estimate: totalEstimate
       };
 
-      // Prepare template params for customer email
+      // Customer confirmation email parameters
       const customerParams = {
         to_name: name,
         total_estimate: totalEstimate,
         email: email
       };
 
-      const serviceID = 'service_itqn635'; // Your EmailJS service ID
-      const adminTemplateID = 'template_mrc33ra'; // Admin email template ID
-      const customerTemplateID = 'template_zenc7k6'; // Customer confirmation template ID
+      const serviceID = "service_itqn635";
+      const adminTemplateID = "template_mrc33ra";
+      const customerTemplateID = "template_zenc7k6";
 
+      // Send admin email
       emailjs.send(serviceID, adminTemplateID, adminParams)
-        .then(function (response) {
-          console.log('Admin Email Sent!', response.status, response.text);
+        .then(() => {
+          // Send confirmation to customer
           return emailjs.send(serviceID, customerTemplateID, customerParams);
         })
-        .then(function (response) {
-          console.log('Customer Email Sent!', response.status, response.text);
-          window.location.href = 'thankyou.html';
+        .then(() => {
+          window.location.href = "thankyou.html";
         })
-        .catch(function (error) {
-          console.error('Failed to send emails:', error);
-          window.location.href = 'failure.html';
+        .catch((err) => {
+          console.error("EmailJS error:", err);
+          window.location.href = "failed.html";
         });
-    }
+    });
   </script>
 </body>
-
 </html>
