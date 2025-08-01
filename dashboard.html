@@ -4,12 +4,21 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Dashboard | HK Window Pros</title>
+
+<!-- Leaflet CSS -->
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+  integrity="sha256-sA+oBo2Sn9Pf+k4hnv8a5teu0ZcpZDlHkMqfCDZ6Y74="
+  crossorigin=""
+/>
+
 <style>
-  body {
+  body, html {
+    height: 100%;
+    margin: 0;
     font-family: 'Roboto', sans-serif;
-    background: #f0f6ff;
-    margin: 0; padding: 0;
-    min-height: 100vh;
+    background-color: #f0f6ff;
     display: flex;
     flex-direction: column;
   }
@@ -20,6 +29,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    user-select: none;
   }
   header h1 {
     margin: 0;
@@ -37,259 +47,442 @@
   button.logout-btn:hover {
     background: #a32a2a;
   }
+
   main {
-    max-width: 800px;
-    margin: 2rem auto 4rem auto;
+    flex: 1;
+    display: flex;
+    padding: 1rem 2rem;
+    gap: 1.5rem;
+    box-sizing: border-box;
+    max-width: 1200px;
+    margin: auto;
+  }
+
+  /* Jobs List */
+  .jobs-list {
+    flex: 1 1 400px;
     background: white;
-    padding: 2rem 2.5rem;
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(26,64,175,0.15);
-  }
-  h2 {
-    color: #0056b3;
-    margin-top: 0;
-  }
-  section {
-    margin-bottom: 2rem;
-  }
-  .active-jobs ul {
-    list-style-type: none;
-    padding-left: 0;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    max-height: 200px;
     overflow-y: auto;
+    max-height: 80vh;
+    padding: 1rem 1.5rem;
+    display: flex;
+    flex-direction: column;
   }
-  .active-jobs li {
-    padding: 0.8rem 1rem;
-    border-bottom: 1px solid #eee;
+  .jobs-list h2 {
+    margin-top: 0;
+    color: #0056b3;
   }
-  .active-jobs li:last-child {
+  .job-item {
+    padding: 1rem 0.7rem;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+    transition: background-color 0.25s;
+  }
+  .job-item:last-child {
     border-bottom: none;
   }
-  form label {
+  .job-item:hover,
+  .job-item.active {
+    background-color: #e6f0ff;
+  }
+  .job-name {
     font-weight: 700;
-    margin-right: 10px;
+    font-size: 1.1rem;
+    color: #003f7f;
+  }
+  .job-details {
+    font-size: 0.9rem;
+    color: #555;
+  }
+
+  /* Availability Section */
+  .availability-section {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 2px solid #007BFF;
+  }
+  .availability-section h3 {
+    margin: 0 0 0.8rem 0;
+    color: #004080;
+  }
+  .week-picker {
+    margin-bottom: 1rem;
+    font-weight: 700;
+  }
+  .week-picker label {
+    margin-right: 0.5rem;
   }
   .availability-grid {
     display: grid;
-    grid-template-columns: 120px repeat(2, 140px);
-    gap: 10px 20px;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 0.4rem 0.8rem;
     align-items: center;
-    margin-top: 1rem;
+    font-size: 0.9rem;
   }
   .availability-grid div {
-    padding: 0.4rem 0;
+    text-align: center;
   }
-  .day-label {
+  .availability-grid .header {
     font-weight: 700;
+    color: #0056b3;
   }
-  input[type="checkbox"] {
-    transform: scale(1.2);
-    margin-right: 6px;
+  .availability-grid label {
     cursor: pointer;
   }
-  select {
-    width: 100%;
-    padding: 6px 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-  }
-  button.save-btn {
-    background: #1a40af;
-    color: white;
-    border: none;
-    padding: 0.7rem 1.5rem;
+  .user-label {
     font-weight: 700;
+    color: #002c66;
+    text-align: right;
+    padding-right: 8px;
+  }
+  .checkbox-label {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.2rem;
+  }
+
+  /* Map container */
+  #map {
+    flex: 1 1 600px;
+    height: 80vh;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(26,64,175,0.15);
+  }
+
+  /* Tooltip styling */
+  .leaflet-tooltip.my-tooltip {
+    background-color: white;
+    border: 1px solid #007BFF;
+    color: #003f7f;
+    font-weight: 700;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
     border-radius: 6px;
-    cursor: pointer;
-    margin-top: 1.5rem;
   }
-  button.save-btn:hover {
-    background: #15327a;
-  }
-  .saved-msg {
-    margin-top: 1rem;
-    color: green;
-    font-weight: 700;
-  }
-  @media (max-width: 600px) {
-    .availability-grid {
-      grid-template-columns: 1fr;
-      gap: 10px 0;
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    main {
+      flex-direction: column;
+      padding: 1rem;
     }
-    .availability-grid div {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    #map {
+      height: 300px;
+      margin-top: 1rem;
     }
-    .availability-grid label {
-      margin-right: 0;
+    .jobs-list {
+      max-height: 300px;
     }
   }
 </style>
+
+<!-- Leaflet JS -->
+<script
+  src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+  integrity="sha256-o9N1jChX3Jp+4Aj1gEpJ3oyB0LzQn0/xv+Itb9yjAJo="
+  crossorigin=""
+></script>
+
 </head>
 <body>
 
 <header>
   <h1>Dashboard</h1>
-  <div>
-    <span id="welcomeUser"></span>
-    <button class="logout-btn" id="logoutBtn">Logout</button>
-  </div>
+  <button class="logout-btn" id="logoutBtn">Logout</button>
 </header>
 
 <main>
-  <section class="active-jobs">
+  <section class="jobs-list" id="jobsListContainer">
     <h2>Active Jobs</h2>
-    <p>No active jobs at the moment.</p>
-    <!-- You can add job items here later -->
-    <ul id="jobsList"></ul>
-  </section>
+    <!-- Jobs will be inserted here dynamically -->
 
-  <section class="availability">
-    <h2>Set Your Availability</h2>
-    <form id="availabilityForm">
-      <div class="availability-grid">
-        <div><strong>Day</strong></div>
-        <div><strong>Available?</strong></div>
-        <div><strong>Time Slot</strong></div>
-
-        <div class="day-label">Monday</div>
-        <div><input type="checkbox" id="monAvailable" /></div>
-        <div>
-          <select id="monTime" disabled>
-            <option value="morning">Morning (9am - 2pm)</option>
-            <option value="evening">Evening (2pm - 7pm)</option>
-          </select>
-        </div>
-
-        <div class="day-label">Tuesday</div>
-        <div><input type="checkbox" id="tueAvailable" /></div>
-        <div>
-          <select id="tueTime" disabled>
-            <option value="morning">Morning (9am - 2pm)</option>
-            <option value="evening">Evening (2pm - 7pm)</option>
-          </select>
-        </div>
-
-        <div class="day-label">Wednesday</div>
-        <div><input type="checkbox" id="wedAvailable" /></div>
-        <div>
-          <select id="wedTime" disabled>
-            <option value="morning">Morning (9am - 2pm)</option>
-            <option value="evening">Evening (2pm - 7pm)</option>
-          </select>
-        </div>
-
-        <div class="day-label">Thursday</div>
-        <div><input type="checkbox" id="thuAvailable" /></div>
-        <div>
-          <select id="thuTime" disabled>
-            <option value="morning">Morning (9am - 2pm)</option>
-            <option value="evening">Evening (2pm - 7pm)</option>
-          </select>
-        </div>
-
-        <div class="day-label">Friday</div>
-        <div><input type="checkbox" id="friAvailable" /></div>
-        <div>
-          <select id="friTime" disabled>
-            <option value="morning">Morning (9am - 2pm)</option>
-            <option value="evening">Evening (2pm - 7pm)</option>
-          </select>
-        </div>
-
-        <div class="day-label">Saturday</div>
-        <div><input type="checkbox" id="satAvailable" /></div>
-        <div>
-          <select id="satTime" disabled>
-            <option value="morning">Morning (9am - 2pm)</option>
-            <option value="evening">Evening (2pm - 7pm)</option>
-          </select>
-        </div>
-
-        <div class="day-label">Sunday</div>
-        <div><input type="checkbox" id="sunAvailable" /></div>
-        <div>
-          <select id="sunTime" disabled>
-            <option value="morning">Morning (9am - 2pm)</option>
-            <option value="evening">Evening (2pm - 7pm)</option>
-          </select>
-        </div>
+    <!-- Availability Section -->
+    <div class="availability-section">
+      <h3>Set Weekly Availability</h3>
+      <div class="week-picker">
+        <label for="weekStart">Select Week Start Date (Monday):</label>
+        <input type="date" id="weekStart" />
       </div>
-
-      <button type="submit" class="save-btn">Save Availability</button>
-      <div id="saveMessage" class="saved-msg" style="display:none;">Availability saved!</div>
-    </form>
+      <div class="availability-grid" id="availabilityGrid">
+        <!-- Grid will be generated dynamically -->
+      </div>
+    </div>
   </section>
+
+  <div id="map"></div>
 </main>
 
 <script>
-  // Redirect to login if not logged in
+  // Redirect if not logged in
   const loggedInUser = localStorage.getItem("loggedInUser");
   if (!loggedInUser) {
     window.location.href = "login.html";
   }
 
-  document.getElementById("welcomeUser").textContent = `Welcome, ${loggedInUser}!`;
-
+  // Logout handler
   document.getElementById("logoutBtn").addEventListener("click", () => {
     localStorage.removeItem("loggedInUser");
     window.location.href = "login.html";
   });
 
-  // Enable/disable time dropdown based on checkbox
-  const days = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+  // Dummy jobs data
+  const jobs = [
+    {
+      id: 1,
+      name: "Smith Residence",
+      location: [40.4406, -79.9959],
+      date: "2025-08-05 9:00 AM",
+      pay: 120,
+      windows: 30,
+      durationHours: 1,
+      address: "123 Maple St, Pittsburgh, PA"
+    },
+    {
+      id: 2,
+      name: "Johnson Home",
+      location: [40.4506, -79.9800],
+      date: "2025-08-06 2:00 PM",
+      pay: 200,
+      windows: 50,
+      durationHours: 1.7,
+      address: "456 Oak Ave, Pittsburgh, PA"
+    },
+    {
+      id: 3,
+      name: "Williams Property",
+      location: [40.4300, -79.9750],
+      date: "2025-08-07 9:00 AM",
+      pay: 90,
+      windows: 22,
+      durationHours: 0.7,
+      address: "789 Pine Rd, Pittsburgh, PA"
+    }
+  ];
 
-  days.forEach(day => {
-    const checkbox = document.getElementById(`${day}Available`);
-    const timeSelect = document.getElementById(`${day}Time`);
-    checkbox.addEventListener("change", () => {
-      timeSelect.disabled = !checkbox.checked;
+  // Initialize map
+  const map = L.map('map').setView([40.44, -79.99], 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
+
+  const markers = {};
+  const defaultIcon = L.icon({
+    iconUrl: 'https://cdn-icons-png.flaticon.com/512/252/252025.png',
+    iconSize: [30, 30],
+    iconAnchor: [15, 30],
+    popupAnchor: [0, -30]
+  });
+  const highlightIcon = L.icon({
+    iconUrl: 'https://cdn-icons-png.flaticon.com/512/252/252035.png',
+    iconSize: [35, 35],
+    iconAnchor: [17, 35],
+    popupAnchor: [0, -35]
+  });
+
+  const jobsListContainer = document.getElementById('jobsListContainer');
+
+  function clearActiveJob() {
+    document.querySelectorAll('.job-item').forEach(item => {
+      item.classList.remove('active');
+    });
+    Object.values(markers).forEach(marker => {
+      marker.setIcon(defaultIcon);
+    });
+  }
+
+  jobs.forEach(job => {
+    const jobItem = document.createElement('div');
+    jobItem.className = 'job-item';
+    jobItem.dataset.jobId = job.id;
+    jobItem.innerHTML = `
+      <div class="job-name">${job.name}</div>
+      <div class="job-details">
+        Date & Time: ${job.date} <br />
+        Pay: $${job.pay.toFixed(2)} <br />
+        Windows: ${job.windows} <br />
+        Estimated Duration: ${job.durationHours.toFixed(1)} hour(s) <br />
+        Address: ${job.address}
+      </div>
+    `;
+    jobsListContainer.appendChild(jobItem);
+
+    const marker = L.marker(job.location, {icon: defaultIcon}).addTo(map);
+
+    marker.bindTooltip(`
+      <div>
+        <strong>${job.name}</strong><br />
+        ${job.date}<br />
+        Pay: $${job.pay.toFixed(2)}<br />
+        Duration: ${job.durationHours.toFixed(1)} hr(s)<br />
+        Windows: ${job.windows}<br />
+        ${job.address}
+      </div>
+    `, {className: 'my-tooltip', sticky: true});
+
+    markers[job.id] = marker;
+
+    jobItem.addEventListener('mouseenter', () => {
+      clearActiveJob();
+      jobItem.classList.add('active');
+      marker.setIcon(highlightIcon);
+      marker.openTooltip();
+      map.panTo(job.location);
+    });
+    jobItem.addEventListener('mouseleave', () => {
+      jobItem.classList.remove('active');
+      marker.setIcon(defaultIcon);
+      marker.closeTooltip();
+    });
+
+    marker.on('mouseover', () => {
+      clearActiveJob();
+      jobItem.classList.add('active');
+    });
+    marker.on('mouseout', () => {
+      jobItem.classList.remove('active');
     });
   });
 
-  // Load saved availability from localStorage
-  function loadAvailability() {
-    const saved = localStorage.getItem(`availability_${loggedInUser}`);
-    if (saved) {
-      const availability = JSON.parse(saved);
-      days.forEach(day => {
-        const dayData = availability[day] || {};
-        const checkbox = document.getElementById(`${day}Available`);
-        const timeSelect = document.getElementById(`${day}Time`);
-        checkbox.checked = !!dayData.available;
-        timeSelect.disabled = !checkbox.checked;
-        if(dayData.timeSlot) {
-          timeSelect.value = dayData.timeSlot;
-        } else {
-          timeSelect.value = "morning";
-        }
-      });
+  // Availability grid setup
+  const weekStartInput = document.getElementById("weekStart");
+  const availabilityGrid = document.getElementById("availabilityGrid");
+
+  // Users for availability
+  const users = [
+    { id: "rejat", name: "Rejat Krishnan" },
+    { id: "nick", name: "Nick Hafner" }
+  ];
+
+  // Utility: get Monday of week for given date
+  function getMonday(d) {
+    d = new Date(d);
+    const day = d.getDay();
+    const diff = (day === 0 ? -6 : 1) - day; // adjust when day is Sunday
+    return new Date(d.setDate(d.getDate() + diff));
+  }
+
+  // Format date as YYYY-MM-DD
+  function formatDate(d) {
+    return d.toISOString().split('T')[0];
+  }
+
+  // Days of week short names
+  const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+  // Availability keys for morning/evening
+  const timeSlots = ["morning", "evening"];
+
+  // Load availability from localStorage by user and week start date
+  function loadAvailability(userId, weekStart) {
+    const key = `availability_${userId}_${weekStart}`;
+    const dataStr = localStorage.getItem(key);
+    if (!dataStr) return {};
+    try {
+      return JSON.parse(dataStr);
+    } catch {
+      return {};
     }
   }
 
-  loadAvailability();
+  // Save availability to localStorage
+  function saveAvailability(userId, weekStart, data) {
+    const key = `availability_${userId}_${weekStart}`;
+    localStorage.setItem(key, JSON.stringify(data));
+  }
 
-  // Save availability on submit
-  document.getElementById("availabilityForm").addEventListener("submit", function(e) {
-    e.preventDefault();
-    const availability = {};
-    days.forEach(day => {
-      const checkbox = document.getElementById(`${day}Available`);
-      const timeSelect = document.getElementById(`${day}Time`);
-      availability[day] = {
-        available: checkbox.checked,
-        timeSlot: timeSelect.value
-      };
+  // Render availability grid
+  function renderAvailabilityGrid(weekStart) {
+    availabilityGrid.innerHTML = "";
+
+    // First row headers: empty cell + days
+    availabilityGrid.appendChild(createDiv("header", ""));
+    dayNames.forEach(day => {
+      availabilityGrid.appendChild(createDiv("header", day));
     });
-    localStorage.setItem(`availability_${loggedInUser}`, JSON.stringify(availability));
-    const msg = document.getElementById("saveMessage");
-    msg.style.display = "block";
-    setTimeout(() => { msg.style.display = "none"; }, 3000);
+
+    // For each user, one row label + cells with checkboxes
+    users.forEach(user => {
+      availabilityGrid.appendChild(createDiv("user-label", user.name));
+      for(let i = 0; i < 7; i++) {
+        const date = new Date(weekStart);
+        date.setDate(date.getDate() + i);
+        const dateStr = formatDate(date);
+
+        // Load saved availability for user & week
+        const saved = loadAvailability(user.id, formatDate(weekStart));
+
+        // Container for morning + evening checkboxes
+        const cell = document.createElement("div");
+
+        // Morning checkbox
+        const morningId = `chk_${user.id}_${dateStr}_morning`;
+        const morningLabel = document.createElement("label");
+        morningLabel.className = "checkbox-label";
+        const morningChk = document.createElement("input");
+        morningChk.type = "checkbox";
+        morningChk.id = morningId;
+        morningChk.checked = saved[dateStr]?.morning || false;
+        morningChk.addEventListener("change", () => {
+          updateAvailability(user.id, formatDate(weekStart), dateStr, "morning", morningChk.checked);
+        });
+        morningLabel.appendChild(morningChk);
+        morningLabel.appendChild(document.createTextNode("Morning"));
+
+        // Evening checkbox
+        const eveningId = `chk_${user.id}_${dateStr}_evening`;
+        const eveningLabel = document.createElement("label");
+        eveningLabel.className = "checkbox-label";
+        const eveningChk = document.createElement("input");
+        eveningChk.type = "checkbox";
+        eveningChk.id = eveningId;
+        eveningChk.checked = saved[dateStr]?.evening || false;
+        eveningChk.addEventListener("change", () => {
+          updateAvailability(user.id, formatDate(weekStart), dateStr, "evening", eveningChk.checked);
+        });
+        eveningLabel.appendChild(eveningChk);
+        eveningLabel.appendChild(document.createTextNode("Evening"));
+
+        cell.appendChild(morningLabel);
+        cell.appendChild(eveningLabel);
+        availabilityGrid.appendChild(cell);
+      }
+    });
+  }
+
+  // Helper: create div with class and text
+  function createDiv(className, text) {
+    const div = document.createElement("div");
+    if (className) div.className = className;
+    if (text) div.textContent = text;
+    return div;
+  }
+
+  // Update availability data and save live
+  function updateAvailability(userId, weekStart, dateStr, slot, value) {
+    const key = `availability_${userId}_${weekStart}`;
+    let data = loadAvailability(userId, weekStart);
+
+    if (!data[dateStr]) data[dateStr] = {};
+    data[dateStr][slot] = value;
+
+    saveAvailability(userId, weekStart, data);
+  }
+
+  // On page load, set weekStart to current week's Monday
+  const today = new Date();
+  const thisMonday = getMonday(today);
+  weekStartInput.value = formatDate(thisMonday);
+  renderAvailabilityGrid(thisMonday);
+
+  weekStartInput.addEventListener("change", () => {
+    const selectedDate = new Date(weekStartInput.value);
+    const monday = getMonday(selectedDate);
+    weekStartInput.value = formatDate(monday);
+    renderAvailabilityGrid(monday);
   });
 </script>
-
 </body>
 </html>
