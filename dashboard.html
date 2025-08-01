@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dashboard | HK Window Pros</title>
+<style>
+  body {
+    font-family: 'Roboto', sans-serif;
+    background: #f0f6ff;
+    margin: 0; padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: linear-gradient(90deg, #007BFF, #0056b3);
+    color: white;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+  }
+  button.logout-btn {
+    background: #e03c3c;
+    border: none;
+    color: white;
+    padding: 0.5rem 1.2rem;
+    border-radius: 5px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  button.logout-btn:hover {
+    background: #a32a2a;
+  }
+  main {
+    max-width: 800px;
+    margin: 2rem auto 4rem auto;
+    background: white;
+    padding: 2rem 2.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(26,64,175,0.15);
+  }
+  h2 {
+    color: #0056b3;
+    margin-top: 0;
+  }
+  section {
+    margin-bottom: 2rem;
+  }
+  .active-jobs ul {
+    list-style-type: none;
+    padding-left: 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  .active-jobs li {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid #eee;
+  }
+  .active-jobs li:last-child {
+    border-bottom: none;
+  }
+  form label {
+    font-weight: 700;
+    margin-right: 10px;
+  }
+  .availability-grid {
+    display: grid;
+    grid-template-columns: 120px repeat(2, 140px);
+    gap: 10px 20px;
+    align-items: center;
+    margin-top: 1rem;
+  }
+  .availability-grid div {
+    padding: 0.4rem 0;
+  }
+  .day-label {
+    font-weight: 700;
+  }
+  input[type="checkbox"] {
+    transform: scale(1.2);
+    margin-right: 6px;
+    cursor: pointer;
+  }
+  select {
+    width: 100%;
+    padding: 6px 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  button.save-btn {
+    background: #1a40af;
+    color: white;
+    border: none;
+    padding: 0.7rem 1.5rem;
+    font-weight: 700;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 1.5rem;
+  }
+  button.save-btn:hover {
+    background: #15327a;
+  }
+  .saved-msg {
+    margin-top: 1rem;
+    color: green;
+    font-weight: 700;
+  }
+  @media (max-width: 600px) {
+    .availability-grid {
+      grid-template-columns: 1fr;
+      gap: 10px 0;
+    }
+    .availability-grid div {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .availability-grid label {
+      margin-right: 0;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Dashboard</h1>
+  <div>
+    <span id="welcomeUser"></span>
+    <button class="logout-btn" id="logoutBtn">Logout</button>
+  </div>
+</header>
+
+<main>
+  <section class="active-jobs">
+    <h2>Active Jobs</h2>
+    <p>No active jobs at the moment.</p>
+    <!-- You can add job items here later -->
+    <ul id="jobsList"></ul>
+  </section>
+
+  <section class="availability">
+    <h2>Set Your Availability</h2>
+    <form id="availabilityForm">
+      <div class="availability-grid">
+        <div><strong>Day</strong></div>
+        <div><strong>Available?</strong></div>
+        <div><strong>Time Slot</strong></div>
+
+        <div class="day-label">Monday</div>
+        <div><input type="checkbox" id="monAvailable" /></div>
+        <div>
+          <select id="monTime" disabled>
+            <option value="morning">Morning (9am - 2pm)</option>
+            <option value="evening">Evening (2pm - 7pm)</option>
+          </select>
+        </div>
+
+        <div class="day-label">Tuesday</div>
+        <div><input type="checkbox" id="tueAvailable" /></div>
+        <div>
+          <select id="tueTime" disabled>
+            <option value="morning">Morning (9am - 2pm)</option>
+            <option value="evening">Evening (2pm - 7pm)</option>
+          </select>
+        </div>
+
+        <div class="day-label">Wednesday</div>
+        <div><input type="checkbox" id="wedAvailable" /></div>
+        <div>
+          <select id="wedTime" disabled>
+            <option value="morning">Morning (9am - 2pm)</option>
+            <option value="evening">Evening (2pm - 7pm)</option>
+          </select>
+        </div>
+
+        <div class="day-label">Thursday</div>
+        <div><input type="checkbox" id="thuAvailable" /></div>
+        <div>
+          <select id="thuTime" disabled>
+            <option value="morning">Morning (9am - 2pm)</option>
+            <option value="evening">Evening (2pm - 7pm)</option>
+          </select>
+        </div>
+
+        <div class="day-label">Friday</div>
+        <div><input type="checkbox" id="friAvailable" /></div>
+        <div>
+          <select id="friTime" disabled>
+            <option value="morning">Morning (9am - 2pm)</option>
+            <option value="evening">Evening (2pm - 7pm)</option>
+          </select>
+        </div>
+
+        <div class="day-label">Saturday</div>
+        <div><input type="checkbox" id="satAvailable" /></div>
+        <div>
+          <select id="satTime" disabled>
+            <option value="morning">Morning (9am - 2pm)</option>
+            <option value="evening">Evening (2pm - 7pm)</option>
+          </select>
+        </div>
+
+        <div class="day-label">Sunday</div>
+        <div><input type="checkbox" id="sunAvailable" /></div>
+        <div>
+          <select id="sunTime" disabled>
+            <option value="morning">Morning (9am - 2pm)</option>
+            <option value="evening">Evening (2pm - 7pm)</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="submit" class="save-btn">Save Availability</button>
+      <div id="saveMessage" class="saved-msg" style="display:none;">Availability saved!</div>
+    </form>
+  </section>
+</main>
+
+<script>
+  // Redirect to login if not logged in
+  const loggedInUser = localStorage.getItem("loggedInUser");
+  if (!loggedInUser) {
+    window.location.href = "login.html";
+  }
+
+  document.getElementById("welcomeUser").textContent = `Welcome, ${loggedInUser}!`;
+
+  document.getElementById("logoutBtn").addEventListener("click", () => {
+    localStorage.removeItem("loggedInUser");
+    window.location.href = "login.html";
+  });
+
+  // Enable/disable time dropdown based on checkbox
+  const days = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+
+  days.forEach(day => {
+    const checkbox = document.getElementById(`${day}Available`);
+    const timeSelect = document.getElementById(`${day}Time`);
+    checkbox.addEventListener("change", () => {
+      timeSelect.disabled = !checkbox.checked;
+    });
+  });
+
+  // Load saved availability from localStorage
+  function loadAvailability() {
+    const saved = localStorage.getItem(`availability_${loggedInUser}`);
+    if (saved) {
+      const availability = JSON.parse(saved);
+      days.forEach(day => {
+        const dayData = availability[day] || {};
+        const checkbox = document.getElementById(`${day}Available`);
+        const timeSelect = document.getElementById(`${day}Time`);
+        checkbox.checked = !!dayData.available;
+        timeSelect.disabled = !checkbox.checked;
+        if(dayData.timeSlot) {
+          timeSelect.value = dayData.timeSlot;
+        } else {
+          timeSelect.value = "morning";
+        }
+      });
+    }
+  }
+
+  loadAvailability();
+
+  // Save availability on submit
+  document.getElementById("availabilityForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const availability = {};
+    days.forEach(day => {
+      const checkbox = document.getElementById(`${day}Available`);
+      const timeSelect = document.getElementById(`${day}Time`);
+      availability[day] = {
+        available: checkbox.checked,
+        timeSlot: timeSelect.value
+      };
+    });
+    localStorage.setItem(`availability_${loggedInUser}`, JSON.stringify(availability));
+    const msg = document.getElementById("saveMessage");
+    msg.style.display = "block";
+    setTimeout(() => { msg.style.display = "none"; }, 3000);
+  });
+</script>
+
+</body>
+</html>
