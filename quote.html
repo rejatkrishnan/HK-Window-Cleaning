@@ -135,7 +135,7 @@
   <main>
     <h2>Get Your Free Quote</h2>
     <div class="note">
-      Contact us for more details.
+      This quote is for houses that are up to two floors (basement + 2 levels). Any larger property owners should contact us directly by call or email. Thank you!
     </div>
 
     <form id="quoteForm">
@@ -175,7 +175,7 @@
     </form>
 
     <footer>
-      📞 (XXX) XXX-XXXX | 📧 hkwindowpros@gmail.com
+      📞 (651) 689-5866 | 📧 hkwindowpros@gmail.com
     </footer>
   </main>
 
@@ -240,24 +240,23 @@
 
       // Admin email parameters
       const adminParams = {
-        from_name: name,
-        from_email: email,
-        phone: phone,
-        first_floor: first,
-        second_floor: second,
-        service_date: date,
-        service_time: time,
-        total_estimate: totalEstimate
-      };
+  from_name: name,
+  from_email: email,
+  phone: phone,
+  first_floor: first,
+  second_floor: second,
+  service_date: date,
+  service_time: time,
+  total_estimate: totalEstimate
+};
 
-      // Customer confirmation email parameters
-      const customerParams = {
-        to_name: name,
-        total_estimate: totalEstimate,
-        service_date: date,
-        service_time: time,
-        email: email
-      };
+const customerParams = {
+  to_name: name,
+  total_estimate: totalEstimate,
+  service_date: date,
+  service_time: time,
+  email: email
+};
 
       const serviceID = "service_itqn635";
       const adminTemplateID = "template_mrc33ra";
