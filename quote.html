@@ -181,10 +181,27 @@
 
   <!-- EmailJS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-  <script>
-    (function() {
-      emailjs.init("_-iJBJuay9T60hC04");
-    })();
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+    // Initialize EmailJS
+    emailjs.init("_-iJBJuay9T60hC04");
+
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyD4_934C9L4kyEGHT5jDaCxNPHGC-HjIj4",
+      authDomain: "hk-windows.firebaseapp.com",
+      projectId: "hk-windows",
+      storageBucket: "hk-windows.firebasestorage.app",
+      messagingSenderId: "955997236305",
+      appId: "1:955997236305:web:b59d35b1f5f43a40ccdc70",
+      measurementId: "G-JPPBZW9LW8"
+    };
+
+    // Initialize Firebase and Firestore
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
     function updateEstimate() {
       const first = parseInt(document.getElementById("firstFloor").value) || 0;
@@ -221,7 +238,19 @@
       }
     };
 
-    document.getElementById("quoteForm").addEventListener("submit", function(event) {
+    async function saveQuoteToFirestore(data) {
+      try {
+        await addDoc(collection(db, "quotes"), {
+          ...data,
+          createdAt: serverTimestamp()
+        });
+        console.log("Quote saved to Firestore.");
+      } catch (e) {
+        console.error("Error adding document: ", e);
+      }
+    }
+
+    document.getElementById("quoteForm").addEventListener("submit", async function(event) {
       event.preventDefault();
 
       const name = document.getElementById("name").value.trim();
@@ -232,13 +261,27 @@
       const date = document.getElementById("serviceDate").value.trim();
       const time = document.getElementById("timeSlot").value.trim();
       const totalEstimate = `$${(parseInt(first) * 5) + (parseInt(second) * 10)}`;
+      const estimatedHours = Math.ceil((parseInt(first) + parseInt(second)) / 30);
 
       if (!name || !email || !phone || !first || !second || !date || !time) {
         alert("Please fill out all fields.");
         return;
       }
 
-      // Admin email parameters
+      // Save quote to Firestore
+      await saveQuoteToFirestore({
+        name,
+        email,
+        phone,
+        firstFloorWindows: parseInt(first),
+        secondFloorWindows: parseInt(second),
+        serviceDate: date,
+        timeSlot: time,
+        totalEstimate,
+        estimatedHours
+      });
+
+      // Prepare EmailJS params
       const adminParams = {
         from_name: name,
         from_email: email,
@@ -246,16 +289,15 @@
         first_floor: first,
         second_floor: second,
         service_date: date,
-        time_slot: time, // fixed variable name
+        time_slot: time,
         total_estimate: totalEstimate
       };
 
-      // Customer confirmation email parameters
       const customerParams = {
         to_name: name,
         total_estimate: totalEstimate,
         service_date: date,
-        time_slot: time, // fixed variable name
+        time_slot: time,
         email: email
       };
 
@@ -264,9 +306,7 @@
       const customerTemplateID = "template_zenc7k6";
 
       emailjs.send(serviceID, adminTemplateID, adminParams)
-        .then(() => {
-          return emailjs.send(serviceID, customerTemplateID, customerParams);
-        })
+        .then(() => emailjs.send(serviceID, customerTemplateID, customerParams))
         .then(() => {
           window.location.href = "thankyou.html";
         })
