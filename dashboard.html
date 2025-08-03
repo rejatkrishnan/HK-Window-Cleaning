@@ -1,475 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Dashboard | HK Window Pros</title>
-
-<!-- Leaflet CSS -->
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
-  integrity="sha256-sA+oBo2Sn9Pf+k4hnv8a5teu0ZcpZDlHkMqfCDZ6Y74="
-  crossorigin=""
-/>
-
-<style>
-  body, html {
-    height: 100%;
-    margin: 0;
-    font-family: 'Roboto', sans-serif;
-    background-color: #f0f6ff;
-    display: flex;
-    flex-direction: column;
-  }
-  header {
-    background: linear-gradient(90deg, #007BFF, #0056b3);
-    color: white;
-    padding: 1rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    user-select: none;
-  }
-  header h1 {
-    margin: 0;
-    font-size: 1.8rem;
-  }
-  button.logout-btn {
-    background: #e03c3c;
-    border: none;
-    color: white;
-    padding: 0.5rem 1.2rem;
-    border-radius: 5px;
-    font-weight: 700;
-    cursor: pointer;
-  }
-  button.logout-btn:hover {
-    background: #a32a2a;
-  }
-
-  main {
-    flex: 1;
-    display: flex;
-    padding: 1rem 2rem;
-    gap: 1.5rem;
-    box-sizing: border-box;
-    max-width: 1200px;
-    margin: auto;
-  }
-
-  /* Jobs List */
-  .jobs-list {
-    flex: 1 1 400px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(26,64,175,0.15);
-    overflow-y: auto;
-    max-height: 80vh;
-    padding: 1rem 1.5rem;
-    display: flex;
-    flex-direction: column;
-  }
-  .jobs-list h2 {
-    margin-top: 0;
-    color: #0056b3;
-  }
-  .job-item {
-    padding: 1rem 0.7rem;
-    border-bottom: 1px solid #ddd;
-    cursor: pointer;
-    transition: background-color 0.25s;
-  }
-  .job-item:last-child {
-    border-bottom: none;
-  }
-  .job-item:hover,
-  .job-item.active {
-    background-color: #e6f0ff;
-  }
-  .job-name {
-    font-weight: 700;
-    font-size: 1.1rem;
-    color: #003f7f;
-  }
-  .job-details {
-    font-size: 0.9rem;
-    color: #555;
-  }
-
-  /* Availability Section */
-  .availability-section {
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 2px solid #007BFF;
-  }
-  .availability-section h3 {
-    margin: 0 0 0.8rem 0;
-    color: #004080;
-  }
-  .week-picker {
-    margin-bottom: 1rem;
-    font-weight: 700;
-  }
-  .week-picker label {
-    margin-right: 0.5rem;
-  }
-  .availability-grid {
-    display: grid;
-    grid-template-columns: repeat(8, 1fr);
-    gap: 0.4rem 0.8rem;
-    align-items: center;
-    font-size: 0.9rem;
-  }
-  .availability-grid div {
-    text-align: center;
-  }
-  .availability-grid .header {
-    font-weight: 700;
-    color: #0056b3;
-  }
-  .availability-grid label {
-    cursor: pointer;
-  }
-  .user-label {
-    font-weight: 700;
-    color: #002c66;
-    text-align: right;
-    padding-right: 8px;
-  }
-  .checkbox-label {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.2rem;
-  }
-
-  /* Map container */
-  #map {
-    flex: 1 1 600px;
-    height: 80vh;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(26,64,175,0.15);
-  }
-
-  /* Tooltip styling */
-  .leaflet-tooltip.my-tooltip {
-    background-color: white;
-    border: 1px solid #007BFF;
-    color: #003f7f;
-    font-weight: 700;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-    border-radius: 6px;
-  }
-
-  /* Responsive */
-  @media (max-width: 900px) {
-    main {
-      flex-direction: column;
-      padding: 1rem;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Employee Login & Job Entry | HK Window Pros</title>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #f0f6ff;
+      margin: 0;
+      padding: 2rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
     }
-    #map {
-      height: 300px;
+    h1 {
+      color: #1a40af;
+      text-align: center;
+    }
+    form {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(26,64,175,0.2);
+    }
+    label {
+      display: block;
       margin-top: 1rem;
+      font-weight: 700;
     }
-    .jobs-list {
-      max-height: 300px;
+    input, select, button {
+      width: 100%;
+      padding: 0.6rem;
+      margin-top: 0.4rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
     }
-  }
-</style>
-
-<!-- Leaflet JS -->
-<script
-  src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
-  integrity="sha256-o9N1jChX3Jp+4Aj1gEpJ3oyB0LzQn0/xv+Itb9yjAJo="
-  crossorigin=""
-></script>
-
+    button {
+      background-color: #1a40af;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 1.5rem;
+      font-weight: 700;
+    }
+    button:hover {
+      background-color: #15327a;
+    }
+    .message {
+      margin-top: 1rem;
+      color: green;
+      font-weight: 700;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
 
-<header>
-  <h1>Dashboard</h1>
-  <button class="logout-btn" id="logoutBtn">Logout</button>
-</header>
+  <h1>Employee Job Entry</h1>
 
-<main>
-  <section class="jobs-list" id="jobsListContainer">
-    <h2>Active Jobs</h2>
-    <!-- Jobs inserted here dynamically -->
+  <form id="jobEntryForm">
+    <label for="name">Customer Full Name *</label>
+    <input type="text" id="name" name="name" required />
 
-    <div class="availability-section">
-      <h3>Set Weekly Availability</h3>
-      <div class="week-picker">
-        <label for="weekStart">Select Week Start Date (Monday):</label>
-        <input type="date" id="weekStart" />
-      </div>
-      <div class="availability-grid" id="availabilityGrid">
-        <!-- Grid generated dynamically -->
-      </div>
-    </div>
-  </section>
+    <label for="email">Customer Email *</label>
+    <input type="email" id="email" name="email" required />
 
-  <div id="map"></div>
-</main>
+    <label for="phone">Customer Phone Number *</label>
+    <input type="tel" id="phone" name="phone" required />
 
-<script>
-  // Redirect to login if no user logged in
-  const loggedInUser = localStorage.getItem("loggedInUser");
-  if (!loggedInUser) {
-    window.location.href = "login.html";
-  }
+    <label for="firstFloor">First Floor Windows *</label>
+    <input type="number" id="firstFloor" name="firstFloor" min="0" required />
 
-  // Logout button handler
-  document.getElementById("logoutBtn").addEventListener("click", () => {
-    localStorage.removeItem("loggedInUser");
-    window.location.href = "login.html";
-  });
+    <label for="secondFloor">Second Floor or Higher Windows *</label>
+    <input type="number" id="secondFloor" name="secondFloor" min="0" required />
 
-  // Sample jobs data
-  const jobs = [
-    {
-      id: 1,
-      name: "Smith Residence",
-      location: [40.4406, -79.9959],
-      date: "2025-08-05 9:00 AM",
-      pay: 120,
-      windows: 30,
-      durationHours: 1,
-      address: "123 Maple St, Pittsburgh, PA"
-    },
-    {
-      id: 2,
-      name: "Johnson Home",
-      location: [40.4506, -79.9800],
-      date: "2025-08-06 2:00 PM",
-      pay: 200,
-      windows: 50,
-      durationHours: 1.7,
-      address: "456 Oak Ave, Pittsburgh, PA"
-    },
-    {
-      id: 3,
-      name: "Williams Property",
-      location: [40.4300, -79.9750],
-      date: "2025-08-07 9:00 AM",
-      pay: 90,
-      windows: 22,
-      durationHours: 0.7,
-      address: "789 Pine Rd, Pittsburgh, PA"
-    }
-  ];
+    <label for="serviceDate">Service Date *</label>
+    <input type="date" id="serviceDate" name="serviceDate" required />
 
-  // Initialize Leaflet map
-  const map = L.map('map').setView([40.44, -79.99], 13);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 18,
-    attribution: '© OpenStreetMap contributors'
-  }).addTo(map);
+    <label for="timeSlot">Time Slot *</label>
+    <select id="timeSlot" name="timeSlot" required>
+      <option value="">Select a time slot</option>
+      <option value="Morning (9AM-2PM)">Morning (9AM-2PM)</option>
+      <option value="Afternoon (2PM-7PM)">Afternoon (2PM-7PM)</option>
+    </select>
 
-  const markers = {};
-  const defaultIcon = L.icon({
-    iconUrl: 'https://cdn-icons-png.flaticon.com/512/252/252025.png',
-    iconSize: [30, 30],
-    iconAnchor: [15, 30],
-    popupAnchor: [0, -30]
-  });
-  const highlightIcon = L.icon({
-    iconUrl: 'https://cdn-icons-png.flaticon.com/512/252/252035.png',
-    iconSize: [35, 35],
-    iconAnchor: [17, 35],
-    popupAnchor: [0, -35]
-  });
+    <label for="status">Job Status *</label>
+    <select id="status" name="status" required>
+      <option value="pending">Pending</option>
+      <option value="in-progress">In Progress</option>
+      <option value="completed">Completed</option>
+    </select>
 
-  const jobsListContainer = document.getElementById('jobsListContainer');
+    <button type="submit">Add Job</button>
 
-  // Clear active job highlight and marker icon
-  function clearActiveJob() {
-    document.querySelectorAll('.job-item').forEach(item => {
-      item.classList.remove('active');
-    });
-    Object.values(markers).forEach(marker => {
-      marker.setIcon(defaultIcon);
-      marker.closeTooltip();
-    });
-  }
+    <div class="message" id="msg"></div>
+  </form>
 
-  // Render job items & map markers with event handlers
-  jobs.forEach(job => {
-    // Job list item
-    const jobItem = document.createElement('div');
-    jobItem.className = 'job-item';
-    jobItem.dataset.jobId = job.id;
-    jobItem.innerHTML = `
-      <div class="job-name">${job.name}</div>
-      <div class="job-details">
-        Date & Time: ${job.date} <br />
-        Pay: $${job.pay.toFixed(2)} <br />
-        Windows: ${job.windows} <br />
-        Estimated Duration: ${job.durationHours.toFixed(1)} hour(s) <br />
-        Address: ${job.address}
-      </div>
-    `;
-    jobsListContainer.appendChild(jobItem);
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-    // Marker
-    const marker = L.marker(job.location, {icon: defaultIcon}).addTo(map);
-    marker.bindTooltip(`
-      <div>
-        <strong>${job.name}</strong><br />
-        ${job.date}<br />
-        Pay: $${job.pay.toFixed(2)}<br />
-        Duration: ${job.durationHours.toFixed(1)} hr(s)<br />
-        Windows: ${job.windows}<br />
-        ${job.address}
-      </div>
-    `, {className: 'my-tooltip', sticky: true});
+    // Your Firebase config (replace with your actual config)
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
 
-    markers[job.id] = marker;
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-    // Highlight on job item hover
-    jobItem.addEventListener('mouseenter', () => {
-      clearActiveJob();
-      jobItem.classList.add('active');
-      marker.setIcon(highlightIcon);
-      marker.openTooltip();
-      map.panTo(job.location);
-    });
-    jobItem.addEventListener('mouseleave', () => {
-      jobItem.classList.remove('active');
-      marker.setIcon(defaultIcon);
-      marker.closeTooltip();
-    });
+    const jobsCollection = collection(db, "quotes"); // same collection as quote page
 
-    // Highlight on marker hover
-    marker.on('mouseover', () => {
-      clearActiveJob();
-      jobItem.classList.add('active');
-      marker.openTooltip();
-    });
-    marker.on('mouseout', () => {
-      jobItem.classList.remove('active');
-      marker.closeTooltip();
-    });
-  });
+    const form = document.getElementById("jobEntryForm");
+    const msgDiv = document.getElementById("msg");
 
-  // Availability data & UI setup
-  const weekStartInput = document.getElementById("weekStart");
-  const availabilityGrid = document.getElementById("availabilityGrid");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-  // Users who have availability to set
-  const users = [
-    { id: "rejat", name: "Rejat Krishnan" },
-    { id: "nick", name: "Nick Hafner" }
-  ];
+      const name = form.name.value.trim();
+      const email = form.email.value.trim();
+      const phone = form.phone.value.trim();
+      const firstFloor = parseInt(form.firstFloor.value) || 0;
+      const secondFloor = parseInt(form.secondFloor.value) || 0;
+      const serviceDate = form.serviceDate.value;
+      const timeSlot = form.timeSlot.value;
+      const status = form.status.value;
 
-  // Utility to get Monday of week for a date
-  function getMonday(d) {
-    d = new Date(d);
-    const day = d.getDay();
-    const diff = (day === 0 ? -6 : 1) - day;
-    return new Date(d.setDate(d.getDate() + diff));
-  }
+      if (!name || !email || !phone || !serviceDate || !timeSlot || !status) {
+        alert("Please fill all required fields.");
+        return;
+      }
 
-  // Format date as YYYY-MM-DD
-  function formatDate(d) {
-    return d.toISOString().split('T')[0];
-  }
+      const estimate = (firstFloor * 5) + (secondFloor * 10);
+      const durationHours = ((firstFloor + secondFloor) / 30); // 30 windows = 1 hour
 
-  // Weekday short names
-  const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
-  // Load availability from localStorage for user & week
-  function loadAvailability(userId, weekStart) {
-    const key = `availability_${userId}_${weekStart}`;
-    const dataStr = localStorage.getItem(key);
-    if (!dataStr) return {};
-    try {
-      return JSON.parse(dataStr);
-    } catch {
-      return {};
-    }
-  }
-
-  // Save availability to localStorage for user & week
-  function saveAvailability(userId, weekStart, data) {
-    const key = `availability_${userId}_${weekStart}`;
-    localStorage.setItem(key, JSON.stringify(data));
-  }
-
-  // Render the availability grid
-  function renderAvailabilityGrid(weekStart) {
-    availabilityGrid.innerHTML = "";
-
-    // Headers row (empty cell + days)
-    availabilityGrid.appendChild(createDiv("header", ""));
-    dayNames.forEach(day => {
-      availabilityGrid.appendChild(createDiv("header", day));
-    });
-
-    users.forEach(user => {
-      availabilityGrid.appendChild(createDiv("user-label", user.name));
-      for(let i = 0; i < 7; i++) {
-        const date = new Date(weekStart);
-        date.setDate(date.getDate() + i);
-        const dateStr = formatDate(date);
-
-        // Load saved availability
-        const saved = loadAvailability(user.id, formatDate(weekStart));
-
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.id = `${user.id}_${dateStr}`;
-        checkbox.checked = saved[dateStr] || false;
-        checkbox.dataset.user = user.id;
-        checkbox.dataset.date = dateStr;
-
-        // Save on toggle
-        checkbox.addEventListener("change", e => {
-          const userId = e.target.dataset.user;
-          const dateKey = e.target.dataset.date;
-          const newVal = e.target.checked;
-          const currentData = loadAvailability(userId, formatDate(weekStart));
-          currentData[dateKey] = newVal;
-          saveAvailability(userId, formatDate(weekStart), currentData);
+      try {
+        await addDoc(jobsCollection, {
+          name,
+          email,
+          phone,
+          firstFloor,
+          secondFloor,
+          serviceDate,
+          timeSlot,
+          estimate,
+          durationHours,
+          status,
+          submittedAt: new Date()
         });
-
-        const label = document.createElement("label");
-        label.className = "checkbox-label";
-        label.htmlFor = checkbox.id;
-        label.appendChild(checkbox);
-
-        availabilityGrid.appendChild(label);
+        msgDiv.textContent = "Job added successfully!";
+        form.reset();
+      } catch (error) {
+        console.error("Error adding job:", error);
+        alert("Failed to add job, try again.");
       }
     });
-  }
-
-  // Utility to create div with class & text content
-  function createDiv(cls, text) {
-    const div = document.createElement("div");
-    div.className = cls;
-    div.textContent = text;
-    return div;
-  }
-
-  // Initialize weekStart to this week's Monday
-  const today = new Date();
-  const thisMonday = getMonday(today);
-  weekStartInput.value = formatDate(thisMonday);
-
-  // Render grid for initial week
-  renderAvailabilityGrid(thisMonday);
-
-  // On week change
-  weekStartInput.addEventListener("change", e => {
-    const val = e.target.value;
-    if (!val) return;
-    // Always force Monday (just in case)
-    const monday = getMonday(new Date(val));
-    weekStartInput.value = formatDate(monday);
-    renderAvailabilityGrid(monday);
-  });
-</script>
-
+  </script>
 </body>
 </html>
