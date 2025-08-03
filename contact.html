@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contact Us | HK Window Pros</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Roboto', sans-serif; background-color: #f0f6ff; margin: 0; padding: 0; }
+    header {
+      background-color: #1a40af;
+      padding: 1rem;
+      color: white;
+      text-align: center;
+      position: relative;
+    }
+    main {
+      max-width: 600px;
+      margin: 2rem auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(26,64,175,0.2);
+      text-align: center;
+    }
+    h2 {
+      color: #1a40af;
+      margin-bottom: 1rem;
+    }
+    p {
+      font-size: 1.1rem;
+      color: #333;
+      line-height: 1.5;
+    }
+    .contact-info {
+      margin-top: 1.5rem;
+      font-size: 1.1rem;
+      background: #e6efff;
+      padding: 1rem;
+      border-radius: 8px;
+      display: inline-block;
+      text-align: left;
+    }
+    .contact-info strong {
+      color: #1a40af;
+    }
+    .menu-icon {
+      font-size: 1.8rem;
+      cursor: pointer;
+      user-select: none;
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      color: white;
+      z-index: 1001;
+    }
+    nav {
+      display: none;
+      position: absolute;
+      top: 3.5rem;
+      right: 1rem;
+      background-color: white;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      border-radius: 8px;
+      overflow: hidden;
+      z-index: 1000;
+      width: 160px;
+    }
+    nav a {
+      display: block;
+      padding: 1rem 1.5rem;
+      text-decoration: none;
+      color: #0a2540;
+      font-weight: 600;
+      border-bottom: 1px solid #ddd;
+      transition: background-color 0.3s;
+    }
+    nav a:last-child {
+      border-bottom: none;
+    }
+    nav a:hover {
+      background-color: #dbe7ff;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>HK Window Pros - Contact Us</h1>
+    <div class="menu-icon" onclick="toggleMenu()">☰</div>
+    <nav id="menu">
+      <a href="index.html">Home</a>
+      <a href="quote.html">Get a Quote</a>
+      <a href="login.html">Employee Login</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Contact Us for Commercial or Large Properties</h2>
+    <p>
+      If you own a commercial building or a home larger than two floors, please reach out to us directly for a custom quote.
+    </p>
+    <div class="contact-info">
+      📞 <strong>Phone:</strong> (651) 689-5866<br>
+      📧 <strong>Email:</strong> hkwindowpros@gmail.com
+    </div>
+  </main>
+
+  <script>
+    function toggleMenu() {
+      const menu = document.getElementById('menu');
+      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    window.onclick = function(event) {
+      const menu = document.getElementById('menu');
+      if (!event.target.closest('.menu-icon') && !event.target.closest('#menu')) {
+        menu.style.display = 'none';
+      }
+    };
+  </script>
+</body>
+</html>
