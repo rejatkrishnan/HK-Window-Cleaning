@@ -207,6 +207,10 @@
     }
   }
 </style>
+
+<!-- Supabase JS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 </head>
 <body>
 
@@ -233,7 +237,7 @@
 </main>
 
 <!-- Modal for Add/Edit Job -->
-<div id="modalBg">
+<div id="modalBg" aria-hidden="true">
   <div id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <button id="modalCloseBtn" aria-label="Close modal">&times;</button>
     <h2 id="modalTitle">Add Job</h2>
@@ -275,15 +279,14 @@
 </div>
 
 <script>
-  (function(){
-    // Check if logged in, else redirect to login
-    const loggedInUser = localStorage.getItem('loggedInUser');
-    if(!loggedInUser) {
-      window.location.href = 'login.html';
-      return;
-    }
+  (async function(){
+    // Supabase credentials
+    const SUPABASE_URL = "https://xwdtpqyphfhhnfpadhpv.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh3ZHRwcXlwaGZoaG5mcGFkaHB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQyNTY0MjIsImV4cCI6MjA2OTgzMjQyMn0.dP_7pajnInXt0p5YJES8yVQcZCP81S4V-rP5ozkTHPQ";
 
-    // DOM Elements
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Elements
     const userDisplay = document.getElementById('userDisplay');
     const logoutBtn = document.getElementById('logoutBtn');
     const jobsContainer = document.getElementById('jobsContainer');
@@ -293,28 +296,52 @@
     const jobForm = document.getElementById('jobForm');
     const tabButtons = document.querySelectorAll('.tab-btn');
 
-    // Shared localStorage key for jobs
-    const jobsKey = 'hkJobsShared';
-
+    // State
     let currentTab = 'pending';
-    let jobs = [];
     let editingJobId = null;
+    let jobs = [];
 
-    // Display logged in user
+    // Check logged in user from localStorage (simple auth)
+    const loggedInUser = localStorage.getItem('loggedInUser');
+    if(!loggedInUser) {
+      window.location.href = 'login.html';
+      return;
+    }
     userDisplay.textContent = `Logged in as: ${capitalize(loggedInUser)}`;
 
-    // Load jobs from localStorage
-    function loadJobs() {
-      const stored = localStorage.getItem(jobsKey);
-      jobs = stored ? JSON.parse(stored) : [];
+    // Capitalize helper
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
-    // Save jobs to localStorage
-    function saveJobs() {
-      localStorage.setItem(jobsKey, JSON.stringify(jobs));
+    // Escape HTML helper
+    function escapeHtml(text) {
+      if(!text) return "";
+      return text.replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;")
+                 .replace(/"/g, "&quot;")
+                 .replace(/'/g, "&#039;");
     }
 
-    // Render jobs by status
+    // Fetch jobs from Supabase
+    async function fetchJobs() {
+      const { data, error } = await supabase
+        .from('jobs')
+        .select('*')
+        .order('date', { ascending: true })
+        .order('time', { ascending: true });
+
+      if(error) {
+        alert("Error loading jobs: " + error.message);
+        return;
+      }
+
+      jobs = data || [];
+      renderJobs(currentTab);
+    }
+
+    // Render jobs list filtered by status
     function renderJobs(status) {
       jobsContainer.innerHTML = "";
       const filtered = jobs.filter(j => j.status === status);
@@ -339,16 +366,14 @@
           <div class="job-actions">
             <button class="btn-edit">Edit</button>
             ${job.status !== "completed" ? `<button class="btn-move">${job.status === "pending" ? "Start" : "Complete"}</button>` : ""}
-            <button class="btn-delete" style="background:#dc3545;">Delete</button>
+            <button class="btn-delete">Delete</button>
           </div>
         `;
 
         div.querySelector(".btn-edit").onclick = () => openEditModal(job.id);
         div.querySelector(".btn-delete").onclick = () => {
           if(confirm("Are you sure you want to delete this job?")) {
-            jobs = jobs.filter(j => j.id !== job.id);
-            saveJobs();
-            renderJobs(currentTab);
+            deleteJob(job.id);
           }
         };
         const moveBtn = div.querySelector(".btn-move");
@@ -360,83 +385,91 @@
       });
     }
 
-    // Open modal for editing job
-    function openEditModal(id) {
+    // Open modal for add/edit job
+    function openEditModal(id = null) {
       editingJobId = id;
-      const job = jobs.find(j => j.id === id);
-      if(!job) return;
 
-      jobForm.customerName.value = job.customerName;
-      jobForm.email.value = job.email;
-      jobForm.phone.value = job.phone;
-      jobForm.status.value = job.status;
-      jobForm.date.value = job.date;
-      jobForm.time.value = job.time;
-      jobForm.pay.value = job.pay;
-      jobForm.windows.value = job.windows;
-      jobForm.location.value = job.location || "";
+      if(id) {
+        const job = jobs.find(j => j.id === id);
+        if(!job) return;
 
-      modalBg.classList.add("active");
-    }
-
-    // Move job status (pending -> in progress -> completed)
-    function moveJobStatus(id) {
-      const job = jobs.find(j => j.id === id);
-      if(!job) return;
-      if(job.status === "pending") job.status = "in progress";
-      else if(job.status === "in progress") job.status = "completed";
-      saveJobs();
-      renderJobs(currentTab);
-    }
-
-    // Escape HTML special chars
-    function escapeHtml(text) {
-      if(!text) return "";
-      return text.replace(/&/g, "&amp;")
-                 .replace(/</g, "&lt;")
-                 .replace(/>/g, "&gt;")
-                 .replace(/"/g, "&quot;")
-                 .replace(/'/g, "&#039;");
-    }
-
-    function capitalize(str) {
-      return str.charAt(0).toUpperCase() + str.slice(1);
-    }
-
-    // Add Job button click
-    addJobBtn.onclick = () => {
-      editingJobId = null;
-      jobForm.reset();
-      jobForm.status.value = "pending";
-      modalBg.classList.add("active");
-    };
-
-    // Modal close handlers
-    modalCloseBtn.onclick = () => {
-      modalBg.classList.remove("active");
-    };
-    modalBg.onclick = e => {
-      if(e.target === modalBg) {
-        modalBg.classList.remove("active");
+        jobForm.customerName.value = job.customerName;
+        jobForm.email.value = job.email;
+        jobForm.phone.value = job.phone;
+        jobForm.status.value = job.status;
+        jobForm.date.value = job.date;
+        jobForm.time.value = job.time;
+        jobForm.pay.value = job.pay;
+        jobForm.windows.value = job.windows;
+        jobForm.location.value = job.location || "";
+        modalBg.querySelector('h2').textContent = "Edit Job";
+      } else {
+        jobForm.reset();
+        jobForm.status.value = "pending";
+        modalBg.querySelector('h2').textContent = "Add Job";
       }
+
+      modalBg.classList.add("active");
+      modalBg.setAttribute("aria-hidden", "false");
+      jobForm.customerName.focus();
+    }
+
+    // Close modal
+    function closeModal() {
+      modalBg.classList.remove("active");
+      modalBg.setAttribute("aria-hidden", "true");
+      editingJobId = null;
+    }
+
+    modalCloseBtn.onclick = closeModal;
+    modalBg.onclick = e => {
+      if(e.target === modalBg) closeModal();
     };
 
-    // Handle tab switching
-    tabButtons.forEach(btn => {
-      btn.onclick = () => {
-        tabButtons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        currentTab = btn.getAttribute("data-tab");
-        renderJobs(currentTab);
-      };
-    });
+    // Add Job button handler
+    addJobBtn.onclick = () => openEditModal();
 
-    // Handle form submit
-    jobForm.onsubmit = e => {
+    // Move job status: pending -> in progress -> completed
+    async function moveJobStatus(id) {
+      const job = jobs.find(j => j.id === id);
+      if(!job) return;
+
+      let newStatus;
+      if(job.status === "pending") newStatus = "in progress";
+      else if(job.status === "in progress") newStatus = "completed";
+      else return; // completed stays completed
+
+      const { error } = await supabase
+        .from('jobs')
+        .update({ status: newStatus })
+        .eq('id', id);
+
+      if(error) {
+        alert("Failed to update job status: " + error.message);
+        return;
+      }
+      await fetchJobs();
+    }
+
+    // Delete job
+    async function deleteJob(id) {
+      const { error } = await supabase
+        .from('jobs')
+        .delete()
+        .eq('id', id);
+
+      if(error) {
+        alert("Failed to delete job: " + error.message);
+        return;
+      }
+      await fetchJobs();
+    }
+
+    // Handle form submission to add/edit job
+    jobForm.onsubmit = async e => {
       e.preventDefault();
 
-      const newJob = {
-        id: editingJobId || Date.now().toString(),
+      const jobData = {
         customerName: jobForm.customerName.value.trim(),
         email: jobForm.email.value.trim(),
         phone: jobForm.phone.value.trim(),
@@ -448,34 +481,57 @@
         location: jobForm.location.value.trim(),
       };
 
-      if(!newJob.customerName || !newJob.email || !newJob.phone || !newJob.status || !newJob.date || !newJob.time || isNaN(newJob.pay) || isNaN(newJob.windows)) {
+      if(!jobData.customerName || !jobData.email || !jobData.phone || !jobData.status || !jobData.date || !jobData.time || isNaN(jobData.pay) || isNaN(jobData.windows)) {
         alert("Please fill all fields correctly.");
         return;
       }
 
       if(editingJobId) {
-        // Edit existing job
-        const index = jobs.findIndex(j => j.id === editingJobId);
-        if(index !== -1) jobs[index] = newJob;
+        // Update existing job
+        const { error } = await supabase
+          .from('jobs')
+          .update(jobData)
+          .eq('id', editingJobId);
+
+        if(error) {
+          alert("Failed to update job: " + error.message);
+          return;
+        }
       } else {
-        // Add new job
-        jobs.push(newJob);
+        // Insert new job (generate id in DB)
+        const { error } = await supabase
+          .from('jobs')
+          .insert([jobData]);
+
+        if(error) {
+          alert("Failed to add job: " + error.message);
+          return;
+        }
       }
 
-      saveJobs();
-      modalBg.classList.remove("active");
-      renderJobs(currentTab);
+      await fetchJobs();
+      closeModal();
     };
 
-    // Logout button click
+    // Tab click handlers
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentTab = btn.getAttribute('data-tab');
+        renderJobs(currentTab);
+      });
+    });
+
+    // Logout handler
     logoutBtn.onclick = () => {
       localStorage.removeItem('loggedInUser');
       window.location.href = 'login.html';
     };
 
     // Initial load
-    loadJobs();
-    renderJobs(currentTab);
+    await fetchJobs();
+
   })();
 </script>
 
