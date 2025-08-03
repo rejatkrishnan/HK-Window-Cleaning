@@ -49,6 +49,8 @@
       margin-top: 0.5rem;
       border-radius: 5px;
       border: 1px solid #ccc;
+      font-size: 1rem;
+      box-sizing: border-box;
     }
     button {
       background: #1a40af;
@@ -56,6 +58,8 @@
       border: none;
       cursor: pointer;
       margin-top: 1rem;
+      font-weight: 700;
+      transition: background-color 0.3s ease;
     }
     button:hover {
       background: #15327a;
@@ -65,6 +69,7 @@
       font-weight: bold;
       text-align: center;
       color: #1a40af;
+      font-size: 1.1rem;
     }
     .terms {
       display: flex;
@@ -139,25 +144,25 @@
     </div>
 
     <form id="quoteForm">
-      <label>Full Name <span>*</span></label>
-      <input type="text" id="name" name="name" required>
+      <label for="name">Full Name <span>*</span></label>
+      <input type="text" id="name" name="name" required autocomplete="name" />
 
-      <label>Email <span>*</span></label>
-      <input type="email" id="email" name="email" required>
+      <label for="email">Email <span>*</span></label>
+      <input type="email" id="email" name="email" required autocomplete="email" />
 
-      <label>Phone Number <span>*</span></label>
-      <input type="text" id="phone" name="phone" required>
+      <label for="phone">Phone Number <span>*</span></label>
+      <input type="tel" id="phone" name="phone" required autocomplete="tel" />
 
-      <label>First Floor Windows <span>*</span></label>
-      <input type="number" id="firstFloor" name="firstFloor" min="0" required oninput="updateEstimate()">
+      <label for="firstFloor">First Floor Windows <span>*</span></label>
+      <input type="number" id="firstFloor" name="firstFloor" min="0" required oninput="updateEstimate()" />
 
-      <label>Second Floor or Higher Windows <span>*</span></label>
-      <input type="number" id="secondFloor" name="secondFloor" min="0" required oninput="updateEstimate()">
+      <label for="secondFloor">Second Floor or Higher Windows <span>*</span></label>
+      <input type="number" id="secondFloor" name="secondFloor" min="0" required oninput="updateEstimate()" />
 
-      <label>Preferred Service Date <span>*</span></label>
+      <label for="serviceDate">Preferred Service Date <span>*</span></label>
       <select id="serviceDate" name="serviceDate" required></select>
 
-      <label>Preferred Time Slot <span>*</span></label>
+      <label for="timeSlot">Preferred Time Slot <span>*</span></label>
       <select id="timeSlot" name="timeSlot" required>
         <option value="">Select a time</option>
         <option value="Morning (9AM-2PM)">Morning (9AM-2PM)</option>
@@ -167,7 +172,7 @@
       <div class="total-estimate" id="totalEstimate">Estimated total: $0</div>
 
       <div class="terms">
-        <input type="checkbox" id="acceptTerms" required>
+        <input type="checkbox" id="acceptTerms" required />
         <label for="acceptTerms">I understand this is an estimate and may not be the final price.</label>
       </div>
 
@@ -181,31 +186,14 @@
 
   <!-- EmailJS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-
-    // Initialize EmailJS
+  <script>
+    // Initialize EmailJS - replace with your own User ID from EmailJS dashboard
     emailjs.init("_-iJBJuay9T60hC04");
-
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyD4_934C9L4kyEGHT5jDaCxNPHGC-HjIj4",
-      authDomain: "hk-windows.firebaseapp.com",
-      projectId: "hk-windows",
-      storageBucket: "hk-windows.firebasestorage.app",
-      messagingSenderId: "955997236305",
-      appId: "1:955997236305:web:b59d35b1f5f43a40ccdc70",
-      measurementId: "G-JPPBZW9LW8"
-    };
-
-    // Initialize Firebase and Firestore
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
 
     function updateEstimate() {
       const first = parseInt(document.getElementById("firstFloor").value) || 0;
       const second = parseInt(document.getElementById("secondFloor").value) || 0;
+      // Pricing: $5 per first floor window, $10 per second floor window
       const total = (first * 5) + (second * 10);
       document.getElementById("totalEstimate").textContent = `Estimated total: $${total}`;
     }
@@ -213,6 +201,8 @@
     function populateDates() {
       const dateSelect = document.getElementById("serviceDate");
       const today = new Date();
+      dateSelect.innerHTML = ""; // clear old options
+
       for (let i = 0; i < 7; i++) {
         const optionDate = new Date();
         optionDate.setDate(today.getDate() + i);
@@ -224,6 +214,7 @@
         dateSelect.appendChild(option);
       }
     }
+
     populateDates();
 
     function toggleMenu() {
@@ -238,19 +229,7 @@
       }
     };
 
-    async function saveQuoteToFirestore(data) {
-      try {
-        await addDoc(collection(db, "quotes"), {
-          ...data,
-          createdAt: serverTimestamp()
-        });
-        console.log("Quote saved to Firestore.");
-      } catch (e) {
-        console.error("Error adding document: ", e);
-      }
-    }
-
-    document.getElementById("quoteForm").addEventListener("submit", async function(event) {
+    document.getElementById("quoteForm").addEventListener("submit", function(event) {
       event.preventDefault();
 
       const name = document.getElementById("name").value.trim();
@@ -260,28 +239,20 @@
       const second = document.getElementById("secondFloor").value.trim();
       const date = document.getElementById("serviceDate").value.trim();
       const time = document.getElementById("timeSlot").value.trim();
-      const totalEstimate = `$${(parseInt(first) * 5) + (parseInt(second) * 10)}`;
-      const estimatedHours = Math.ceil((parseInt(first) + parseInt(second)) / 30);
+      const acceptedTerms = document.getElementById("acceptTerms").checked;
 
       if (!name || !email || !phone || !first || !second || !date || !time) {
         alert("Please fill out all fields.");
         return;
       }
+      if (!acceptedTerms) {
+        alert("You must accept the terms to proceed.");
+        return;
+      }
 
-      // Save quote to Firestore
-      await saveQuoteToFirestore({
-        name,
-        email,
-        phone,
-        firstFloorWindows: parseInt(first),
-        secondFloorWindows: parseInt(second),
-        serviceDate: date,
-        timeSlot: time,
-        totalEstimate,
-        estimatedHours
-      });
+      const totalEstimate = `$${(parseInt(first) * 5) + (parseInt(second) * 10)}`;
 
-      // Prepare EmailJS params
+      // Prepare email params for admin and customer
       const adminParams = {
         from_name: name,
         from_email: email,
@@ -305,14 +276,18 @@
       const adminTemplateID = "template_mrc33ra";
       const customerTemplateID = "template_zenc7k6";
 
+      // Send email to admin then confirmation email to customer
       emailjs.send(serviceID, adminTemplateID, adminParams)
         .then(() => emailjs.send(serviceID, customerTemplateID, customerParams))
         .then(() => {
+          alert("Thank you! Your quote request has been submitted.");
           window.location.href = "thankyou.html";
         })
         .catch((err) => {
           console.error("EmailJS error:", err);
-          window.location.href = "failed.html";
+          alert("Sorry, there was an error submitting your request. Please try again later.");
+          // Optionally redirect to failed page:
+          // window.location.href = "failed.html";
         });
     });
   </script>
