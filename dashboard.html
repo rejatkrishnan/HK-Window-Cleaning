@@ -4,6 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Dashboard | HK Window Pros</title>
+<!-- FullCalendar CSS -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.7/index.global.min.css" rel="stylesheet" />
 <style>
   body, html {
     height: 100%;
@@ -77,8 +79,9 @@
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(26,64,175,0.15);
     padding: 1rem 1.5rem;
-    max-height: 70vh;
+    max-height: 40vh;
     overflow-y: auto;
+    margin-bottom: 1rem;
   }
 
   .job-item {
@@ -134,7 +137,7 @@
     right:0;
     bottom:0;
     background: rgba(0,0,0,0.5);
-    display: none;
+    display: none; /* Hidden by default */
     align-items: center;
     justify-content: center;
     z-index: 9999;
@@ -197,6 +200,14 @@
     color: #333;
   }
 
+  /* Calendar container */
+  #calendar {
+    background: white;
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 4px 15px rgba(26,64,175,0.15);
+  }
+
   /* Responsive */
   @media (max-width: 600px) {
     .job-info {
@@ -230,6 +241,8 @@
   <button id="addJobBtn" style="margin-top:1rem; padding:0.7rem 1.2rem; font-weight: 700; background:#1a40af; color:white; border:none; border-radius:6px; cursor:pointer;">
     + Add Job
   </button>
+
+  <div id="calendar"></div>
 </main>
 
 <!-- Modal for Add/Edit Job -->
@@ -274,165 +287,106 @@
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const SUPABASE_URL = 'https://xwdtpqyphfhhnfpadhpv.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh3ZHRwcXlwaGZoaG5mcGFkaHB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQyNTY0MjIsImV4cCI6MjA2OTgzMjQyMn0.dP_7pajnInXt0p5YJES8yVQcZCP81S4V-rP5ozkTHPQ';
+<!-- FullCalendar JS -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.7/index.global.min.js"></script>
 
-  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+  // Supabase config - replace with your own
+  const supabaseUrl = 'https://xwdtpqyphfhhnfpadhpv.supabase.co';
+  const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh3ZHRwcXlwaGZoaG5mcGFkaHB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQyNTY0MjIsImV4cCI6MjA2OTgzMjQyMn0.dP_7pajnInXt0p5YJES8yVQcZCP81S4V-rP5ozkTHPQ';
+
+  const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
   const loggedInUser = localStorage.getItem('loggedInUser');
   if (!loggedInUser) {
     window.location.href = 'login.html';
-    return;
+    throw new Error('Not logged in');
   }
-  document.getElementById('userDisplay').textContent = `Logged in as: ${capitalize(loggedInUser)}`;
 
-  // DOM
+  const userDisplay = document.getElementById('userDisplay');
   const logoutBtn = document.getElementById('logoutBtn');
+  const jobsContainer = document.getElementById('jobsContainer');
   const addJobBtn = document.getElementById('addJobBtn');
   const modalBg = document.getElementById('modalBg');
   const modalCloseBtn = document.getElementById('modalCloseBtn');
   const jobForm = document.getElementById('jobForm');
-  const jobsContainer = document.getElementById('jobsContainer');
   const tabButtons = document.querySelectorAll('.tab-btn');
+  const calendarEl = document.getElementById('calendar');
+  const modalTitle = document.getElementById('modalTitle');
 
   let currentTab = 'pending';
   let jobs = [];
   let editingJobId = null;
+  let calendar;
 
-  // Logout
-  logoutBtn.addEventListener('click', () => {
-    localStorage.removeItem('loggedInUser');
-    window.location.href = 'login.html';
-  });
+  userDisplay.textContent = `Logged in as: ${capitalize(loggedInUser)}`;
 
-  // Add Job button
-  addJobBtn.addEventListener('click', () => {
-    openEditModal();
-  });
-
-  // Modal close
-  modalCloseBtn.addEventListener('click', closeModal);
-  modalBg.addEventListener('click', e => {
-    if (e.target === modalBg) closeModal();
-  });
-
-  // Tab switching
-  tabButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      tabButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      currentTab = btn.getAttribute('data-tab');
-      renderJobs(currentTab);
-    });
-  });
-
-  // Load jobs from Supabase
   async function loadJobs() {
     const { data, error } = await supabase
       .from('jobs')
       .select('*')
       .order('date', { ascending: true })
       .order('time', { ascending: true });
+
     if (error) {
-      alert('Failed to load jobs: ' + error.message);
+      alert('Error loading jobs: ' + error.message);
       return;
     }
-    jobs = data;
+    jobs = data || [];
   }
 
-  // Save (insert or update) job to Supabase
   async function saveJob(job) {
-    if (editingJobId) {
-      // update
+    if (job.id) {
       const { error } = await supabase
         .from('jobs')
-        .update(job)
-        .eq('id', editingJobId);
-      if (error) {
-        alert('Failed to update job: ' + error.message);
-        return false;
-      }
+        .update({
+          customerName: job.customerName,
+          email: job.email,
+          phone: job.phone,
+          status: job.status,
+          date: job.date,
+          time: job.time,
+          pay: job.pay,
+          windows: job.windows,
+          location: job.location
+        })
+        .eq('id', job.id);
+
+      if (error) alert('Error updating job: ' + error.message);
     } else {
-      // insert new, generate UUID
       job.id = crypto.randomUUID();
       const { error } = await supabase
         .from('jobs')
-        .insert(job);
-      if (error) {
-        alert('Failed to add job: ' + error.message);
-        return false;
-      }
+        .insert([job]);
+
+      if (error) alert('Error inserting job: ' + error.message);
     }
-    return true;
+    await loadJobs();
   }
 
-  // Delete job from Supabase
   async function deleteJob(id) {
     const { error } = await supabase
       .from('jobs')
       .delete()
       .eq('id', id);
-    if (error) {
-      alert('Failed to delete job: ' + error.message);
-      return false;
-    }
-    return true;
+
+    if (error) alert('Error deleting job: ' + error.message);
+    await loadJobs();
   }
 
-  // Move job status (pending -> in progress -> completed)
-  async function moveJobStatus(id) {
-    const job = jobs.find(j => j.id === id);
-    if (!job) return;
-    if (job.status === "pending") job.status = "in progress";
-    else if (job.status === "in progress") job.status = "completed";
-    else return; // completed can't move further
-
-    const success = await saveJob(job);
-    if (success) {
-      await refreshJobs();
-    }
-  }
-
-  // Open modal for add/edit
-  function openEditModal(id) {
-    editingJobId = id || null;
-    if (id) {
-      const job = jobs.find(j => j.id === id);
-      if (!job) return;
-      jobForm.customerName.value = job.customerName || '';
-      jobForm.email.value = job.email || '';
-      jobForm.phone.value = job.phone || '';
-      jobForm.status.value = job.status || 'pending';
-      jobForm.date.value = job.date || '';
-      jobForm.time.value = job.time || '';
-      jobForm.pay.value = job.pay || '';
-      jobForm.windows.value = job.windows || '';
-      jobForm.location.value = job.location || '';
-    } else {
-      jobForm.reset();
-      jobForm.status.value = 'pending';
-    }
-    modalBg.classList.add('active');
-  }
-
-  function closeModal() {
-    modalBg.classList.remove('active');
-  }
-
-  // Render jobs of current tab
   function renderJobs(status) {
-    jobsContainer.innerHTML = '';
+    jobsContainer.innerHTML = "";
     const filtered = jobs.filter(j => j.status === status);
     if (filtered.length === 0) {
       jobsContainer.innerHTML = `<p style="text-align:center; color:#555; margin-top:2rem;">No ${capitalize(status)} jobs.</p>`;
       return;
     }
     filtered.forEach(job => {
-      const div = document.createElement('div');
-      div.className = 'job-item';
+      const div = document.createElement("div");
+      div.className = "job-item";
+
       div.innerHTML = `
         <div class="job-info">
           <p class="job-name">${escapeHtml(job.customerName)}</p>
@@ -446,41 +400,116 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="job-actions">
           <button class="btn-edit">Edit</button>
           ${job.status !== "completed" ? `<button class="btn-move">${job.status === "pending" ? "Start" : "Complete"}</button>` : ""}
-          <button class="btn-delete">Delete</button>
+          <button class="btn-delete" style="background:#dc3545;">Delete</button>
         </div>
       `;
-      const editBtn = div.querySelector('.btn-edit');
-      const deleteBtn = div.querySelector('.btn-delete');
-      const moveBtn = div.querySelector('.btn-move');
 
-      editBtn.addEventListener('click', () => openEditModal(job.id));
-      deleteBtn.addEventListener('click', async () => {
+      div.querySelector(".btn-edit").onclick = () => openEditModal(job.id);
+      div.querySelector(".btn-delete").onclick = async () => {
         if (confirm("Are you sure you want to delete this job?")) {
-          const success = await deleteJob(job.id);
-          if (success) await refreshJobs();
+          await deleteJob(job.id);
+          renderJobs(currentTab);
+          renderCalendar();
         }
-      });
+      };
+      const moveBtn = div.querySelector(".btn-move");
       if (moveBtn) {
-        moveBtn.addEventListener('click', async () => {
-          await moveJobStatus(job.id);
-        });
+        moveBtn.onclick = async () => {
+          if (job.status === "pending") job.status = "in progress";
+          else if (job.status === "in progress") job.status = "completed";
+          await saveJob(job);
+          renderJobs(currentTab);
+          renderCalendar();
+        };
       }
 
       jobsContainer.appendChild(div);
     });
   }
 
-  // Refresh jobs list from DB and render current tab
-  async function refreshJobs() {
-    await loadJobs();
-    renderJobs(currentTab);
+  function openEditModal(id = null) {
+    editingJobId = id;
+    if (id) {
+      const job = jobs.find(j => j.id === id);
+      if (!job) return;
+
+      jobForm.customerName.value = job.customerName;
+      jobForm.email.value = job.email;
+      jobForm.phone.value = job.phone;
+      jobForm.status.value = job.status;
+      jobForm.date.value = job.date;
+      jobForm.time.value = job.time;
+      jobForm.pay.value = job.pay;
+      jobForm.windows.value = job.windows;
+      jobForm.location.value = job.location || "";
+      modalTitle.textContent = "Edit Job";
+    } else {
+      jobForm.reset();
+      jobForm.status.value = "pending";
+      modalTitle.textContent = "Add Job";
+    }
+    modalBg.classList.add("active");
   }
 
-  // Form submit handler
-  jobForm.addEventListener('submit', async e => {
+  function escapeHtml(text) {
+    if (!text) return "";
+    return text.replace(/&/g, "&amp;")
+               .replace(/</g, "&lt;")
+               .replace(/>/g, "&gt;")
+               .replace(/"/g, "&quot;")
+               .replace(/'/g, "&#039;");
+  }
+
+  function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  function renderCalendar() {
+    const events = jobs.map(job => {
+      if (!job.date || !job.time) return null;
+      const start = job.date + "T" + job.time;
+      return {
+        id: job.id,
+        title: `${job.customerName} (${capitalize(job.status)})`,
+        start: start,
+        allDay: false,
+      };
+    }).filter(Boolean);
+
+    if (calendar) {
+      calendar.removeAllEvents();
+      calendar.addEventSource(events);
+    } else {
+      calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'timeGridWeek',
+        nowIndicator: true,
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'timeGridWeek,timeGridDay'
+        },
+        events: events,
+      });
+      calendar.render();
+    }
+  }
+
+  // Event listeners
+  addJobBtn.onclick = () => openEditModal();
+
+  modalCloseBtn.onclick = () => {
+    modalBg.classList.remove("active");
+  };
+
+  modalBg.onclick = e => {
+    if (e.target === modalBg) modalBg.classList.remove("active");
+  };
+
+  jobForm.onsubmit = async e => {
     e.preventDefault();
 
     const newJob = {
+      id: editingJobId,
       customerName: jobForm.customerName.value.trim(),
       email: jobForm.email.value.trim(),
       phone: jobForm.phone.value.trim(),
@@ -489,43 +518,36 @@ document.addEventListener('DOMContentLoaded', () => {
       time: jobForm.time.value,
       pay: parseFloat(jobForm.pay.value),
       windows: parseInt(jobForm.windows.value),
-      location: jobForm.location.value.trim() || 'TBD',
+      location: jobForm.location.value.trim() || 'TBD'
     };
 
-    if (!newJob.customerName || !newJob.email || !newJob.phone || !newJob.status || !newJob.date || !newJob.time || isNaN(newJob.pay) || isNaN(newJob.windows)) {
-      alert('Please fill all required fields correctly.');
-      return;
-    }
+    await saveJob(newJob);
+    renderJobs(currentTab);
+    renderCalendar();
+    modalBg.classList.remove("active");
+  };
 
-    if (editingJobId) {
-      newJob.id = editingJobId;
-    }
+  logoutBtn.onclick = () => {
+    localStorage.removeItem('loggedInUser');
+    window.location.href = 'login.html';
+  };
 
-    const success = await saveJob(newJob);
-    if (success) {
-      closeModal();
-      await refreshJobs();
-    }
+  tabButtons.forEach(btn => {
+    btn.onclick = () => {
+      tabButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTab = btn.getAttribute('data-tab');
+      renderJobs(currentTab);
+    };
   });
 
-  // Helpers
-  function capitalize(str) {
-    if (!str) return "";
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  }
+  // Initial load
+  (async () => {
+    await loadJobs();
+    renderJobs(currentTab);
+    renderCalendar();
+  })();
 
-  function escapeHtml(text) {
-    if (!text) return "";
-    return text.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
-  }
-
-  // Initialize app by loading jobs and rendering
-  async function init() {
-    await refreshJobs();
-  }
-
-  init();
-});
 </script>
 
 </body>
