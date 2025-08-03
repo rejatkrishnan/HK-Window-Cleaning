@@ -8,11 +8,52 @@
   body {
     font-family: 'Roboto', sans-serif;
     background: #f0f6ff;
-    display: flex;
-    height: 100vh;
-    align-items: center;
-    justify-content: center;
     margin: 0;
+    padding: 0;
+  }
+  header {
+    background-color: #1a40af;
+    padding: 1rem;
+    color: white;
+    text-align: center;
+    position: relative;
+  }
+  .menu-icon {
+    font-size: 1.8rem;
+    cursor: pointer;
+    user-select: none;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    color: white;
+    z-index: 1001;
+  }
+  nav {
+    display: none;
+    position: absolute;
+    top: 3.5rem;
+    right: 1rem;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    overflow: hidden;
+    z-index: 1000;
+    width: 180px;
+  }
+  nav a {
+    display: block;
+    padding: 1rem 1.5rem;
+    text-decoration: none;
+    color: #0a2540;
+    font-weight: 600;
+    border-bottom: 1px solid #ddd;
+    transition: background-color 0.3s;
+  }
+  nav a:last-child {
+    border-bottom: none;
+  }
+  nav a:hover {
+    background-color: #dbe7ff;
   }
   .login-container {
     background: white;
@@ -20,6 +61,7 @@
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(26,64,175,0.2);
     width: 320px;
+    margin: 4rem auto;
   }
   h2 {
     text-align: center;
@@ -61,6 +103,17 @@
 </style>
 </head>
 <body>
+
+  <header>
+    <h1>HK Window Pros - Employee Login</h1>
+    <div class="menu-icon" onclick="toggleMenu()">☰</div>
+    <nav id="menu">
+      <a href="index.html">Home</a>
+      <a href="quote.html">Get a Quote</a>
+      <a href="contact.html">Contact Us</a>
+    </nav>
+  </header>
+
   <div class="login-container">
     <h2>Employee/Admin Login</h2>
     <form id="loginForm">
@@ -74,6 +127,18 @@
   </div>
 
 <script>
+  function toggleMenu() {
+    const menu = document.getElementById('menu');
+    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+  }
+
+  window.onclick = function(event) {
+    const menu = document.getElementById('menu');
+    if (!event.target.closest('.menu-icon') && !event.target.closest('#menu')) {
+      menu.style.display = 'none';
+    }
+  };
+
   const users = {
     "rejat": "rejat123",
     "nick": "nick123"
@@ -85,7 +150,6 @@
     const password = document.getElementById("password").value;
 
     if (users[username] && users[username] === password) {
-      // Save login state
       localStorage.setItem("loggedInUser", username);
       window.location.href = "dashboard.html";
     } else {
@@ -95,10 +159,10 @@
     }
   });
 
-  // If already logged in, redirect directly to dashboard
   if(localStorage.getItem("loggedInUser")) {
     window.location.href = "dashboard.html";
   }
 </script>
+
 </body>
 </html>
