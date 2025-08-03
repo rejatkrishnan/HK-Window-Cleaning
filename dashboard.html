@@ -11,7 +11,8 @@
     margin: 0;
     font-family: 'Roboto', sans-serif;
     background-color: #f0f6ff;
-    padding: 1rem 2rem;
+    display: flex;
+    flex-direction: column;
   }
   header {
     background: linear-gradient(90deg, #007BFF, #0056b3);
@@ -21,7 +22,6 @@
     justify-content: space-between;
     align-items: center;
     user-select: none;
-    border-radius: 10px;
   }
   header h1 {
     margin: 0;
@@ -39,127 +39,202 @@
   button.logout-btn:hover {
     background: #a32a2a;
   }
-  button#addJobBtn {
-    background-color: #1a40af;
-    color: white;
-    border: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: 5px;
-    font-weight: 700;
-    cursor: pointer;
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 2rem;
+    max-width: 1200px;
+    margin: auto;
+    gap: 1.5rem;
+    box-sizing: border-box;
+  }
+  /* Tabs for job status */
+  .tabs {
+    display: flex;
+    gap: 1rem;
     margin-bottom: 1rem;
   }
-  button#addJobBtn:hover {
-    background-color: #15327a;
+  .tab-btn {
+    padding: 0.5rem 1rem;
+    background: #dbe7ff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #0056b3;
+    transition: background-color 0.3s;
   }
-  main {
-    max-width: 1100px;
-    margin: auto;
+  .tab-btn.active,
+  .tab-btn:hover {
+    background: #1a40af;
+    color: white;
   }
-  section {
+  /* Jobs container */
+  .jobs-container {
     background: white;
-    padding: 1rem 1.5rem;
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(26,64,175,0.15);
-    margin-bottom: 1.5rem;
-  }
-  section h2 {
-    color: #0056b3;
-    margin-top: 0;
+    padding: 1rem 1.5rem;
+    max-height: 300px;
+    overflow-y: auto;
   }
   .job-item {
     border-bottom: 1px solid #ddd;
-    padding: 0.8rem 0;
+    padding: 0.8rem 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
   }
   .job-item:last-child {
     border-bottom: none;
   }
+  .job-item:hover {
+    background-color: #e6f0ff;
+  }
   .job-name {
     font-weight: 700;
-    color: #003f7f;
     font-size: 1.1rem;
+    color: #003f7f;
   }
   .job-details {
     font-size: 0.9rem;
     color: #555;
+    margin-top: 0.2rem;
+  }
+  /* Add Job button */
+  #addJobBtn {
+    align-self: flex-start;
+    padding: 0.5rem 1rem;
+    background: #1a40af;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 1rem;
+  }
+  #addJobBtn:hover {
+    background: #15327a;
   }
   /* Modal styles */
   .modal {
     display: none;
     position: fixed;
-    z-index: 9999;
-    left: 0; top: 0; right: 0; bottom: 0;
-    background-color: rgba(0,0,0,0.5);
+    z-index: 10000;
+    left: 0; top: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
     justify-content: center;
     align-items: center;
   }
+  .modal.active {
+    display: flex;
+  }
   .modal-content {
     background: white;
-    padding: 1.5rem;
+    padding: 1.5rem 2rem;
     border-radius: 10px;
+    max-width: 500px;
     width: 100%;
-    max-width: 480px;
-    box-shadow: 0 4px 15px rgba(26,64,175,0.25);
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.3);
     position: relative;
   }
-  .modal-content h3 {
+  .modal-content h2 {
     margin-top: 0;
     color: #1a40af;
   }
   .modal-content label {
     display: block;
     margin-top: 1rem;
-    font-weight: 700;
+    font-weight: 600;
   }
-  .modal-content input, .modal-content select {
+  .modal-content input, .modal-content select, .modal-content textarea {
     width: 100%;
-    padding: 0.6rem;
+    padding: 0.5rem;
     margin-top: 0.3rem;
-    border-radius: 5px;
+    border-radius: 6px;
     border: 1px solid #ccc;
     font-size: 1rem;
+    box-sizing: border-box;
   }
-  .modal-content button {
-    margin-top: 1.2rem;
-    background-color: #1a40af;
-    color: white;
+  .modal-content textarea {
+    resize: vertical;
+    min-height: 60px;
+  }
+  .modal-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+  }
+  .btn {
+    padding: 0.5rem 1rem;
     border: none;
-    padding: 0.7rem 1.2rem;
-    border-radius: 5px;
+    border-radius: 6px;
     font-weight: 700;
     cursor: pointer;
   }
-  .modal-content button:hover {
-    background-color: #15327a;
+  .btn.cancel-btn {
+    background: #ccc;
+    color: #444;
   }
-  .close-btn {
-    position: absolute;
-    right: 1rem;
-    top: 1rem;
-    font-size: 1.5rem;
+  .btn.cancel-btn:hover {
+    background: #999;
+  }
+  .btn.save-btn {
+    background: #1a40af;
+    color: white;
+  }
+  .btn.save-btn:hover {
+    background: #15327a;
+  }
+  /* Weekly calendar */
+  section.weekly-calendar {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(26,64,175,0.15);
+    padding: 1rem 1.5rem;
+    overflow-x: auto;
+  }
+  #weeklyCalendar {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding-top: 0.5rem;
+  }
+  .day-col {
+    min-width: 130px;
+    background: #f9faff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 0.5rem;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+    flex-shrink: 0;
+  }
+  .day-label {
     font-weight: 700;
-    color: #555;
+    margin-bottom: 0.6rem;
+    color: #0056b3;
+  }
+  .calendar-job {
+    background: #e6f0ff;
+    padding: 0.4rem;
+    margin-bottom: 0.4rem;
+    border-radius: 4px;
     cursor: pointer;
   }
-  .close-btn:hover {
-    color: #000;
+  .calendar-job:hover {
+    background: #c3d1ff;
   }
 </style>
 
+<!-- Firebase SDKs -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-  import {
-    getFirestore,
-    collection,
-    query,
-    where,
-    onSnapshot,
-    addDoc,
-    serverTimestamp,
-    orderBy
-  } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+  import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
-  // Your Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyD4_934C9L4kyEGHT5jDaCxNPHGC-HjIj4",
     authDomain: "hk-windows.firebaseapp.com",
@@ -172,141 +247,252 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  const auth = getAuth(app);
 
-  // DOM Elements
-  const inProgressList = document.getElementById("inProgressJobs");
-  const completedList = document.getElementById("completedJobs");
+  // Elements
+  const logoutBtn = document.getElementById("logoutBtn");
   const addJobBtn = document.getElementById("addJobBtn");
-  const modal = document.getElementById("addJobModal");
-  const closeModalBtn = document.getElementById("closeModal");
+  const modal = document.getElementById("jobModal");
+  const modalTitle = document.getElementById("modalTitle");
   const jobForm = document.getElementById("jobForm");
+  const jobsContainers = {
+    pending: document.getElementById("pendingJobs"),
+    inprogress: document.getElementById("inprogressJobs"),
+    completed: document.getElementById("completedJobs"),
+  };
+  const tabs = document.querySelectorAll(".tab-btn");
+  const weeklyCalendar = document.getElementById("weeklyCalendar");
 
-  addJobBtn.addEventListener("click", () => {
-    modal.style.display = "flex";
-  });
+  let editingJobId = null;
 
-  closeModalBtn.addEventListener("click", () => {
-    modal.style.display = "none";
-    jobForm.reset();
-  });
+  // Current logged-in user email (auth-based)
+  let currentUserEmail = null;
 
-  window.addEventListener("click", (e) => {
-    if (e.target === modal) {
-      modal.style.display = "none";
-      jobForm.reset();
+  // Allowed users to see/edit jobs (emails lowercase)
+  const allowedUsers = ["rejat@example.com", "nick@example.com"];
+
+  // Redirect if not logged in
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      window.location.href = "login.html";
+    } else {
+      currentUserEmail = user.email.toLowerCase();
+      if (!allowedUsers.includes(currentUserEmail)) {
+        alert("You do not have permission to access this dashboard.");
+        signOut(auth);
+        return;
+      }
+      loadJobsRealtime();
     }
   });
 
-  function formatDateTime(dateStr, timeSlot) {
-    const d = new Date(dateStr);
-    const options = { month: "short", day: "numeric", year: "numeric" };
-    const formattedDate = d.toLocaleDateString(undefined, options);
-    return `${formattedDate} - ${timeSlot}`;
+  logoutBtn.onclick = () => {
+    signOut(auth);
+  };
+
+  // Switch tabs
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      tabs.forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+      showTab(tab.dataset.status);
+    });
+  });
+
+  function showTab(status) {
+    Object.entries(jobsContainers).forEach(([key, container]) => {
+      container.style.display = (key === status) ? "block" : "none";
+    });
   }
 
-  function calcDuration(first, second) {
-    return ((first + second) / 30).toFixed(2);
+  // Initialize showing pending jobs
+  showTab("pending");
+  tabs[0].classList.add("active");
+
+  // Load jobs from Firestore realtime & display
+  function loadJobsRealtime() {
+    const jobsRef = collection(db, "quotes");
+    const q = query(jobsRef, orderBy("serviceDate", "asc"));
+
+    onSnapshot(q, (snapshot) => {
+      const allJobs = [];
+      snapshot.forEach(docSnap => {
+        const job = docSnap.data();
+        job.id = docSnap.id;
+        allJobs.push(job);
+      });
+
+      renderJobs(allJobs);
+      renderWeeklyCalendar(allJobs);
+    });
   }
 
-  function renderJob(job) {
-    return `
-      <div class="job-item">
+  // Render jobs into their containers by status
+  function renderJobs(jobs) {
+    // Clear containers
+    Object.values(jobsContainers).forEach(c => c.innerHTML = "");
+
+    jobs.forEach(job => {
+      // Show job only if it's assigned to allowed users or no restriction
+      // (or you can implement a field for assigned users)
+      if (!allowedUsers.includes(currentUserEmail)) return;
+
+      const status = (job.status || "pending").toLowerCase();
+      if (!jobsContainers[status]) return; // skip unknown status
+
+      const jobDiv = document.createElement("div");
+      jobDiv.className = "job-item";
+      jobDiv.dataset.id = job.id;
+      jobDiv.innerHTML = `
         <div class="job-name">${job.name}</div>
         <div class="job-details">
-          Date & Time: ${formatDateTime(job.serviceDate, job.timeSlot)}<br />
-          Pay: $${job.estimate.toFixed(2)}<br />
-          Windows: ${job.firstFloor + job.secondFloor}<br />
-          Estimated Duration: ${calcDuration(job.firstFloor, job.secondFloor)} hour(s)<br />
-          Status: ${job.status}<br />
-          Contact: ${job.email}, ${job.phone}
+          Date: ${job.serviceDate || "N/A"}<br />
+          Time: ${job.timeSlot || "N/A"}<br />
+          Pay: $${job.pay?.toFixed(2) || "0.00"}<br />
+          Windows: ${job.windows || 0}<br />
+          Duration: ${job.durationHours?.toFixed(1) || "0"} hrs<br />
+          Location: ${job.location || "TBD"}
         </div>
-      </div>
-    `;
+      `;
+
+      jobDiv.onclick = () => openModal(job);
+
+      jobsContainers[status].appendChild(jobDiv);
+    });
   }
 
-  const inProgressQuery = query(
-    collection(db, "quotes"),
-    where("status", "==", "in-progress"),
-    orderBy("submittedAt", "desc")
-  );
-  onSnapshot(inProgressQuery, (snapshot) => {
-    inProgressList.innerHTML = "";
-    if (snapshot.empty) {
-      inProgressList.innerHTML = "<p>No in-progress jobs.</p>";
-      return;
-    }
-    snapshot.forEach(doc => {
-      const job = doc.data();
-      inProgressList.innerHTML += renderJob(job);
-    });
-  });
+  // Open modal for adding/editing
+  function openModal(job = null) {
+    modal.classList.add("active");
+    editingJobId = null;
 
-  const completedQuery = query(
-    collection(db, "quotes"),
-    where("status", "==", "completed"),
-    orderBy("submittedAt", "desc")
-  );
-  onSnapshot(completedQuery, (snapshot) => {
-    completedList.innerHTML = "";
-    if (snapshot.empty) {
-      completedList.innerHTML = "<p>No completed jobs.</p>";
-      return;
+    if (job) {
+      modalTitle.textContent = "Edit Job";
+      jobForm.name.value = job.name || "";
+      jobForm.email.value = job.email || "";
+      jobForm.phone.value = job.phone || "";
+      jobForm.serviceDate.value = job.serviceDate || "";
+      jobForm.timeSlot.value = job.timeSlot || "";
+      jobForm.pay.value = job.pay || "";
+      jobForm.windows.value = job.windows || "";
+      jobForm.durationHours.value = job.durationHours || "";
+      jobForm.location.value = job.location || "";
+      jobForm.status.value = (job.status || "pending");
+      editingJobId = job.id;
+    } else {
+      modalTitle.textContent = "Add New Job";
+      jobForm.reset();
+      jobForm.status.value = "pending";
     }
-    snapshot.forEach(doc => {
-      const job = doc.data();
-      completedList.innerHTML += renderJob(job);
-    });
-  });
+  }
 
-  jobForm.addEventListener("submit", async (e) => {
+  // Close modal
+  document.getElementById("modalClose").onclick = () => {
+    modal.classList.remove("active");
+    editingJobId = null;
+  };
+  // Also close if clicking outside modal-content
+  modal.onclick = (e) => {
+    if (e.target === modal) {
+      modal.classList.remove("active");
+      editingJobId = null;
+    }
+  };
+
+  // Add job button
+  addJobBtn.onclick = () => openModal();
+
+  // Save job (add or update)
+  jobForm.onsubmit = async (e) => {
     e.preventDefault();
-
-    const name = jobForm.name.value.trim();
-    const email = jobForm.email.value.trim();
-    const phone = jobForm.phone.value.trim();
-    const firstFloor = parseInt(jobForm.firstFloor.value) || 0;
-    const secondFloor = parseInt(jobForm.secondFloor.value) || 0;
-    const serviceDate = jobForm.serviceDate.value;
-    const timeSlot = jobForm.timeSlot.value;
-    const status = jobForm.status.value;
-
-    if (!name || !email || !phone || !serviceDate || !timeSlot || !status) {
-      alert("Please fill all required fields.");
-      return;
-    }
-
-    const estimate = (firstFloor * 5) + (secondFloor * 10);
+    const data = {
+      name: jobForm.name.value.trim(),
+      email: jobForm.email.value.trim(),
+      phone: jobForm.phone.value.trim(),
+      serviceDate: jobForm.serviceDate.value,
+      timeSlot: jobForm.timeSlot.value,
+      pay: parseFloat(jobForm.pay.value) || 0,
+      windows: parseInt(jobForm.windows.value) || 0,
+      durationHours: parseFloat(jobForm.durationHours.value) || 0,
+      location: jobForm.location.value.trim() || "TBD",
+      status: jobForm.status.value.toLowerCase() || "pending",
+      createdBy: currentUserEmail,
+      createdAt: new Date().toISOString()
+    };
 
     try {
-      await addDoc(collection(db, "quotes"), {
-        name,
-        email,
-        phone,
-        firstFloor,
-        secondFloor,
-        serviceDate,
-        timeSlot,
-        status,
-        estimate,
-        submittedAt: serverTimestamp()
-      });
-      alert("Job added successfully!");
-      jobForm.reset();
-      modal.style.display = "none";
+      if (editingJobId) {
+        const jobDoc = doc(db, "quotes", editingJobId);
+        await updateDoc(jobDoc, data);
+      } else {
+        await addDoc(collection(db, "quotes"), data);
+      }
+      modal.classList.remove("active");
+      editingJobId = null;
     } catch (err) {
-      console.error("Error adding job:", err);
-      alert("Failed to add job. Try again.");
+      alert("Error saving job: " + err.message);
     }
-  });
+  };
 
-  document.getElementById("logoutBtn").addEventListener("click", () => {
-    localStorage.removeItem("loggedInUser");
-    window.location.href = "login.html";
-  });
+  // Weekly calendar rendering
+  function getMonday(d) {
+    d = new Date(d);
+    const day = d.getDay();
+    const diff = (day === 0 ? -6 : 1) - day;
+    return new Date(d.setDate(d.getDate() + diff));
+  }
+  function formatDayLabel(date) {
+    const options = { weekday: "short", month: "numeric", day: "numeric" };
+    return date.toLocaleDateString(undefined, options);
+  }
+  function formatJobDisplay(job) {
+    return `${job.name} (${job.timeSlot || "No time"})`;
+  }
+  function renderWeeklyCalendar(jobs) {
+    weeklyCalendar.innerHTML = "";
+    const monday = getMonday(new Date());
+
+    for (let i = 0; i < 7; i++) {
+      const dayDate = new Date(monday);
+      dayDate.setDate(monday.getDate() + i);
+
+      const dayJobs = jobs.filter(job => {
+        if (!job.serviceDate) return false;
+        const jobDate = new Date(job.serviceDate);
+        return jobDate.toDateString() === dayDate.toDateString();
+      });
+
+      const dayCol = document.createElement("div");
+      dayCol.className = "day-col";
+
+      const dayLabel = document.createElement("div");
+      dayLabel.className = "day-label";
+      dayLabel.textContent = formatDayLabel(dayDate);
+      dayCol.appendChild(dayLabel);
+
+      if (dayJobs.length === 0) {
+        const noJobs = document.createElement("div");
+        noJobs.style.color = "#999";
+        noJobs.textContent = "No jobs";
+        dayCol.appendChild(noJobs);
+      } else {
+        dayJobs.forEach(job => {
+          const jobDiv = document.createElement("div");
+          jobDiv.className = "calendar-job";
+          jobDiv.textContent = formatJobDisplay(job);
+          jobDiv.onclick = () => openModal(job);
+          dayCol.appendChild(jobDiv);
+        });
+      }
+
+      weeklyCalendar.appendChild(dayCol);
+    }
+  }
 </script>
 
 </head>
 <body>
+
 <header>
   <h1>Dashboard</h1>
   <button class="logout-btn" id="logoutBtn">Logout</button>
@@ -315,60 +501,65 @@
 <main>
   <button id="addJobBtn">+ Add Job</button>
 
-  <section>
-    <h2>In Progress Jobs</h2>
-    <div id="inProgressJobs">
-      <p>Loading...</p>
-    </div>
-  </section>
+  <div class="tabs">
+    <button class="tab-btn" data-status="pending">Pending Jobs</button>
+    <button class="tab-btn" data-status="inprogress">In Progress Jobs</button>
+    <button class="tab-btn" data-status="completed">Completed Jobs</button>
+  </div>
 
-  <section>
-    <h2>Completed Jobs</h2>
-    <div id="completedJobs">
-      <p>Loading...</p>
-    </div>
+  <div id="pendingJobs" class="jobs-container"></div>
+  <div id="inprogressJobs" class="jobs-container" style="display:none;"></div>
+  <div id="completedJobs" class="jobs-container" style="display:none;"></div>
+
+  <section class="weekly-calendar">
+    <h2>Weekly Calendar</h2>
+    <div id="weeklyCalendar"></div>
   </section>
 </main>
 
-<!-- Add Job Modal -->
-<div class="modal" id="addJobModal">
+<!-- Job Add/Edit Modal -->
+<div class="modal" id="jobModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="modal-content">
-    <span class="close-btn" id="closeModal">&times;</span>
-    <h3>Add New Job</h3>
+    <h2 id="modalTitle">Add/Edit Job</h2>
     <form id="jobForm">
-      <label for="name">Customer Full Name *</label>
-      <input type="text" id="name" name="name" required />
+      <label for="name">Job Name*</label>
+      <input id="name" name="name" required type="text" placeholder="Job name" />
 
-      <label for="email">Customer Email *</label>
-      <input type="email" id="email" name="email" required />
+      <label for="email">Customer Email</label>
+      <input id="email" name="email" type="email" placeholder="customer@example.com" />
 
-      <label for="phone">Customer Phone Number *</label>
-      <input type="tel" id="phone" name="phone" required />
+      <label for="phone">Customer Phone</label>
+      <input id="phone" name="phone" type="tel" placeholder="555-123-4567" />
 
-      <label for="firstFloor">First Floor Windows *</label>
-      <input type="number" id="firstFloor" name="firstFloor" min="0" required />
+      <label for="serviceDate">Service Date*</label>
+      <input id="serviceDate" name="serviceDate" type="date" required />
 
-      <label for="secondFloor">Second Floor or Higher Windows *</label>
-      <input type="number" id="secondFloor" name="secondFloor" min="0" required />
+      <label for="timeSlot">Time Slot</label>
+      <input id="timeSlot" name="timeSlot" type="text" placeholder="e.g., 9:00 AM - 11:00 AM" />
 
-      <label for="serviceDate">Service Date *</label>
-      <input type="date" id="serviceDate" name="serviceDate" required />
+      <label for="pay">Pay ($)</label>
+      <input id="pay" name="pay" type="number" step="0.01" min="0" placeholder="120.00" />
 
-      <label for="timeSlot">Time Slot *</label>
-      <select id="timeSlot" name="timeSlot" required>
-        <option value="">Select a time slot</option>
-        <option value="Morning (9AM-2PM)">Morning (9AM-2PM)</option>
-        <option value="Afternoon (2PM-7PM)">Afternoon (2PM-7PM)</option>
-      </select>
+      <label for="windows">Number of Windows</label>
+      <input id="windows" name="windows" type="number" min="0" placeholder="30" />
 
-      <label for="status">Job Status *</label>
-      <select id="status" name="status" required>
+      <label for="durationHours">Estimated Duration (hrs)</label>
+      <input id="durationHours" name="durationHours" type="number" step="0.1" min="0" placeholder="1.5" />
+
+      <label for="location">Job Location</label>
+      <textarea id="location" name="location" placeholder="Address or location details"></textarea>
+
+      <label for="status">Status</label>
+      <select id="status" name="status">
         <option value="pending">Pending</option>
-        <option value="in-progress">In Progress</option>
+        <option value="inprogress">In Progress</option>
         <option value="completed">Completed</option>
       </select>
 
-      <button type="submit">Add Job</button>
+      <div class="modal-actions">
+        <button type="button" class="btn cancel-btn" id="modalClose">Cancel</button>
+        <button type="submit" class="btn save-btn">Save Job</button>
+      </div>
     </form>
   </div>
 </div>
