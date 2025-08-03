@@ -240,23 +240,24 @@
 
       // Admin email parameters
       const adminParams = {
-  from_name: name,
-  from_email: email,
-  phone: phone,
-  first_floor: first,
-  second_floor: second,
-  service_date: date,
-  service_time: time,
-  total_estimate: totalEstimate
-};
+        from_name: name,
+        from_email: email,
+        phone: phone,
+        first_floor: first,
+        second_floor: second,
+        service_date: date,
+        time_slot: time, // fixed variable name
+        total_estimate: totalEstimate
+      };
 
-const customerParams = {
-  to_name: name,
-  total_estimate: totalEstimate,
-  service_date: date,
-  service_time: time,
-  email: email
-};
+      // Customer confirmation email parameters
+      const customerParams = {
+        to_name: name,
+        total_estimate: totalEstimate,
+        service_date: date,
+        time_slot: time, // fixed variable name
+        email: email
+      };
 
       const serviceID = "service_itqn635";
       const adminTemplateID = "template_mrc33ra";
