@@ -26,6 +26,11 @@
     margin: 0;
     font-size: 1.8rem;
   }
+  header #userDisplay {
+    font-weight: 700;
+    font-size: 1rem;
+    font-style: italic;
+  }
   button.logout-btn {
     background: #e03c3c;
     border: none;
@@ -38,127 +43,125 @@
   button.logout-btn:hover {
     background: #a32a2a;
   }
+
   main {
     flex: 1;
+    display: flex;
+    flex-direction: column;
     padding: 1rem 2rem;
-    max-width: 1000px;
+    max-width: 900px;
     margin: auto;
-    box-sizing: border-box;
   }
+
   .tabs {
     display: flex;
     gap: 1rem;
     margin-bottom: 1rem;
   }
-  .tab-button {
-    flex: 1;
-    padding: 0.7rem;
+  .tab-btn {
+    padding: 0.5rem 1rem;
     background: #ddd;
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    font-weight: 700;
-    color: #003f7f;
-    transition: background-color 0.3s;
+    font-weight: 600;
+    color: #0056b3;
   }
-  .tab-button.active {
+  .tab-btn.active {
     background: #1a40af;
     color: white;
   }
-  .job-list {
+
+  #jobsContainer {
     background: white;
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(26,64,175,0.15);
-    padding: 1rem;
-    max-height: 400px;
+    padding: 1rem 1.5rem;
+    max-height: 70vh;
     overflow-y: auto;
   }
+
   .job-item {
-    border-bottom: 1px solid #ccc;
-    padding: 0.8rem 0;
-    cursor: pointer;
+    padding: 1rem 0.7rem;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
   .job-item:last-child {
     border-bottom: none;
   }
-  .job-item:hover {
-    background-color: #e6f0ff;
-  }
-  .job-title {
+  .job-name {
     font-weight: 700;
-    color: #0056b3;
+    font-size: 1.1rem;
+    color: #003f7f;
+    margin: 0;
+  }
+  .job-details {
+    font-size: 0.9rem;
+    color: #555;
+    margin: 0.2rem 0 0 0;
   }
   .job-info {
-    font-size: 0.9rem;
-    color: #444;
+    max-width: 70%;
   }
-  /* Add job form styles */
-  .add-job-container {
-    margin-top: 2rem;
-    background: white;
-    padding: 1rem 1.5rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(26,64,175,0.15);
-  }
-  .add-job-container h2 {
-    margin-top: 0;
-    color: #1a40af;
-    text-align: center;
-  }
-  .add-job-container label {
-    display: block;
-    margin-top: 1rem;
-    font-weight: 700;
-  }
-  .add-job-container input, .add-job-container select {
-    width: 100%;
-    padding: 0.5rem;
-    margin-top: 0.3rem;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-  }
-  .add-job-container button {
-    margin-top: 1rem;
-    background: #1a40af;
-    color: white;
-    font-weight: 700;
+  .job-actions button {
+    margin-left: 0.5rem;
+    padding: 0.3rem 0.7rem;
     border: none;
-    padding: 0.7rem;
-    width: 100%;
-    border-radius: 6px;
+    border-radius: 4px;
     cursor: pointer;
+    font-weight: 600;
   }
-  .add-job-container button:hover {
-    background: #15327a;
+  .btn-edit {
+    background: #007BFF;
+    color: white;
   }
-  /* Edit modal styles */
-  #editModal {
-    display: none;
+  .btn-move {
+    background: #28a745;
+    color: white;
+  }
+  .btn-delete {
+    background: #dc3545;
+    color: white;
+  }
+
+  /* Modal Styles */
+  #modalBg {
     position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
+    top: 0;
+    left: 0;
+    right:0;
+    bottom:0;
     background: rgba(0,0,0,0.5);
-    justify-content: center;
+    display: none;
     align-items: center;
-    z-index: 10000;
+    justify-content: center;
+    z-index: 9999;
   }
-  #editModal .modal-content {
+  #modalBg.active {
+    display: flex;
+  }
+  #modal {
     background: white;
-    border-radius: 10px;
     padding: 1.5rem 2rem;
-    width: 400px;
-    max-width: 90%;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 450px;
+    box-sizing: border-box;
+    position: relative;
   }
-  #editModal h3 {
+  #modal h2 {
     margin-top: 0;
     color: #1a40af;
+    margin-bottom: 1rem;
   }
-  #editModal label {
-    margin-top: 1rem;
+  #jobForm label {
     display: block;
-    font-weight: 700;
+    margin-top: 0.8rem;
+    font-weight: 600;
   }
-  #editModal input, #editModal select {
+  #jobForm input, #jobForm select {
     width: 100%;
     padding: 0.5rem;
     margin-top: 0.3rem;
@@ -166,322 +169,314 @@
     border: 1px solid #ccc;
     box-sizing: border-box;
   }
-  #editModal button {
-    margin-top: 1rem;
+  #jobForm button {
+    margin-top: 1.2rem;
+    width: 100%;
+    padding: 0.7rem;
     background: #1a40af;
     color: white;
     font-weight: 700;
     border: none;
-    padding: 0.7rem;
-    width: 100%;
     border-radius: 6px;
     cursor: pointer;
   }
-  #editModal button:hover {
+  #jobForm button:hover {
     background: #15327a;
   }
-  #editModal .close-btn {
-    background: #ccc;
-    color: #333;
-    margin-top: 0.5rem;
+  #modalCloseBtn {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #888;
   }
-  #editModal .close-btn:hover {
-    background: #999;
+  #modalCloseBtn:hover {
+    color: #333;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .job-info {
+      max-width: 60%;
+    }
+    main {
+      padding: 1rem;
+    }
   }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>Dashboard | HK Window Pros</h1>
+  <h1>Dashboard</h1>
+  <div id="userDisplay"></div>
   <button class="logout-btn" id="logoutBtn">Logout</button>
 </header>
 
 <main>
   <div class="tabs">
-    <button class="tab-button active" data-tab="pending">Pending Jobs</button>
-    <button class="tab-button" data-tab="inprogress">In Progress</button>
-    <button class="tab-button" data-tab="completed">Completed</button>
+    <button class="tab-btn active" data-tab="pending">Pending</button>
+    <button class="tab-btn" data-tab="in progress">In Progress</button>
+    <button class="tab-btn" data-tab="completed">Completed</button>
   </div>
 
-  <div id="jobLists">
-    <div class="job-list" data-list="pending"></div>
-    <div class="job-list" data-list="inprogress" style="display:none;"></div>
-    <div class="job-list" data-list="completed" style="display:none;"></div>
+  <div id="jobsContainer">
+    <!-- Jobs will be listed here -->
   </div>
 
-  <div class="add-job-container">
-    <h2>Add New Job</h2>
-    <form id="addJobForm">
-      <label for="jobName">Job Name</label>
-      <input type="text" id="jobName" required placeholder="Customer or Property Name" />
-
-      <label for="jobDate">Date & Time</label>
-      <input type="datetime-local" id="jobDate" required />
-
-      <label for="jobPay">Payment Amount ($)</label>
-      <input type="number" id="jobPay" min="0" step="0.01" required />
-
-      <label for="jobWindows">Number of Windows</label>
-      <input type="number" id="jobWindows" min="0" required />
-
-      <label for="jobDuration">Estimated Duration (hours)</label>
-      <input type="number" id="jobDuration" min="0" step="0.1" required />
-
-      <label for="jobLocation">Location (address or notes)</label>
-      <input type="text" id="jobLocation" placeholder="Will update later" />
-
-      <label for="jobStatus">Job Status</label>
-      <select id="jobStatus" required>
-        <option value="pending">Pending</option>
-        <option value="inprogress">In Progress</option>
-        <option value="completed">Completed</option>
-      </select>
-
-      <button type="submit">Add Job</button>
-    </form>
-  </div>
+  <button id="addJobBtn" style="margin-top:1rem; padding:0.7rem 1.2rem; font-weight: 700; background:#1a40af; color:white; border:none; border-radius:6px; cursor:pointer;">
+    + Add Job
+  </button>
 </main>
 
-<!-- Edit modal -->
-<div id="editModal">
-  <div class="modal-content">
-    <h3>Edit Job</h3>
-    <form id="editJobForm">
-      <input type="hidden" id="editJobId" />
-      <label for="editJobName">Job Name</label>
-      <input type="text" id="editJobName" required />
+<!-- Modal for Add/Edit Job -->
+<div id="modalBg">
+  <div id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button id="modalCloseBtn" aria-label="Close modal">&times;</button>
+    <h2 id="modalTitle">Add Job</h2>
+    <form id="jobForm">
+      <label for="customerName">Customer Name</label>
+      <input type="text" id="customerName" name="customerName" required />
 
-      <label for="editJobDate">Date & Time</label>
-      <input type="datetime-local" id="editJobDate" required />
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required />
 
-      <label for="editJobPay">Payment Amount ($)</label>
-      <input type="number" id="editJobPay" min="0" step="0.01" required />
+      <label for="phone">Phone Number</label>
+      <input type="tel" id="phone" name="phone" required />
 
-      <label for="editJobWindows">Number of Windows</label>
-      <input type="number" id="editJobWindows" min="0" required />
-
-      <label for="editJobDuration">Estimated Duration (hours)</label>
-      <input type="number" id="editJobDuration" min="0" step="0.1" required />
-
-      <label for="editJobLocation">Location (address or notes)</label>
-      <input type="text" id="editJobLocation" />
-
-      <label for="editJobStatus">Job Status</label>
-      <select id="editJobStatus" required>
+      <label for="status">Status</label>
+      <select id="status" name="status" required>
         <option value="pending">Pending</option>
-        <option value="inprogress">In Progress</option>
+        <option value="in progress">In Progress</option>
         <option value="completed">Completed</option>
       </select>
 
-      <button type="submit">Save Changes</button>
-      <button type="button" class="close-btn" id="closeEditModal">Cancel</button>
+      <label for="date">Date</label>
+      <input type="date" id="date" name="date" required />
+
+      <label for="time">Time</label>
+      <input type="time" id="time" name="time" required />
+
+      <label for="pay">Pay ($)</label>
+      <input type="number" id="pay" name="pay" min="0" step="0.01" required />
+
+      <label for="windows">Windows</label>
+      <input type="number" id="windows" name="windows" min="0" step="1" required />
+
+      <label for="location">Location</label>
+      <input type="text" id="location" name="location" placeholder="Address or 'TBD'" />
+
+      <button type="submit">Save Job</button>
     </form>
   </div>
 </div>
 
 <script>
-  // Login check & redirect
-  const loggedInUser = localStorage.getItem('loggedInUser');
-  if(!loggedInUser) {
-    if(!window.location.href.includes('login.html')) {
+  (function(){
+    // Check if logged in, else redirect to login
+    const loggedInUser = localStorage.getItem('loggedInUser');
+    if(!loggedInUser) {
       window.location.href = 'login.html';
+      return;
     }
-  }
 
-  // Logout button
-  document.getElementById('logoutBtn').addEventListener('click', () => {
-    localStorage.removeItem('loggedInUser');
-    window.location.href = 'login.html';
-  });
+    // DOM Elements
+    const userDisplay = document.getElementById('userDisplay');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const jobsContainer = document.getElementById('jobsContainer');
+    const addJobBtn = document.getElementById('addJobBtn');
+    const modalBg = document.getElementById('modalBg');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+    const jobForm = document.getElementById('jobForm');
+    const tabButtons = document.querySelectorAll('.tab-btn');
 
-  // Jobs storage key
-  const JOBS_STORAGE_KEY = 'hk_window_jobs';
+    // Shared localStorage key for jobs
+    const jobsKey = 'hkJobsShared';
 
-  // Load jobs from localStorage (or empty array)
-  function loadJobs() {
-    const raw = localStorage.getItem(JOBS_STORAGE_KEY);
-    if(!raw) return [];
-    try {
-      return JSON.parse(raw);
-    } catch {
-      return [];
+    let currentTab = 'pending';
+    let jobs = [];
+    let editingJobId = null;
+
+    // Display logged in user
+    userDisplay.textContent = `Logged in as: ${capitalize(loggedInUser)}`;
+
+    // Load jobs from localStorage
+    function loadJobs() {
+      const stored = localStorage.getItem(jobsKey);
+      jobs = stored ? JSON.parse(stored) : [];
     }
-  }
 
-  // Save jobs to localStorage
-  function saveJobs(jobs) {
-    localStorage.setItem(JOBS_STORAGE_KEY, JSON.stringify(jobs));
-  }
+    // Save jobs to localStorage
+    function saveJobs() {
+      localStorage.setItem(jobsKey, JSON.stringify(jobs));
+    }
 
-  // Current jobs data
-  let jobs = loadJobs();
-
-  // UI Elements
-  const tabs = document.querySelectorAll('.tab-button');
-  const jobLists = document.querySelectorAll('.job-list');
-
-  let currentTab = 'pending';
-
-  // Render jobs by tab
-  function renderJobs() {
-    jobLists.forEach(list => {
-      if(list.dataset.list === currentTab) {
-        list.style.display = 'block';
-      } else {
-        list.style.display = 'none';
+    // Render jobs by status
+    function renderJobs(status) {
+      jobsContainer.innerHTML = "";
+      const filtered = jobs.filter(j => j.status === status);
+      if(filtered.length === 0) {
+        jobsContainer.innerHTML = `<p style="text-align:center; color:#555; margin-top:2rem;">No ${capitalize(status)} jobs.</p>`;
+        return;
       }
-      // Clear current list
-      list.innerHTML = '';
-    });
+      filtered.forEach(job => {
+        const div = document.createElement("div");
+        div.className = "job-item";
 
-    const filteredJobs = jobs.filter(j => j.status === currentTab);
-    if(filteredJobs.length === 0) {
-      const emptyMsg = document.createElement('div');
-      emptyMsg.textContent = 'No jobs here.';
-      emptyMsg.style.padding = '1rem';
-      emptyMsg.style.color = '#555';
-      document.querySelector(`.job-list[data-list="${currentTab}"]`).appendChild(emptyMsg);
-      return;
+        div.innerHTML = `
+          <div class="job-info">
+            <p class="job-name">${escapeHtml(job.customerName)}</p>
+            <p class="job-details">
+              Status: <strong>${capitalize(job.status)}</strong> | Date: ${job.date} | Time: ${job.time}<br/>
+              Pay: $${Number(job.pay).toFixed(2)} | Windows: ${job.windows}<br/>
+              Location: ${escapeHtml(job.location || "TBD")}<br/>
+              Email: ${escapeHtml(job.email)} | Phone: ${escapeHtml(job.phone)}
+            </p>
+          </div>
+          <div class="job-actions">
+            <button class="btn-edit">Edit</button>
+            ${job.status !== "completed" ? `<button class="btn-move">${job.status === "pending" ? "Start" : "Complete"}</button>` : ""}
+            <button class="btn-delete" style="background:#dc3545;">Delete</button>
+          </div>
+        `;
+
+        div.querySelector(".btn-edit").onclick = () => openEditModal(job.id);
+        div.querySelector(".btn-delete").onclick = () => {
+          if(confirm("Are you sure you want to delete this job?")) {
+            jobs = jobs.filter(j => j.id !== job.id);
+            saveJobs();
+            renderJobs(currentTab);
+          }
+        };
+        const moveBtn = div.querySelector(".btn-move");
+        if(moveBtn) {
+          moveBtn.onclick = () => moveJobStatus(job.id);
+        }
+
+        jobsContainer.appendChild(div);
+      });
     }
 
-    filteredJobs.forEach(job => {
-      const item = document.createElement('div');
-      item.className = 'job-item';
-      item.dataset.id = job.id;
-      item.innerHTML = `
-        <div class="job-title">${job.name}</div>
-        <div class="job-info">
-          Date & Time: ${new Date(job.date).toLocaleString()}<br>
-          Pay: $${parseFloat(job.pay).toFixed(2)}<br>
-          Windows: ${job.windows}<br>
-          Duration: ${parseFloat(job.duration).toFixed(1)} hr(s)<br>
-          Location: ${job.location || '(not set)'}<br>
-          Status: ${job.status.charAt(0).toUpperCase() + job.status.slice(1)}
-        </div>
-      `;
-      item.addEventListener('click', () => openEditModal(job.id));
-      document.querySelector(`.job-list[data-list="${currentTab}"]`).appendChild(item);
-    });
-  }
+    // Open modal for editing job
+    function openEditModal(id) {
+      editingJobId = id;
+      const job = jobs.find(j => j.id === id);
+      if(!job) return;
 
-  // Switch tab handler
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      tabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      currentTab = tab.dataset.tab;
-      renderJobs();
-    });
-  });
+      jobForm.customerName.value = job.customerName;
+      jobForm.email.value = job.email;
+      jobForm.phone.value = job.phone;
+      jobForm.status.value = job.status;
+      jobForm.date.value = job.date;
+      jobForm.time.value = job.time;
+      jobForm.pay.value = job.pay;
+      jobForm.windows.value = job.windows;
+      jobForm.location.value = job.location || "";
 
-  // Add job form submission
-  document.getElementById('addJobForm').addEventListener('submit', e => {
-    e.preventDefault();
-    const name = document.getElementById('jobName').value.trim();
-    const date = document.getElementById('jobDate').value;
-    const pay = parseFloat(document.getElementById('jobPay').value);
-    const windows = parseInt(document.getElementById('jobWindows').value);
-    const duration = parseFloat(document.getElementById('jobDuration').value);
-    const location = document.getElementById('jobLocation').value.trim();
-    const status = document.getElementById('jobStatus').value;
-
-    if(!name || !date || isNaN(pay) || isNaN(windows) || isNaN(duration)) {
-      alert('Please fill out all required fields correctly.');
-      return;
+      modalBg.classList.add("active");
     }
 
-    const newJob = {
-      id: Date.now().toString(),
-      name,
-      date,
-      pay,
-      windows,
-      duration,
-      location,
-      status
+    // Move job status (pending -> in progress -> completed)
+    function moveJobStatus(id) {
+      const job = jobs.find(j => j.id === id);
+      if(!job) return;
+      if(job.status === "pending") job.status = "in progress";
+      else if(job.status === "in progress") job.status = "completed";
+      saveJobs();
+      renderJobs(currentTab);
+    }
+
+    // Escape HTML special chars
+    function escapeHtml(text) {
+      if(!text) return "";
+      return text.replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;")
+                 .replace(/"/g, "&quot;")
+                 .replace(/'/g, "&#039;");
+    }
+
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    // Add Job button click
+    addJobBtn.onclick = () => {
+      editingJobId = null;
+      jobForm.reset();
+      jobForm.status.value = "pending";
+      modalBg.classList.add("active");
     };
 
-    jobs.push(newJob);
-    saveJobs(jobs);
-    renderJobs();
-    e.target.reset();
-  });
-
-  // Edit modal elements
-  const editModal = document.getElementById('editModal');
-  const editJobForm = document.getElementById('editJobForm');
-
-  // Open edit modal with job data
-  function openEditModal(jobId) {
-    const job = jobs.find(j => j.id === jobId);
-    if(!job) return;
-
-    document.getElementById('editJobId').value = job.id;
-    document.getElementById('editJobName').value = job.name;
-    document.getElementById('editJobDate').value = job.date;
-    document.getElementById('editJobPay').value = job.pay;
-    document.getElementById('editJobWindows').value = job.windows;
-    document.getElementById('editJobDuration').value = job.duration;
-    document.getElementById('editJobLocation').value = job.location;
-    document.getElementById('editJobStatus').value = job.status;
-
-    editModal.style.display = 'flex';
-  }
-
-  // Close edit modal
-  document.getElementById('closeEditModal').addEventListener('click', () => {
-    editModal.style.display = 'none';
-  });
-
-  // Save edited job
-  editJobForm.addEventListener('submit', e => {
-    e.preventDefault();
-    const id = document.getElementById('editJobId').value;
-    const name = document.getElementById('editJobName').value.trim();
-    const date = document.getElementById('editJobDate').value;
-    const pay = parseFloat(document.getElementById('editJobPay').value);
-    const windows = parseInt(document.getElementById('editJobWindows').value);
-    const duration = parseFloat(document.getElementById('editJobDuration').value);
-    const location = document.getElementById('editJobLocation').value.trim();
-    const status = document.getElementById('editJobStatus').value;
-
-    if(!name || !date || isNaN(pay) || isNaN(windows) || isNaN(duration)) {
-      alert('Please fill out all required fields correctly.');
-      return;
-    }
-
-    const jobIndex = jobs.findIndex(j => j.id === id);
-    if(jobIndex === -1) {
-      alert('Job not found');
-      return;
-    }
-
-    jobs[jobIndex] = {
-      id,
-      name,
-      date,
-      pay,
-      windows,
-      duration,
-      location,
-      status
+    // Modal close handlers
+    modalCloseBtn.onclick = () => {
+      modalBg.classList.remove("active");
+    };
+    modalBg.onclick = e => {
+      if(e.target === modalBg) {
+        modalBg.classList.remove("active");
+      }
     };
 
-    saveJobs(jobs);
-    renderJobs();
-    editModal.style.display = 'none';
-  });
+    // Handle tab switching
+    tabButtons.forEach(btn => {
+      btn.onclick = () => {
+        tabButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentTab = btn.getAttribute("data-tab");
+        renderJobs(currentTab);
+      };
+    });
 
-  // Close modal on outside click
-  window.addEventListener('click', (e) => {
-    if(e.target === editModal) {
-      editModal.style.display = 'none';
-    }
-  });
+    // Handle form submit
+    jobForm.onsubmit = e => {
+      e.preventDefault();
 
-  // Initial render
-  renderJobs();
+      const newJob = {
+        id: editingJobId || Date.now().toString(),
+        customerName: jobForm.customerName.value.trim(),
+        email: jobForm.email.value.trim(),
+        phone: jobForm.phone.value.trim(),
+        status: jobForm.status.value,
+        date: jobForm.date.value,
+        time: jobForm.time.value,
+        pay: parseFloat(jobForm.pay.value),
+        windows: parseInt(jobForm.windows.value),
+        location: jobForm.location.value.trim(),
+      };
+
+      if(!newJob.customerName || !newJob.email || !newJob.phone || !newJob.status || !newJob.date || !newJob.time || isNaN(newJob.pay) || isNaN(newJob.windows)) {
+        alert("Please fill all fields correctly.");
+        return;
+      }
+
+      if(editingJobId) {
+        // Edit existing job
+        const index = jobs.findIndex(j => j.id === editingJobId);
+        if(index !== -1) jobs[index] = newJob;
+      } else {
+        // Add new job
+        jobs.push(newJob);
+      }
+
+      saveJobs();
+      modalBg.classList.remove("active");
+      renderJobs(currentTab);
+    };
+
+    // Logout button click
+    logoutBtn.onclick = () => {
+      localStorage.removeItem('loggedInUser');
+      window.location.href = 'login.html';
+    };
+
+    // Initial load
+    loadJobs();
+    renderJobs(currentTab);
+  })();
 </script>
 
 </body>
