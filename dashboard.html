@@ -214,7 +214,28 @@
   <div id="map"></div>
 </main>
 
-<script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+  import {
+    getFirestore, collection, getDocs, addDoc, query, orderBy, serverTimestamp,
+    doc, getDoc, setDoc
+  } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+  // Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyD4_934C9L4kyEGHT5jDaCxNPHGC-HjIj4",
+    authDomain: "hk-windows.firebaseapp.com",
+    projectId: "hk-windows",
+    storageBucket: "hk-windows.firebasestorage.app",
+    messagingSenderId: "955997236305",
+    appId: "1:955997236305:web:b59d35b1f5f43a40ccdc70",
+    measurementId: "G-JPPBZW9LW8"
+  };
+
+  // Initialize Firebase and Firestore
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
   // Redirect if not logged in
   const loggedInUser = localStorage.getItem("loggedInUser");
   if (!loggedInUser) {
@@ -227,48 +248,13 @@
     window.location.href = "login.html";
   });
 
-  // Dummy jobs data
-  const jobs = [
-    {
-      id: 1,
-      name: "Smith Residence",
-      location: [40.4406, -79.9959],
-      date: "2025-08-05 9:00 AM",
-      pay: 120,
-      windows: 30,
-      durationHours: 1,
-      address: "123 Maple St, Pittsburgh, PA"
-    },
-    {
-      id: 2,
-      name: "Johnson Home",
-      location: [40.4506, -79.9800],
-      date: "2025-08-06 2:00 PM",
-      pay: 200,
-      windows: 50,
-      durationHours: 1.7,
-      address: "456 Oak Ave, Pittsburgh, PA"
-    },
-    {
-      id: 3,
-      name: "Williams Property",
-      location: [40.4300, -79.9750],
-      date: "2025-08-07 9:00 AM",
-      pay: 90,
-      windows: 22,
-      durationHours: 0.7,
-      address: "789 Pine Rd, Pittsburgh, PA"
-    }
-  ];
-
-  // Initialize map
+  const jobsListContainer = document.getElementById('jobsListContainer');
   const map = L.map('map').setView([40.44, -79.99], 13);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 18,
     attribution: '© OpenStreetMap contributors'
   }).addTo(map);
 
-  const markers = {};
   const defaultIcon = L.icon({
     iconUrl: 'https://cdn-icons-png.flaticon.com/512/252/252025.png',
     iconSize: [30, 30],
@@ -282,7 +268,87 @@
     popupAnchor: [0, -35]
   });
 
-  const jobsListContainer = document.getElementById('jobsListContainer');
+  const markers = {};
+
+  // Fetch jobs (quotes) from Firestore
+  async function loadJobs() {
+    // Clear existing jobs list
+    // Remove all .job-item elements before availability section
+    [...jobsListContainer.querySelectorAll('.job-item')].forEach(el => el.remove());
+
+    const q = query(collection(db, "quotes"), orderBy("createdAt", "desc"));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      const noJobsMsg = document.createElement("div");
+      noJobsMsg.textContent = "No active jobs found.";
+      noJobsMsg.style.padding = "1rem";
+      jobsListContainer.insertBefore(noJobsMsg, jobsListContainer.querySelector(".availability-section"));
+      return;
+    }
+
+    querySnapshot.forEach(docSnap => {
+      const job = docSnap.data();
+      job.id = docSnap.id;
+
+      // Parse location if saved; fallback to some default
+      let lat = 40.44, lng = -79.99;
+      if (job.location && Array.isArray(job.location) && job.location.length === 2) {
+        lat = job.location[0];
+        lng = job.location[1];
+      }
+
+      const jobItem = document.createElement('div');
+      jobItem.className = 'job-item';
+      jobItem.dataset.jobId = job.id;
+      jobItem.innerHTML = `
+        <div class="job-name">${job.name || "Unknown"}</div>
+        <div class="job-details">
+          Date & Time: ${job.serviceDate || "N/A"} ${job.timeSlot || ""} <br />
+          Estimated Total: ${job.totalEstimate || "N/A"} <br />
+          Estimated Duration: ${job.estimatedHours ? job.estimatedHours.toFixed(1) : "N/A"} hour(s) <br />
+          Address: ${job.address || "N/A"}
+        </div>
+      `;
+
+      jobsListContainer.insertBefore(jobItem, jobsListContainer.querySelector(".availability-section"));
+
+      const marker = L.marker([lat, lng], {icon: defaultIcon}).addTo(map);
+
+      marker.bindTooltip(`
+        <div>
+          <strong>${job.name || "Unknown"}</strong><br />
+          ${job.serviceDate || "N/A"} ${job.timeSlot || ""}<br />
+          Estimated Total: ${job.totalEstimate || "N/A"}<br />
+          Duration: ${job.estimatedHours ? job.estimatedHours.toFixed(1) : "N/A"} hr(s)<br />
+          ${job.address || "N/A"}
+        </div>
+      `, {className: 'my-tooltip', sticky: true});
+
+      markers[job.id] = marker;
+
+      jobItem.addEventListener('mouseenter', () => {
+        clearActiveJob();
+        jobItem.classList.add('active');
+        marker.setIcon(highlightIcon);
+        marker.openTooltip();
+        map.panTo([lat, lng]);
+      });
+      jobItem.addEventListener('mouseleave', () => {
+        jobItem.classList.remove('active');
+        marker.setIcon(defaultIcon);
+        marker.closeTooltip();
+      });
+
+      marker.on('mouseover', () => {
+        clearActiveJob();
+        jobItem.classList.add('active');
+      });
+      marker.on('mouseout', () => {
+        jobItem.classList.remove('active');
+      });
+    });
+  }
 
   function clearActiveJob() {
     document.querySelectorAll('.job-item').forEach(item => {
@@ -293,68 +359,14 @@
     });
   }
 
-  jobs.forEach(job => {
-    const jobItem = document.createElement('div');
-    jobItem.className = 'job-item';
-    jobItem.dataset.jobId = job.id;
-    jobItem.innerHTML = `
-      <div class="job-name">${job.name}</div>
-      <div class="job-details">
-        Date & Time: ${job.date} <br />
-        Pay: $${job.pay.toFixed(2)} <br />
-        Windows: ${job.windows} <br />
-        Estimated Duration: ${job.durationHours.toFixed(1)} hour(s) <br />
-        Address: ${job.address}
-      </div>
-    `;
-    jobsListContainer.appendChild(jobItem);
-
-    const marker = L.marker(job.location, {icon: defaultIcon}).addTo(map);
-
-    marker.bindTooltip(`
-      <div>
-        <strong>${job.name}</strong><br />
-        ${job.date}<br />
-        Pay: $${job.pay.toFixed(2)}<br />
-        Duration: ${job.durationHours.toFixed(1)} hr(s)<br />
-        Windows: ${job.windows}<br />
-        ${job.address}
-      </div>
-    `, {className: 'my-tooltip', sticky: true});
-
-    markers[job.id] = marker;
-
-    jobItem.addEventListener('mouseenter', () => {
-      clearActiveJob();
-      jobItem.classList.add('active');
-      marker.setIcon(highlightIcon);
-      marker.openTooltip();
-      map.panTo(job.location);
-    });
-    jobItem.addEventListener('mouseleave', () => {
-      jobItem.classList.remove('active');
-      marker.setIcon(defaultIcon);
-      marker.closeTooltip();
-    });
-
-    marker.on('mouseover', () => {
-      clearActiveJob();
-      jobItem.classList.add('active');
-    });
-    marker.on('mouseout', () => {
-      jobItem.classList.remove('active');
-    });
-  });
-
-  // Availability grid setup
-  const weekStartInput = document.getElementById("weekStart");
-  const availabilityGrid = document.getElementById("availabilityGrid");
-
   // Users for availability
   const users = [
     { id: "rejat", name: "Rejat Krishnan" },
     { id: "nick", name: "Nick Hafner" }
   ];
+
+  const weekStartInput = document.getElementById("weekStart");
+  const availabilityGrid = document.getElementById("availabilityGrid");
 
   // Utility: get Monday of week for given date
   function getMonday(d) {
@@ -372,29 +384,25 @@
   // Days of week short names
   const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-  // Availability keys for morning/evening
-  const timeSlots = ["morning", "evening"];
-
-  // Load availability from localStorage by user and week start date
-  function loadAvailability(userId, weekStart) {
-    const key = `availability_${userId}_${weekStart}`;
-    const dataStr = localStorage.getItem(key);
-    if (!dataStr) return {};
-    try {
-      return JSON.parse(dataStr);
-    } catch {
-      return {};
+  // Load availability from Firestore by user and weekStart date
+  async function loadAvailability(userId, weekStart) {
+    const docRef = doc(db, "availability", `${userId}_${weekStart}`);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      return docSnap.data();
+    } else {
+      return {}; // no availability saved yet
     }
   }
 
-  // Save availability to localStorage
-  function saveAvailability(userId, weekStart, data) {
-    const key = `availability_${userId}_${weekStart}`;
-    localStorage.setItem(key, JSON.stringify(data));
+  // Save availability to Firestore
+  async function saveAvailability(userId, weekStart, data) {
+    const docRef = doc(db, "availability", `${userId}_${weekStart}`);
+    await setDoc(docRef, data);
   }
 
-  // Render availability grid
-  function renderAvailabilityGrid(weekStart) {
+  // Render availability grid (async because loading from Firestore)
+  async function renderAvailabilityGrid(weekStart) {
     availabilityGrid.innerHTML = "";
 
     // First row headers: empty cell + days
@@ -403,18 +411,15 @@
       availabilityGrid.appendChild(createDiv("header", day));
     });
 
-    // For each user, one row label + cells with checkboxes
-    users.forEach(user => {
+    for (const user of users) {
       availabilityGrid.appendChild(createDiv("user-label", user.name));
+      const saved = await loadAvailability(user.id, formatDate(weekStart));
+
       for(let i = 0; i < 7; i++) {
         const date = new Date(weekStart);
         date.setDate(date.getDate() + i);
         const dateStr = formatDate(date);
 
-        // Load saved availability for user & week
-        const saved = loadAvailability(user.id, formatDate(weekStart));
-
-        // Container for morning + evening checkboxes
         const cell = document.createElement("div");
 
         // Morning checkbox
@@ -425,8 +430,8 @@
         morningChk.type = "checkbox";
         morningChk.id = morningId;
         morningChk.checked = saved[dateStr]?.morning || false;
-        morningChk.addEventListener("change", () => {
-          updateAvailability(user.id, formatDate(weekStart), dateStr, "morning", morningChk.checked);
+        morningChk.addEventListener("change", async () => {
+          await updateAvailability(user.id, formatDate(weekStart), dateStr, "morning", morningChk.checked);
         });
         morningLabel.appendChild(morningChk);
         morningLabel.appendChild(document.createTextNode("Morning"));
@@ -439,8 +444,8 @@
         eveningChk.type = "checkbox";
         eveningChk.id = eveningId;
         eveningChk.checked = saved[dateStr]?.evening || false;
-        eveningChk.addEventListener("change", () => {
-          updateAvailability(user.id, formatDate(weekStart), dateStr, "evening", eveningChk.checked);
+        eveningChk.addEventListener("change", async () => {
+          await updateAvailability(user.id, formatDate(weekStart), dateStr, "evening", eveningChk.checked);
         });
         eveningLabel.appendChild(eveningChk);
         eveningLabel.appendChild(document.createTextNode("Evening"));
@@ -449,7 +454,7 @@
         cell.appendChild(eveningLabel);
         availabilityGrid.appendChild(cell);
       }
-    });
+    }
   }
 
   // Helper: create div with class and text
@@ -460,29 +465,39 @@
     return div;
   }
 
-  // Update availability data and save live
-  function updateAvailability(userId, weekStart, dateStr, slot, value) {
-    const key = `availability_${userId}_${weekStart}`;
-    let data = loadAvailability(userId, weekStart);
-
+  // Update availability data and save live to Firestore
+  async function updateAvailability(userId, weekStart, dateStr, slot, value) {
+    const docRef = doc(db, "availability", `${userId}_${weekStart}`);
+    const docSnap = await getDoc(docRef);
+    let data = {};
+    if (docSnap.exists()) {
+      data = docSnap.data();
+    }
     if (!data[dateStr]) data[dateStr] = {};
     data[dateStr][slot] = value;
 
-    saveAvailability(userId, weekStart, data);
+    await saveAvailability(userId, weekStart, data);
   }
 
-  // On page load, set weekStart to current week's Monday
-  const today = new Date();
-  const thisMonday = getMonday(today);
-  weekStartInput.value = formatDate(thisMonday);
-  renderAvailabilityGrid(thisMonday);
+  // On page load
+  (async () => {
+    // Set weekStart to current week's Monday
+    const today = new Date();
+    const thisMonday = getMonday(today);
+    weekStartInput.value = formatDate(thisMonday);
+    await renderAvailabilityGrid(thisMonday);
 
-  weekStartInput.addEventListener("change", () => {
-    const selectedDate = new Date(weekStartInput.value);
-    const monday = getMonday(selectedDate);
-    weekStartInput.value = formatDate(monday);
-    renderAvailabilityGrid(monday);
-  });
+    weekStartInput.addEventListener("change", async () => {
+      const selectedDate = new Date(weekStartInput.value);
+      const monday = getMonday(selectedDate);
+      weekStartInput.value = formatDate(monday);
+      await renderAvailabilityGrid(monday);
+    });
+
+    // Load jobs from Firestore
+    await loadJobs();
+  })();
 </script>
+
 </body>
 </html>
