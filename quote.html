@@ -154,10 +154,10 @@
       <input type="tel" id="phone" name="phone" required autocomplete="tel" />
 
       <label for="firstFloor">First Floor Windows <span>*</span></label>
-      <input type="number" id="firstFloor" name="firstFloor" min="0" required oninput="updateEstimate()" />
+      <input type="number" id="firstFloor" name="firstFloor" min="0" required />
 
       <label for="secondFloor">Second Floor or Higher Windows <span>*</span></label>
-      <input type="number" id="secondFloor" name="secondFloor" min="0" required oninput="updateEstimate()" />
+      <input type="number" id="secondFloor" name="secondFloor" min="0" required />
 
       <label for="serviceDate">Preferred Service Date <span>*</span></label>
       <select id="serviceDate" name="serviceDate" required></select>
@@ -187,41 +187,48 @@
   <!-- EmailJS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
   <script>
-    // Initialize EmailJS - replace with your own User ID from EmailJS dashboard
+    // Initialize EmailJS (your User ID here)
     emailjs.init("_-iJBJuay9T60hC04");
 
+    // Calculate and update the estimate when inputs change
+    const firstFloorInput = document.getElementById("firstFloor");
+    const secondFloorInput = document.getElementById("secondFloor");
+    const totalEstimateDiv = document.getElementById("totalEstimate");
+
     function updateEstimate() {
-      const first = parseInt(document.getElementById("firstFloor").value) || 0;
-      const second = parseInt(document.getElementById("secondFloor").value) || 0;
-      // Pricing: $5 per first floor window, $10 per second floor window
+      const first = parseInt(firstFloorInput.value) || 0;
+      const second = parseInt(secondFloorInput.value) || 0;
       const total = (first * 5) + (second * 10);
-      document.getElementById("totalEstimate").textContent = `Estimated total: $${total}`;
+      totalEstimateDiv.textContent = `Estimated total: $${total}`;
     }
 
+    firstFloorInput.addEventListener("input", updateEstimate);
+    secondFloorInput.addEventListener("input", updateEstimate);
+
+    // Populate the serviceDate dropdown with next 7 days
     function populateDates() {
       const dateSelect = document.getElementById("serviceDate");
+      dateSelect.innerHTML = "";
       const today = new Date();
-      dateSelect.innerHTML = ""; // clear old options
 
       for (let i = 0; i < 7; i++) {
-        const optionDate = new Date();
-        optionDate.setDate(today.getDate() + i);
-        const dayName = optionDate.toLocaleDateString('en-US', { weekday: 'long' });
-        const formattedDate = optionDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+        const date = new Date();
+        date.setDate(today.getDate() + i);
+        const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+        const formattedDate = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
         const option = document.createElement("option");
         option.value = `${dayName}, ${formattedDate}`;
         option.textContent = `${dayName} - ${formattedDate}`;
         dateSelect.appendChild(option);
       }
     }
-
     populateDates();
 
+    // Hamburger menu toggle
     function toggleMenu() {
       const menu = document.getElementById('menu');
-      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+      menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
     }
-
     window.onclick = function(event) {
       const menu = document.getElementById('menu');
       if (!event.target.closest('.menu-icon') && !event.target.closest('#menu')) {
@@ -229,6 +236,7 @@
       }
     };
 
+    // Form submit handler
     document.getElementById("quoteForm").addEventListener("submit", function(event) {
       event.preventDefault();
 
@@ -242,7 +250,7 @@
       const acceptedTerms = document.getElementById("acceptTerms").checked;
 
       if (!name || !email || !phone || !first || !second || !date || !time) {
-        alert("Please fill out all fields.");
+        alert("Please fill out all required fields.");
         return;
       }
       if (!acceptedTerms) {
@@ -252,7 +260,7 @@
 
       const totalEstimate = `$${(parseInt(first) * 5) + (parseInt(second) * 10)}`;
 
-      // Prepare email params for admin and customer
+      // Prepare EmailJS params
       const adminParams = {
         from_name: name,
         from_email: email,
@@ -276,18 +284,15 @@
       const adminTemplateID = "template_mrc33ra";
       const customerTemplateID = "template_zenc7k6";
 
-      // Send email to admin then confirmation email to customer
       emailjs.send(serviceID, adminTemplateID, adminParams)
         .then(() => emailjs.send(serviceID, customerTemplateID, customerParams))
         .then(() => {
           alert("Thank you! Your quote request has been submitted.");
           window.location.href = "thankyou.html";
         })
-        .catch((err) => {
-          console.error("EmailJS error:", err);
-          alert("Sorry, there was an error submitting your request. Please try again later.");
-          // Optionally redirect to failed page:
-          // window.location.href = "failed.html";
+        .catch((error) => {
+          console.error("EmailJS error:", error);
+          alert("Oops! Something went wrong. Please try again later.");
         });
     });
   </script>
