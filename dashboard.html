@@ -1,166 +1,377 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Employee Login & Job Entry | HK Window Pros</title>
-  <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-      background-color: #f0f6ff;
-      margin: 0;
-      padding: 2rem;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dashboard | HK Window Pros</title>
+
+<style>
+  body, html {
+    height: 100%;
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #f0f6ff;
+    padding: 1rem 2rem;
+  }
+  header {
+    background: linear-gradient(90deg, #007BFF, #0056b3);
+    color: white;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+    border-radius: 10px;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+  }
+  button.logout-btn {
+    background: #e03c3c;
+    border: none;
+    color: white;
+    padding: 0.5rem 1.2rem;
+    border-radius: 5px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  button.logout-btn:hover {
+    background: #a32a2a;
+  }
+  button#addJobBtn {
+    background-color: #1a40af;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 5px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 1rem;
+  }
+  button#addJobBtn:hover {
+    background-color: #15327a;
+  }
+  main {
+    max-width: 1100px;
+    margin: auto;
+  }
+  section {
+    background: white;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(26,64,175,0.15);
+    margin-bottom: 1.5rem;
+  }
+  section h2 {
+    color: #0056b3;
+    margin-top: 0;
+  }
+  .job-item {
+    border-bottom: 1px solid #ddd;
+    padding: 0.8rem 0;
+  }
+  .job-item:last-child {
+    border-bottom: none;
+  }
+  .job-name {
+    font-weight: 700;
+    color: #003f7f;
+    font-size: 1.1rem;
+  }
+  .job-details {
+    font-size: 0.9rem;
+    color: #555;
+  }
+  /* Modal styles */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0; top: 0; right: 0; bottom: 0;
+    background-color: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+  }
+  .modal-content {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 4px 15px rgba(26,64,175,0.25);
+    position: relative;
+  }
+  .modal-content h3 {
+    margin-top: 0;
+    color: #1a40af;
+  }
+  .modal-content label {
+    display: block;
+    margin-top: 1rem;
+    font-weight: 700;
+  }
+  .modal-content input, .modal-content select {
+    width: 100%;
+    padding: 0.6rem;
+    margin-top: 0.3rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+  }
+  .modal-content button {
+    margin-top: 1.2rem;
+    background-color: #1a40af;
+    color: white;
+    border: none;
+    padding: 0.7rem 1.2rem;
+    border-radius: 5px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .modal-content button:hover {
+    background-color: #15327a;
+  }
+  .close-btn {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #555;
+    cursor: pointer;
+  }
+  .close-btn:hover {
+    color: #000;
+  }
+</style>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+  import {
+    getFirestore,
+    collection,
+    query,
+    where,
+    onSnapshot,
+    addDoc,
+    serverTimestamp,
+    orderBy
+  } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+  // Your Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyD4_934C9L4kyEGHT5jDaCxNPHGC-HjIj4",
+    authDomain: "hk-windows.firebaseapp.com",
+    projectId: "hk-windows",
+    storageBucket: "hk-windows.firebasestorage.app",
+    messagingSenderId: "955997236305",
+    appId: "1:955997236305:web:b59d35b1f5f43a40ccdc70",
+    measurementId: "G-JPPBZW9LW8"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // DOM Elements
+  const inProgressList = document.getElementById("inProgressJobs");
+  const completedList = document.getElementById("completedJobs");
+  const addJobBtn = document.getElementById("addJobBtn");
+  const modal = document.getElementById("addJobModal");
+  const closeModalBtn = document.getElementById("closeModal");
+  const jobForm = document.getElementById("jobForm");
+
+  addJobBtn.addEventListener("click", () => {
+    modal.style.display = "flex";
+  });
+
+  closeModalBtn.addEventListener("click", () => {
+    modal.style.display = "none";
+    jobForm.reset();
+  });
+
+  window.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      modal.style.display = "none";
+      jobForm.reset();
     }
-    h1 {
-      color: #1a40af;
-      text-align: center;
+  });
+
+  function formatDateTime(dateStr, timeSlot) {
+    const d = new Date(dateStr);
+    const options = { month: "short", day: "numeric", year: "numeric" };
+    const formattedDate = d.toLocaleDateString(undefined, options);
+    return `${formattedDate} - ${timeSlot}`;
+  }
+
+  function calcDuration(first, second) {
+    return ((first + second) / 30).toFixed(2);
+  }
+
+  function renderJob(job) {
+    return `
+      <div class="job-item">
+        <div class="job-name">${job.name}</div>
+        <div class="job-details">
+          Date & Time: ${formatDateTime(job.serviceDate, job.timeSlot)}<br />
+          Pay: $${job.estimate.toFixed(2)}<br />
+          Windows: ${job.firstFloor + job.secondFloor}<br />
+          Estimated Duration: ${calcDuration(job.firstFloor, job.secondFloor)} hour(s)<br />
+          Status: ${job.status}<br />
+          Contact: ${job.email}, ${job.phone}
+        </div>
+      </div>
+    `;
+  }
+
+  const inProgressQuery = query(
+    collection(db, "quotes"),
+    where("status", "==", "in-progress"),
+    orderBy("submittedAt", "desc")
+  );
+  onSnapshot(inProgressQuery, (snapshot) => {
+    inProgressList.innerHTML = "";
+    if (snapshot.empty) {
+      inProgressList.innerHTML = "<p>No in-progress jobs.</p>";
+      return;
     }
-    form {
-      background: white;
-      padding: 1.5rem;
-      border-radius: 10px;
-      box-shadow: 0 4px 15px rgba(26,64,175,0.2);
+    snapshot.forEach(doc => {
+      const job = doc.data();
+      inProgressList.innerHTML += renderJob(job);
+    });
+  });
+
+  const completedQuery = query(
+    collection(db, "quotes"),
+    where("status", "==", "completed"),
+    orderBy("submittedAt", "desc")
+  );
+  onSnapshot(completedQuery, (snapshot) => {
+    completedList.innerHTML = "";
+    if (snapshot.empty) {
+      completedList.innerHTML = "<p>No completed jobs.</p>";
+      return;
     }
-    label {
-      display: block;
-      margin-top: 1rem;
-      font-weight: 700;
+    snapshot.forEach(doc => {
+      const job = doc.data();
+      completedList.innerHTML += renderJob(job);
+    });
+  });
+
+  jobForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const name = jobForm.name.value.trim();
+    const email = jobForm.email.value.trim();
+    const phone = jobForm.phone.value.trim();
+    const firstFloor = parseInt(jobForm.firstFloor.value) || 0;
+    const secondFloor = parseInt(jobForm.secondFloor.value) || 0;
+    const serviceDate = jobForm.serviceDate.value;
+    const timeSlot = jobForm.timeSlot.value;
+    const status = jobForm.status.value;
+
+    if (!name || !email || !phone || !serviceDate || !timeSlot || !status) {
+      alert("Please fill all required fields.");
+      return;
     }
-    input, select, button {
-      width: 100%;
-      padding: 0.6rem;
-      margin-top: 0.4rem;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      font-size: 1rem;
+
+    const estimate = (firstFloor * 5) + (secondFloor * 10);
+
+    try {
+      await addDoc(collection(db, "quotes"), {
+        name,
+        email,
+        phone,
+        firstFloor,
+        secondFloor,
+        serviceDate,
+        timeSlot,
+        status,
+        estimate,
+        submittedAt: serverTimestamp()
+      });
+      alert("Job added successfully!");
+      jobForm.reset();
+      modal.style.display = "none";
+    } catch (err) {
+      console.error("Error adding job:", err);
+      alert("Failed to add job. Try again.");
     }
-    button {
-      background-color: #1a40af;
-      color: white;
-      border: none;
-      cursor: pointer;
-      margin-top: 1.5rem;
-      font-weight: 700;
-    }
-    button:hover {
-      background-color: #15327a;
-    }
-    .message {
-      margin-top: 1rem;
-      color: green;
-      font-weight: 700;
-      text-align: center;
-    }
-  </style>
+  });
+
+  document.getElementById("logoutBtn").addEventListener("click", () => {
+    localStorage.removeItem("loggedInUser");
+    window.location.href = "login.html";
+  });
+</script>
+
 </head>
 <body>
+<header>
+  <h1>Dashboard</h1>
+  <button class="logout-btn" id="logoutBtn">Logout</button>
+</header>
 
-  <h1>Employee Job Entry</h1>
+<main>
+  <button id="addJobBtn">+ Add Job</button>
 
-  <form id="jobEntryForm">
-    <label for="name">Customer Full Name *</label>
-    <input type="text" id="name" name="name" required />
+  <section>
+    <h2>In Progress Jobs</h2>
+    <div id="inProgressJobs">
+      <p>Loading...</p>
+    </div>
+  </section>
 
-    <label for="email">Customer Email *</label>
-    <input type="email" id="email" name="email" required />
+  <section>
+    <h2>Completed Jobs</h2>
+    <div id="completedJobs">
+      <p>Loading...</p>
+    </div>
+  </section>
+</main>
 
-    <label for="phone">Customer Phone Number *</label>
-    <input type="tel" id="phone" name="phone" required />
+<!-- Add Job Modal -->
+<div class="modal" id="addJobModal">
+  <div class="modal-content">
+    <span class="close-btn" id="closeModal">&times;</span>
+    <h3>Add New Job</h3>
+    <form id="jobForm">
+      <label for="name">Customer Full Name *</label>
+      <input type="text" id="name" name="name" required />
 
-    <label for="firstFloor">First Floor Windows *</label>
-    <input type="number" id="firstFloor" name="firstFloor" min="0" required />
+      <label for="email">Customer Email *</label>
+      <input type="email" id="email" name="email" required />
 
-    <label for="secondFloor">Second Floor or Higher Windows *</label>
-    <input type="number" id="secondFloor" name="secondFloor" min="0" required />
+      <label for="phone">Customer Phone Number *</label>
+      <input type="tel" id="phone" name="phone" required />
 
-    <label for="serviceDate">Service Date *</label>
-    <input type="date" id="serviceDate" name="serviceDate" required />
+      <label for="firstFloor">First Floor Windows *</label>
+      <input type="number" id="firstFloor" name="firstFloor" min="0" required />
 
-    <label for="timeSlot">Time Slot *</label>
-    <select id="timeSlot" name="timeSlot" required>
-      <option value="">Select a time slot</option>
-      <option value="Morning (9AM-2PM)">Morning (9AM-2PM)</option>
-      <option value="Afternoon (2PM-7PM)">Afternoon (2PM-7PM)</option>
-    </select>
+      <label for="secondFloor">Second Floor or Higher Windows *</label>
+      <input type="number" id="secondFloor" name="secondFloor" min="0" required />
 
-    <label for="status">Job Status *</label>
-    <select id="status" name="status" required>
-      <option value="pending">Pending</option>
-      <option value="in-progress">In Progress</option>
-      <option value="completed">Completed</option>
-    </select>
+      <label for="serviceDate">Service Date *</label>
+      <input type="date" id="serviceDate" name="serviceDate" required />
 
-    <button type="submit">Add Job</button>
+      <label for="timeSlot">Time Slot *</label>
+      <select id="timeSlot" name="timeSlot" required>
+        <option value="">Select a time slot</option>
+        <option value="Morning (9AM-2PM)">Morning (9AM-2PM)</option>
+        <option value="Afternoon (2PM-7PM)">Afternoon (2PM-7PM)</option>
+      </select>
 
-    <div class="message" id="msg"></div>
-  </form>
+      <label for="status">Job Status *</label>
+      <select id="status" name="status" required>
+        <option value="pending">Pending</option>
+        <option value="in-progress">In Progress</option>
+        <option value="completed">Completed</option>
+      </select>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+      <button type="submit">Add Job</button>
+    </form>
+  </div>
+</div>
 
-    // Your Firebase config (replace with your actual config)
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    const jobsCollection = collection(db, "quotes"); // same collection as quote page
-
-    const form = document.getElementById("jobEntryForm");
-    const msgDiv = document.getElementById("msg");
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const name = form.name.value.trim();
-      const email = form.email.value.trim();
-      const phone = form.phone.value.trim();
-      const firstFloor = parseInt(form.firstFloor.value) || 0;
-      const secondFloor = parseInt(form.secondFloor.value) || 0;
-      const serviceDate = form.serviceDate.value;
-      const timeSlot = form.timeSlot.value;
-      const status = form.status.value;
-
-      if (!name || !email || !phone || !serviceDate || !timeSlot || !status) {
-        alert("Please fill all required fields.");
-        return;
-      }
-
-      const estimate = (firstFloor * 5) + (secondFloor * 10);
-      const durationHours = ((firstFloor + secondFloor) / 30); // 30 windows = 1 hour
-
-      try {
-        await addDoc(jobsCollection, {
-          name,
-          email,
-          phone,
-          firstFloor,
-          secondFloor,
-          serviceDate,
-          timeSlot,
-          estimate,
-          durationHours,
-          status,
-          submittedAt: new Date()
-        });
-        msgDiv.textContent = "Job added successfully!";
-        form.reset();
-      } catch (error) {
-        console.error("Error adding job:", error);
-        alert("Failed to add job, try again.");
-      }
-    });
-  </script>
 </body>
 </html>
