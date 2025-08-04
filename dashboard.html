@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Dashboard | HK Window Pros</title>
 <style>
+  /* Reset & base */
   body, html {
     height: 100%;
     margin: 0;
@@ -21,15 +22,17 @@
     justify-content: space-between;
     align-items: center;
     user-select: none;
+    position: relative;
   }
   header h1 {
     margin: 0;
     font-size: 1.8rem;
   }
-  header #userDisplay {
+  #userDisplay {
     font-weight: 700;
     font-size: 1rem;
     font-style: italic;
+    margin-right: 1rem;
   }
   button.logout-btn {
     background: #e03c3c;
@@ -42,6 +45,55 @@
   }
   button.logout-btn:hover {
     background: #a32a2a;
+  }
+
+  /* Hamburger Menu Styles */
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    width: 25px;
+    height: 18px;
+    justify-content: space-between;
+  }
+  .hamburger div {
+    height: 3px;
+    background-color: white;
+    border-radius: 2px;
+  }
+  nav {
+    display: flex;
+    gap: 1rem;
+  }
+  nav a {
+    color: white;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  nav a:hover {
+    text-decoration: underline;
+  }
+
+  /* Mobile menu toggle */
+  @media (max-width: 600px) {
+    nav {
+      display: none;
+      flex-direction: column;
+      position: absolute;
+      top: 56px;
+      right: 2rem;
+      background: #0056b3;
+      border-radius: 6px;
+      padding: 1rem;
+      z-index: 10;
+    }
+    nav.active {
+      display: flex;
+    }
+    .hamburger {
+      display: flex;
+    }
   }
 
   main {
@@ -225,8 +277,18 @@
 
 <header>
   <h1>Dashboard</h1>
-  <div id="userDisplay"></div>
-  <button class="logout-btn" id="logoutBtn">Logout</button>
+  <div style="display:flex; align-items:center;">
+    <div id="userDisplay"></div>
+    <button class="logout-btn" id="logoutBtn">Logout</button>
+    <div class="hamburger" id="hamburger" aria-label="Menu" role="button" tabindex="0">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  </div>
+  <nav id="navMenu" aria-label="Main navigation">
+    <a href="login.html" id="loginLink">Login</a>
+  </nav>
 </header>
 
 <main>
@@ -306,6 +368,8 @@
     const modalCloseBtn = document.getElementById('modalCloseBtn');
     const jobForm = document.getElementById('jobForm');
     const tabButtons = document.querySelectorAll('.tab-btn');
+    const hamburger = document.getElementById('hamburger');
+    const navMenu = document.getElementById('navMenu');
 
     let currentTab = 'pending';
     let jobs = [];
@@ -313,23 +377,33 @@
 
     userDisplay.textContent = `Logged in as: ${capitalize(loggedInUser)}`;
 
+    hamburger.addEventListener('click', () => {
+      navMenu.classList.toggle('active');
+    });
+    // also allow keyboard toggling for accessibility
+    hamburger.addEventListener('keydown', e => {
+      if(e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        navMenu.classList.toggle('active');
+      }
+    });
+
     async function loadJobs() {
       const { data, error } = await supabase
         .from('jobs')
         .select('*')
         .order('date', { ascending: true })
         .order('time', { ascending: true });
-
-      if(error){
+      if(error) {
         alert('Error loading jobs: ' + error.message);
         return;
       }
-
       jobs = data || [];
     }
 
     async function saveJobToSupabase(job) {
       if(editingJobId) {
+        // update job
         const { error } = await supabase
           .from('jobs')
           .update({
@@ -349,24 +423,16 @@
           return false;
         }
       } else {
+        // insert new job
         const { error } = await supabase
           .from('jobs')
-          .insert({
-            customerName: job.customerName,
-            email: job.email,
-            phone: job.phone,
-            status: job.status,
-            date: job.date,
-            time: job.time,
-            pay: job.pay,
-            windows: job.windows,
-            location: job.location,
-          });
+          .insert([job]);
         if(error) {
-          alert('Error adding job: ' + error.message);
+          alert('Error inserting job: ' + error.message);
           return false;
         }
       }
+      editingJobId = null;
       return true;
     }
 
@@ -391,7 +457,7 @@
       }
       filtered.forEach(job => {
         const div = document.createElement("div");
-        div.className = "job-item job-" + job.status.replace(/\s/g, '-');
+        div.className = "job-item job-" + job.status.replace(" ", "-");
 
         div.innerHTML = `
           <div class="job-info">
