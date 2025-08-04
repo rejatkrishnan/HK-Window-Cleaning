@@ -219,24 +219,59 @@
     max-width: 900px;
     margin: 2rem auto 3rem auto;
     background: white;
-    padding: 1rem 2rem;
+    padding: 1rem 1rem 1rem 1rem;
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(26,64,175,0.15);
+
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #1a40af #f0f6ff;
   }
-  #jobsByDay h3 {
-    margin-top: 1.5rem;
-    margin-bottom: 0.5rem;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 0.3rem;
+  #jobsByDay::-webkit-scrollbar {
+    height: 8px;
+  }
+  #jobsByDay::-webkit-scrollbar-thumb {
+    background-color: #1a40af;
+    border-radius: 10px;
+  }
+  #jobsByDay::-webkit-scrollbar-track {
+    background: #f0f6ff;
+  }
+
+  .day-block {
+    min-width: 160px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 0.5rem 1rem 1rem 1rem;
+    box-sizing: border-box;
+    background: #fafafa;
+    flex-shrink: 0;
+  }
+  .day-block h3 {
+    margin-top: 0.3rem;
+    margin-bottom: 0.6rem;
+    font-size: 1.1rem;
     color: #1a40af;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 0.25rem;
   }
   .job-list-item {
     margin-bottom: 1rem;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: #333;
   }
+  .job-list-item strong {
+    display: block;
+    margin-bottom: 0.15rem;
+  }
+  .no-jobs {
+    font-style: italic;
+    color: #999;
+  }
 
-  /* Responsive */
+  /* Responsive tweaks */
   @media (max-width: 600px) {
     .job-info {
       max-width: 60%;
@@ -245,7 +280,15 @@
       padding: 1rem;
     }
     #jobsByDay {
-      padding: 1rem;
+      padding: 1rem 0.5rem;
+      gap: 0.8rem;
+    }
+    .day-block {
+      min-width: 140px;
+      padding: 0.5rem 0.8rem 0.8rem 0.8rem;
+    }
+    .day-block h3 {
+      font-size: 1rem;
     }
   }
 </style>
@@ -455,20 +498,18 @@
                  .replace(/'/g, "&#039;");
     }
 
-    // Capitalize first letter
     function capitalize(str) {
       return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
-    // Convert 24h time "HH:mm" to 12h with AM/PM
+    // Convert 24-hour time "HH:mm" to 12-hour time with AM/PM
     function convertTo12Hour(time24) {
       if(!time24) return "";
-      const [hourStr, min] = time24.split(':');
-      let hour = parseInt(hourStr);
-      const ampm = hour >= 12 ? 'PM' : 'AM';
+      let [hour, minute] = time24.split(":").map(Number);
+      const ampm = hour >= 12 ? "PM" : "AM";
       hour = hour % 12;
-      if(hour === 0) hour = 12;
-      return `${hour}:${min} ${ampm}`;
+      hour = hour ? hour : 12; // 0 => 12
+      return `${hour}:${minute.toString().padStart(2,'0')} ${ampm}`;
     }
 
     // Add Job button click
@@ -522,9 +563,11 @@
       }
 
       if(editingJobId) {
+        // Edit existing job
         const index = jobs.findIndex(j => j.id === editingJobId);
         if(index !== -1) jobs[index] = newJob;
       } else {
+        // Add new job
         jobs.push(newJob);
       }
 
@@ -540,19 +583,65 @@
       window.location.href = 'login.html';
     };
 
-    // Get day of week name from date string yyyy-mm-dd
+    // Utility: get day name from date string
     function getDayOfWeek(dateStr) {
       const date = new Date(dateStr + "T00:00:00");
       return date.toLocaleDateString(undefined, { weekday: 'long' });
     }
 
-    // Render jobs grouped by day of the week below main content
+    // Utility: format date as MM/DD/YYYY
+    function formatDate(date) {
+      const d = new Date(date + "T00:00:00");
+      return d.toLocaleDateString();
+    }
+
+    // Find the Monday of the week for a given date
+    function getWeekStartDate(date) {
+      const d = new Date(date + "T00:00:00");
+      const day = d.getDay(); // 0=Sun,1=Mon...
+      const diff = (day === 0 ? -6 : 1) - day; // Mon is start of week
+      d.setDate(d.getDate() + diff);
+      return d;
+    }
+
+    // Add days to date, return yyyy-mm-dd string
+    function addDays(dateObj, days) {
+      const d = new Date(dateObj);
+      d.setDate(d.getDate() + days);
+      return d.toISOString().slice(0,10);
+    }
+
+    // Render jobs grouped by day of the week below main content, horizontally with all days shown
     function renderJobsByDay() {
       jobsByDaySection.innerHTML = "";
 
       if(jobs.length === 0) {
-        jobsByDaySection.innerHTML = `<p style="text-align:center; color:#555;">No jobs to display by day.</p>`;
+        // Show current week days with no jobs
+        const today = new Date();
+        const weekStart = getWeekStartDate(today.toISOString().slice(0,10));
+        for(let i=0; i<7; i++) {
+          const dayDate = addDays(weekStart, i);
+          const dayName = dayDate ? new Date(dayDate).toLocaleDateString(undefined, { weekday: 'long' }) : "";
+          const dayBlock = document.createElement("div");
+          dayBlock.className = "day-block";
+          dayBlock.innerHTML = `<h3>${dayName} — ${formatDate(dayDate)}</h3><p class="no-jobs">No jobs</p>`;
+          jobsByDaySection.appendChild(dayBlock);
+        }
         return;
+      }
+
+      // Find min and max job dates to determine week range to display
+      const datesSorted = jobs.map(j => j.date).sort();
+      const minDate = datesSorted[0];
+      const maxDate = datesSorted[datesSorted.length -1];
+
+      // Get week start (Monday) for minDate
+      let weekStart = getWeekStartDate(minDate);
+
+      // Build array of 7 days for that week
+      const weekDays = [];
+      for(let i=0; i<7; i++) {
+        weekDays.push(addDays(weekStart, i));
       }
 
       // Group jobs by date
@@ -562,30 +651,36 @@
         jobsByDate[job.date].push(job);
       });
 
-      // Sort dates ascending
-      const sortedDates = Object.keys(jobsByDate).sort((a,b) => new Date(a) - new Date(b));
+      weekDays.forEach(dayDate => {
+        const dayName = getDayOfWeek(dayDate);
+        const jobsForDate = jobsByDate[dayDate] || [];
 
-      sortedDates.forEach(dateStr => {
-        const dayName = getDayOfWeek(dateStr);
-        const jobsForDate = jobsByDate[dateStr];
+        const dayBlock = document.createElement("div");
+        dayBlock.className = "day-block";
+        dayBlock.innerHTML = `<h3>${dayName} — ${formatDate(dayDate)}</h3>`;
 
-        const dayTitle = document.createElement("h3");
-        dayTitle.textContent = `${dayName} — ${dateStr}`;
-        jobsByDaySection.appendChild(dayTitle);
+        if(jobsForDate.length === 0) {
+          const noJobs = document.createElement("p");
+          noJobs.className = "no-jobs";
+          noJobs.textContent = "No jobs";
+          dayBlock.appendChild(noJobs);
+        } else {
+          jobsForDate.forEach(job => {
+            const time12h = convertTo12Hour(job.time);
 
-        jobsForDate.forEach(job => {
-          const time12h = convertTo12Hour(job.time);
+            const jobDiv = document.createElement("div");
+            jobDiv.className = "job-list-item";
+            jobDiv.innerHTML = `
+              <strong>${escapeHtml(job.customerName)}</strong> (${capitalize(job.status)})<br/>
+              Time: ${time12h} | Pay: $${Number(job.pay).toFixed(2)} | Windows: ${job.windows}<br/>
+              Location: ${escapeHtml(job.location || "TBD")}<br/>
+              Email: ${escapeHtml(job.email)} | Phone: ${escapeHtml(job.phone)}
+            `;
+            dayBlock.appendChild(jobDiv);
+          });
+        }
 
-          const jobDiv = document.createElement("div");
-          jobDiv.className = "job-list-item";
-          jobDiv.innerHTML = `
-            <strong>${escapeHtml(job.customerName)}</strong> (${capitalize(job.status)})<br/>
-            Time: ${time12h} | Pay: $${Number(job.pay).toFixed(2)} | Windows: ${job.windows}<br/>
-            Location: ${escapeHtml(job.location || "TBD")}<br/>
-            Email: ${escapeHtml(job.email)} | Phone: ${escapeHtml(job.phone)}
-          `;
-          jobsByDaySection.appendChild(jobDiv);
-        });
+        jobsByDaySection.appendChild(dayBlock);
       });
     }
 
