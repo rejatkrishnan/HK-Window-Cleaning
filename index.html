@@ -203,20 +203,6 @@
       z-index: 500;
     }
 
-    /* Responsive */
-
-    @media (max-width: 900px) {
-      main {
-        padding: 2rem 1.5rem;
-        margin: 2rem 1rem 6rem 1rem;
-      }
-
-      .team-container {
-        flex-direction: column;
-        align-items: center;
-      }
-    }
-
     /* New section styles */
     #service-area {
       margin: 3rem auto 2rem auto;
@@ -246,7 +232,6 @@
       border: none;
       border-radius: 12px;
     }
-
   </style>
 
   <script>
@@ -289,18 +274,7 @@
       passionate students, we combine expertise, reliability, and a strong community commitment to brighten your home.
     </p>
 
-    <!-- New Service Area Section -->
-    <section id="service-area" aria-label="Areas we service">
-      <h2>Areas We Service</h2>
-      <p>Washington County and surrounding areas</p>
-      <iframe
-        src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d114847.61767758801!2d-92.9612624!3d44.9003721!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x52b33a4842786e11%3A0x83e18ff8e02223a5!2sWashington%20County%2C%20MN!5e0!3m2!1sen!2sus!4v1691085018394!5m2!1sen!2sus"
-        allowfullscreen=""
-        loading="lazy"
-        referrerpolicy="no-referrer-when-downgrade"
-        title="Map of Washington County, Minnesota"></iframe>
-    </section>
-
+    <!-- Quote button ABOVE map -->
     <div class="quote-button-container">
       <button class="quote-button" onclick="window.location.href='quote.html'">Get a Free Quote Now</button>
       <p class="quote-note">
@@ -308,6 +282,18 @@
         <a href="contact.html" style="color:#0056b3; text-decoration: underline;">contact us</a> for a custom estimate.
       </p>
     </div>
+
+    <!-- Service Area Section -->
+    <section id="service-area" aria-label="Areas we service">
+      <h2>Areas We Service</h2>
+      <p>Washington County and surrounding areas, including Saint Paul</p>
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d230271.42330858984!2d-93.2783759!3d44.9321147!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x52b33a4842786e11%3A0x83e18ff8e02223a5!2sWashington%20County%2C%20MN!5e0!3m2!1sen!2sus!4v1691089999999!5m2!1sen!2sus"
+        allowfullscreen=""
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        title="Map of Washington County and Saint Paul, Minnesota"></iframe>
+    </section>
 
     <div class="team-container">
       <div class="team-member">
