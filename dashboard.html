@@ -214,12 +214,37 @@
     color: #333;
   }
 
+  /* Jobs by day section */
+  #jobsByDay {
+    max-width: 900px;
+    margin: 2rem auto 3rem auto;
+    background: white;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(26,64,175,0.15);
+  }
+  #jobsByDay h3 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 0.3rem;
+    color: #1a40af;
+  }
+  .job-list-item {
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+    color: #333;
+  }
+
   /* Responsive */
   @media (max-width: 600px) {
     .job-info {
       max-width: 60%;
     }
     main {
+      padding: 1rem;
+    }
+    #jobsByDay {
       padding: 1rem;
     }
   }
@@ -291,14 +316,21 @@
   </div>
 </div>
 
+<!-- Jobs by day of the week listing -->
+<section id="jobsByDay" aria-label="Jobs grouped by day of the week">
+  <!-- This will be populated by JS -->
+</section>
+
 <script>
   (function(){
+    // Check if logged in, else redirect to login
     const loggedInUser = localStorage.getItem('loggedInUser');
     if(!loggedInUser) {
       window.location.href = 'login.html';
       return;
     }
 
+    // DOM Elements
     const userDisplay = document.getElementById('userDisplay');
     const logoutBtn = document.getElementById('logoutBtn');
     const jobsContainer = document.getElementById('jobsContainer');
@@ -307,40 +339,30 @@
     const modalCloseBtn = document.getElementById('modalCloseBtn');
     const jobForm = document.getElementById('jobForm');
     const tabButtons = document.querySelectorAll('.tab-btn');
+    const jobsByDaySection = document.getElementById('jobsByDay');
 
+    // Shared localStorage key for jobs
     const jobsKey = 'hkJobsShared';
 
     let currentTab = 'pending';
     let jobs = [];
     let editingJobId = null;
 
+    // Display logged in user
     userDisplay.textContent = `Logged in as: ${capitalize(loggedInUser)}`;
 
+    // Load jobs from localStorage
     function loadJobs() {
       const stored = localStorage.getItem(jobsKey);
       jobs = stored ? JSON.parse(stored) : [];
     }
 
+    // Save jobs to localStorage
     function saveJobs() {
       localStorage.setItem(jobsKey, JSON.stringify(jobs));
     }
 
-    // New helper: get day of week from a date string YYYY-MM-DD
-    function getDayOfWeek(dateStr) {
-      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-      const dateObj = new Date(dateStr + 'T00:00:00'); // ensure UTC no timezone offset
-      return days[dateObj.getDay()];
-    }
-
-    // New helper: convert 24h "HH:MM" to 12h format with AM/PM
-    function convertTo12Hour(time24) {
-      let [hour, minute] = time24.split(':').map(Number);
-      const ampm = hour >= 12 ? 'PM' : 'AM';
-      hour = hour % 12;
-      if(hour === 0) hour = 12;
-      return `${hour}:${minute.toString().padStart(2,'0')} ${ampm}`;
-    }
-
+    // Render jobs by status with color coding
     function renderJobs(status) {
       jobsContainer.innerHTML = "";
       const filtered = jobs.filter(j => j.status === status);
@@ -349,11 +371,9 @@
         return;
       }
       filtered.forEach(job => {
-        const dayOfWeek = getDayOfWeek(job.date);
-        const time12h = convertTo12Hour(job.time);
-
         const div = document.createElement("div");
         div.className = "job-item";
+        // Add class for color coding
         if(job.status === "pending") div.classList.add("pending");
         else if(job.status === "in progress") div.classList.add("in-progress");
         else if(job.status === "completed") div.classList.add("completed");
@@ -362,7 +382,7 @@
           <div class="job-info">
             <p class="job-name">${escapeHtml(job.customerName)}</p>
             <p class="job-details">
-              Status: <strong>${capitalize(job.status)}</strong> | Date: ${dayOfWeek}, ${job.date} | Time: ${time12h}<br/>
+              Status: <strong>${capitalize(job.status)}</strong> | Date: ${job.date} | Time: ${convertTo12Hour(job.time)}<br/>
               Pay: $${Number(job.pay).toFixed(2)} | Windows: ${job.windows}<br/>
               Location: ${escapeHtml(job.location || "TBD")}<br/>
               Email: ${escapeHtml(job.email)} | Phone: ${escapeHtml(job.phone)}
@@ -381,17 +401,22 @@
             jobs = jobs.filter(j => j.id !== job.id);
             saveJobs();
             renderJobs(currentTab);
+            renderJobsByDay();
           }
         };
         const moveBtn = div.querySelector(".btn-move");
         if(moveBtn) {
-          moveBtn.onclick = () => moveJobStatus(job.id);
+          moveBtn.onclick = () => {
+            moveJobStatus(job.id);
+            renderJobsByDay();
+          };
         }
 
         jobsContainer.appendChild(div);
       });
     }
 
+    // Open modal for editing job
     function openEditModal(id) {
       editingJobId = id;
       const job = jobs.find(j => j.id === id);
@@ -410,6 +435,7 @@
       modalBg.classList.add("active");
     }
 
+    // Move job status (pending -> in progress -> completed)
     function moveJobStatus(id) {
       const job = jobs.find(j => j.id === id);
       if(!job) return;
@@ -419,6 +445,7 @@
       renderJobs(currentTab);
     }
 
+    // Escape HTML special chars
     function escapeHtml(text) {
       if(!text) return "";
       return text.replace(/&/g, "&amp;")
@@ -428,10 +455,23 @@
                  .replace(/'/g, "&#039;");
     }
 
+    // Capitalize first letter
     function capitalize(str) {
       return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
+    // Convert 24h time "HH:mm" to 12h with AM/PM
+    function convertTo12Hour(time24) {
+      if(!time24) return "";
+      const [hourStr, min] = time24.split(':');
+      let hour = parseInt(hourStr);
+      const ampm = hour >= 12 ? 'PM' : 'AM';
+      hour = hour % 12;
+      if(hour === 0) hour = 12;
+      return `${hour}:${min} ${ampm}`;
+    }
+
+    // Add Job button click
     addJobBtn.onclick = () => {
       editingJobId = null;
       jobForm.reset();
@@ -439,6 +479,7 @@
       modalBg.classList.add("active");
     };
 
+    // Modal close handlers
     modalCloseBtn.onclick = () => {
       modalBg.classList.remove("active");
     };
@@ -448,6 +489,7 @@
       }
     };
 
+    // Handle tab switching
     tabButtons.forEach(btn => {
       btn.onclick = () => {
         tabButtons.forEach(b => b.classList.remove("active"));
@@ -457,6 +499,7 @@
       };
     });
 
+    // Handle form submit
     jobForm.onsubmit = e => {
       e.preventDefault();
 
@@ -488,15 +531,68 @@
       saveJobs();
       modalBg.classList.remove("active");
       renderJobs(currentTab);
+      renderJobsByDay();
     };
 
+    // Logout button click
     logoutBtn.onclick = () => {
       localStorage.removeItem('loggedInUser');
       window.location.href = 'login.html';
     };
 
+    // Get day of week name from date string yyyy-mm-dd
+    function getDayOfWeek(dateStr) {
+      const date = new Date(dateStr + "T00:00:00");
+      return date.toLocaleDateString(undefined, { weekday: 'long' });
+    }
+
+    // Render jobs grouped by day of the week below main content
+    function renderJobsByDay() {
+      jobsByDaySection.innerHTML = "";
+
+      if(jobs.length === 0) {
+        jobsByDaySection.innerHTML = `<p style="text-align:center; color:#555;">No jobs to display by day.</p>`;
+        return;
+      }
+
+      // Group jobs by date
+      const jobsByDate = {};
+      jobs.forEach(job => {
+        if(!jobsByDate[job.date]) jobsByDate[job.date] = [];
+        jobsByDate[job.date].push(job);
+      });
+
+      // Sort dates ascending
+      const sortedDates = Object.keys(jobsByDate).sort((a,b) => new Date(a) - new Date(b));
+
+      sortedDates.forEach(dateStr => {
+        const dayName = getDayOfWeek(dateStr);
+        const jobsForDate = jobsByDate[dateStr];
+
+        const dayTitle = document.createElement("h3");
+        dayTitle.textContent = `${dayName} — ${dateStr}`;
+        jobsByDaySection.appendChild(dayTitle);
+
+        jobsForDate.forEach(job => {
+          const time12h = convertTo12Hour(job.time);
+
+          const jobDiv = document.createElement("div");
+          jobDiv.className = "job-list-item";
+          jobDiv.innerHTML = `
+            <strong>${escapeHtml(job.customerName)}</strong> (${capitalize(job.status)})<br/>
+            Time: ${time12h} | Pay: $${Number(job.pay).toFixed(2)} | Windows: ${job.windows}<br/>
+            Location: ${escapeHtml(job.location || "TBD")}<br/>
+            Email: ${escapeHtml(job.email)} | Phone: ${escapeHtml(job.phone)}
+          `;
+          jobsByDaySection.appendChild(jobDiv);
+        });
+      });
+    }
+
+    // Initial load
     loadJobs();
     renderJobs(currentTab);
+    renderJobsByDay();
   })();
 </script>
 
