@@ -195,7 +195,7 @@
       color: #444;
       font-size: 0.9rem;
       user-select: none;
-      box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
       position: fixed;
       width: 100%;
       bottom: 0;
@@ -203,34 +203,25 @@
       z-index: 500;
     }
 
-    /* New section styles */
-    #service-area {
-      margin: 3rem auto 2rem auto;
-      max-width: 900px;
-      background: white;
-      border-radius: 12px;
-      padding: 2rem 3rem;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-      text-align: center;
+    footer a {
       color: #0056b3;
+      text-decoration: none;
     }
 
-    #service-area h2 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
+    footer a:hover {
+      text-decoration: underline;
     }
 
-    #service-area p {
-      font-size: 1.2rem;
-      margin-bottom: 1.5rem;
-      color: #333;
-    }
+    @media (max-width: 900px) {
+      main {
+        padding: 2rem 1.5rem;
+        margin: 2rem 1rem 6rem 1rem;
+      }
 
-    #service-area iframe {
-      width: 100%;
-      height: 350px;
-      border: none;
-      border-radius: 12px;
+      .team-container {
+        flex-direction: column;
+        align-items: center;
+      }
     }
   </style>
 
@@ -240,7 +231,7 @@
       menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
     }
 
-    window.onclick = function(event) {
+    window.onclick = function (event) {
       const menu = document.getElementById('menu');
       if (!event.target.closest('.menu-icon') && !event.target.closest('#menu')) {
         menu.style.display = 'none';
@@ -274,7 +265,6 @@
       passionate students, we combine expertise, reliability, and a strong community commitment to brighten your home.
     </p>
 
-    <!-- Quote button ABOVE map -->
     <div class="quote-button-container">
       <button class="quote-button" onclick="window.location.href='quote.html'">Get a Free Quote Now</button>
       <p class="quote-note">
@@ -282,18 +272,6 @@
         <a href="contact.html" style="color:#0056b3; text-decoration: underline;">contact us</a> for a custom estimate.
       </p>
     </div>
-
-    <!-- Service Area Section -->
-    <section id="service-area" aria-label="Areas we service">
-      <h2>Areas We Service</h2>
-      <p>Washington County and surrounding areas, including Saint Paul</p>
-      <iframe
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d230271.42330858984!2d-93.2783759!3d44.9321147!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x52b33a4842786e11%3A0x83e18ff8e02223a5!2sWashington%20County%2C%20MN!5e0!3m2!1sen!2sus!4v1691089999999!5m2!1sen!2sus"
-        allowfullscreen=""
-        loading="lazy"
-        referrerpolicy="no-referrer-when-downgrade"
-        title="Map of Washington County and Saint Paul, Minnesota"></iframe>
-    </section>
 
     <div class="team-container">
       <div class="team-member">
@@ -320,7 +298,11 @@
     </div>
   </main>
 
-  <footer>&copy; 2025 HK Window Pros. All rights reserved.</footer>
+  <footer>
+    &copy; 2025 HK Window Pros. All rights reserved.
+    <br>📞 (555) 123-4567
+    <br>✉️ <a href="mailto:info@hkwindowpros.com">info@hkwindowpros.com</a>
+  </footer>
 </body>
 
 </html>
