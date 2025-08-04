@@ -39,8 +39,6 @@
     border-radius: 5px;
     font-weight: 700;
     cursor: pointer;
-    position: relative;
-    z-index: 3;
   }
   button.logout-btn:hover {
     background: #a32a2a;
@@ -53,8 +51,6 @@
     padding: 1rem 2rem;
     max-width: 900px;
     margin: auto;
-    position: relative;
-    z-index: 1; /* above calendar */
   }
 
   .tabs {
@@ -70,8 +66,6 @@
     cursor: pointer;
     font-weight: 600;
     color: #0056b3;
-    position: relative;
-    z-index: 2;
   }
   .tab-btn.active {
     background: #1a40af;
@@ -83,10 +77,8 @@
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(26,64,175,0.15);
     padding: 1rem 1.5rem;
-    max-height: 300px;
+    max-height: 450px;
     overflow-y: auto;
-    position: relative;
-    z-index: 2;
   }
 
   .job-item {
@@ -120,8 +112,6 @@
     border-radius: 4px;
     cursor: pointer;
     font-weight: 600;
-    position: relative;
-    z-index: 3;
   }
   .btn-edit {
     background: #007BFF;
@@ -156,8 +146,6 @@
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    position: relative;
-    z-index: 3;
     width: fit-content;
   }
 
@@ -231,74 +219,6 @@
   #modalCloseBtn:hover {
     color: #333;
   }
-
-  /* Calendar Styles */
-  #calendar {
-    margin-top: 2rem;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 15px rgba(26,64,175,0.15);
-    user-select: none;
-    position: relative;
-    z-index: 0; /* under main content */
-  }
-  #calendar table {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
-  }
-  #calendar thead {
-    background: #1a40af;
-    color: white;
-  }
-  #calendar th, #calendar td {
-    border: 1px solid #ddd;
-    padding: 0.5rem;
-    vertical-align: top;
-    height: 100px;
-    overflow: hidden;
-  }
-  #calendar th {
-    text-align: center;
-  }
-  .calendar-job {
-    display: block;
-    padding: 3px 5px;
-    margin-bottom: 4px;
-    border-radius: 4px;
-    font-size: 0.85rem;
-    color: white;
-    cursor: default;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .cal-pending {
-    background-color: #dc3545; /* red */
-  }
-  .cal-in-progress {
-    background-color: #ffc107; /* yellow */
-    color: #222;
-  }
-  .cal-completed {
-    background-color: #28a745; /* green */
-  }
-
-  /* Responsive */
-  @media (max-width: 600px) {
-    .job-info {
-      max-width: 60%;
-    }
-    main {
-      padding: 1rem;
-    }
-    #calendar th, #calendar td {
-      height: 80px;
-      font-size: 0.75rem;
-      padding: 0.3rem;
-    }
-  }
 </style>
 </head>
 <body>
@@ -317,14 +237,10 @@
   </div>
 
   <div id="jobsContainer">
-    <!-- Jobs will be listed here -->
+    <!-- Jobs will show here -->
   </div>
 
   <button id="addJobBtn">+ Add Job</button>
-
-  <section id="calendar">
-    <!-- Calendar will be generated here -->
-  </section>
 </main>
 
 <!-- Modal for Add/Edit Job -->
@@ -372,19 +288,16 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   (async function(){
-    // Your Supabase config
     const supabaseUrl = 'https://xwdtpqyphfhhnfpadhpv.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh3ZHRwcXlwaGZoaG5mcGFkaHB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQyNTY0MjIsImV4cCI6MjA2OTgzMjQyMn0.dP_7pajnInXt0p5YJES8yVQcZCP81S4V-rP5ozkTHPQ';
     const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-    // Check if logged in, else redirect to login
     const loggedInUser = localStorage.getItem('loggedInUser');
     if(!loggedInUser) {
       window.location.href = 'login.html';
       return;
     }
 
-    // DOM Elements
     const userDisplay = document.getElementById('userDisplay');
     const logoutBtn = document.getElementById('logoutBtn');
     const jobsContainer = document.getElementById('jobsContainer');
@@ -393,16 +306,13 @@
     const modalCloseBtn = document.getElementById('modalCloseBtn');
     const jobForm = document.getElementById('jobForm');
     const tabButtons = document.querySelectorAll('.tab-btn');
-    const calendarSection = document.getElementById('calendar');
 
     let currentTab = 'pending';
     let jobs = [];
     let editingJobId = null;
 
-    // Display logged in user
     userDisplay.textContent = `Logged in as: ${capitalize(loggedInUser)}`;
 
-    // Load jobs from Supabase
     async function loadJobs() {
       const { data, error } = await supabase
         .from('jobs')
@@ -418,7 +328,6 @@
       jobs = data || [];
     }
 
-    // Save or update job to Supabase
     async function saveJobToSupabase(job) {
       if(editingJobId) {
         const { error } = await supabase
@@ -461,7 +370,6 @@
       return true;
     }
 
-    // Delete job from Supabase
     async function deleteJobFromSupabase(id) {
       const { error } = await supabase
         .from('jobs')
@@ -474,7 +382,6 @@
       return true;
     }
 
-    // Render jobs by status
     function renderJobs(status) {
       jobsContainer.innerHTML = "";
       const filtered = jobs.filter(j => j.status === status);
@@ -510,7 +417,6 @@
             if(success) {
               await loadJobs();
               renderJobs(currentTab);
-              renderCalendar();
             }
           }
         };
@@ -524,7 +430,6 @@
             if(success) {
               await loadJobs();
               renderJobs(currentTab);
-              renderCalendar();
             }
           };
         }
@@ -533,7 +438,6 @@
       });
     }
 
-    // Escape HTML special chars
     function escapeHtml(text) {
       if(!text) return "";
       return text.replace(/&/g, "&amp;")
@@ -547,7 +451,6 @@
       return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
-    // Open modal for editing job
     function openEditModal(id) {
       editingJobId = id;
       const job = jobs.find(j => j.id === id);
@@ -566,7 +469,6 @@
       modalBg.classList.add("active");
     }
 
-    // Add Job button click
     addJobBtn.onclick = () => {
       editingJobId = null;
       jobForm.reset();
@@ -574,7 +476,6 @@
       modalBg.classList.add("active");
     };
 
-    // Modal close handlers
     modalCloseBtn.onclick = () => {
       modalBg.classList.remove("active");
     };
@@ -584,7 +485,6 @@
       }
     };
 
-    // Handle tab switching
     tabButtons.forEach(btn => {
       btn.onclick = () => {
         tabButtons.forEach(b => b.classList.remove("active"));
@@ -594,7 +494,6 @@
       };
     });
 
-    // Handle form submit
     jobForm.onsubmit = async e => {
       e.preventDefault();
 
@@ -620,105 +519,16 @@
         modalBg.classList.remove("active");
         await loadJobs();
         renderJobs(currentTab);
-        renderCalendar();
       }
     };
 
-    // Logout button click
     logoutBtn.onclick = () => {
       localStorage.removeItem('loggedInUser');
       window.location.href = 'login.html';
     };
 
-    // --- CALENDAR RENDERING ---
-
-    // Generate calendar for current month
-    function renderCalendar() {
-      const today = new Date();
-      const year = today.getFullYear();
-      const month = today.getMonth();
-
-      // Start with first day of month
-      const firstDay = new Date(year, month, 1);
-      const lastDay = new Date(year, month + 1, 0);
-
-      // Get day of week (0=Sun,6=Sat) for first day
-      const startDay = firstDay.getDay();
-
-      // Number of days in month
-      const daysInMonth = lastDay.getDate();
-
-      // Clear calendar section
-      calendarSection.innerHTML = "";
-
-      // Create table
-      const table = document.createElement('table');
-
-      // Header row with weekdays
-      const thead = document.createElement('thead');
-      const headerRow = document.createElement('tr');
-      const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-      weekdays.forEach(day => {
-        const th = document.createElement('th');
-        th.textContent = day;
-        headerRow.appendChild(th);
-      });
-      thead.appendChild(headerRow);
-      table.appendChild(thead);
-
-      // Body with days
-      const tbody = document.createElement('tbody');
-      let row = document.createElement('tr');
-
-      // Fill empty cells before first day
-      for(let i=0; i < startDay; i++) {
-        const td = document.createElement('td');
-        row.appendChild(td);
-      }
-
-      for(let date=1; date <= daysInMonth; date++) {
-        if(row.children.length === 7) {
-          tbody.appendChild(row);
-          row = document.createElement('tr');
-        }
-
-        const td = document.createElement('td');
-        const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(date).padStart(2,'0')}`;
-
-        // Date number
-        const dateNumber = document.createElement('div');
-        dateNumber.textContent = date;
-        dateNumber.style.fontWeight = '700';
-        td.appendChild(dateNumber);
-
-        // Add jobs for this date
-        const jobsForDate = jobs.filter(j => j.date === dateStr);
-        jobsForDate.forEach(job => {
-          const jobSpan = document.createElement('span');
-          jobSpan.className = 'calendar-job cal-' + job.status.replace(/\s/g,'-');
-          jobSpan.title = `${job.customerName} | ${capitalize(job.status)} | ${job.time}`;
-          jobSpan.textContent = job.customerName + (job.windows ? ` (${job.windows} win)` : '');
-          td.appendChild(jobSpan);
-        });
-
-        row.appendChild(td);
-      }
-
-      // Fill remaining empty cells at end of month
-      while(row.children.length < 7) {
-        const td = document.createElement('td');
-        row.appendChild(td);
-      }
-      tbody.appendChild(row);
-
-      table.appendChild(tbody);
-      calendarSection.appendChild(table);
-    }
-
-    // INITIAL LOAD
     await loadJobs();
     renderJobs(currentTab);
-    renderCalendar();
 
   })();
 </script>
