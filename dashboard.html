@@ -130,7 +130,7 @@
   .job-item.pending {
     background-color: #f8d7da; /* red-ish */
   }
-  .job-item['in progress'] {
+  .job-item.in-progress {
     background-color: #fff3cd; /* yellow-ish */
   }
   .job-item.completed {
@@ -293,14 +293,12 @@
 
 <script>
   (function(){
-    // Check if logged in, else redirect to login
     const loggedInUser = localStorage.getItem('loggedInUser');
     if(!loggedInUser) {
       window.location.href = 'login.html';
       return;
     }
 
-    // DOM Elements
     const userDisplay = document.getElementById('userDisplay');
     const logoutBtn = document.getElementById('logoutBtn');
     const jobsContainer = document.getElementById('jobsContainer');
@@ -310,28 +308,39 @@
     const jobForm = document.getElementById('jobForm');
     const tabButtons = document.querySelectorAll('.tab-btn');
 
-    // Shared localStorage key for jobs
     const jobsKey = 'hkJobsShared';
 
     let currentTab = 'pending';
     let jobs = [];
     let editingJobId = null;
 
-    // Display logged in user
     userDisplay.textContent = `Logged in as: ${capitalize(loggedInUser)}`;
 
-    // Load jobs from localStorage
     function loadJobs() {
       const stored = localStorage.getItem(jobsKey);
       jobs = stored ? JSON.parse(stored) : [];
     }
 
-    // Save jobs to localStorage
     function saveJobs() {
       localStorage.setItem(jobsKey, JSON.stringify(jobs));
     }
 
-    // Render jobs by status with color coding
+    // New helper: get day of week from a date string YYYY-MM-DD
+    function getDayOfWeek(dateStr) {
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const dateObj = new Date(dateStr + 'T00:00:00'); // ensure UTC no timezone offset
+      return days[dateObj.getDay()];
+    }
+
+    // New helper: convert 24h "HH:MM" to 12h format with AM/PM
+    function convertTo12Hour(time24) {
+      let [hour, minute] = time24.split(':').map(Number);
+      const ampm = hour >= 12 ? 'PM' : 'AM';
+      hour = hour % 12;
+      if(hour === 0) hour = 12;
+      return `${hour}:${minute.toString().padStart(2,'0')} ${ampm}`;
+    }
+
     function renderJobs(status) {
       jobsContainer.innerHTML = "";
       const filtered = jobs.filter(j => j.status === status);
@@ -340,9 +349,11 @@
         return;
       }
       filtered.forEach(job => {
+        const dayOfWeek = getDayOfWeek(job.date);
+        const time12h = convertTo12Hour(job.time);
+
         const div = document.createElement("div");
         div.className = "job-item";
-        // Add class for color coding
         if(job.status === "pending") div.classList.add("pending");
         else if(job.status === "in progress") div.classList.add("in-progress");
         else if(job.status === "completed") div.classList.add("completed");
@@ -351,7 +362,7 @@
           <div class="job-info">
             <p class="job-name">${escapeHtml(job.customerName)}</p>
             <p class="job-details">
-              Status: <strong>${capitalize(job.status)}</strong> | Date: ${job.date} | Time: ${job.time}<br/>
+              Status: <strong>${capitalize(job.status)}</strong> | Date: ${dayOfWeek}, ${job.date} | Time: ${time12h}<br/>
               Pay: $${Number(job.pay).toFixed(2)} | Windows: ${job.windows}<br/>
               Location: ${escapeHtml(job.location || "TBD")}<br/>
               Email: ${escapeHtml(job.email)} | Phone: ${escapeHtml(job.phone)}
@@ -381,7 +392,6 @@
       });
     }
 
-    // Open modal for editing job
     function openEditModal(id) {
       editingJobId = id;
       const job = jobs.find(j => j.id === id);
@@ -400,7 +410,6 @@
       modalBg.classList.add("active");
     }
 
-    // Move job status (pending -> in progress -> completed)
     function moveJobStatus(id) {
       const job = jobs.find(j => j.id === id);
       if(!job) return;
@@ -410,7 +419,6 @@
       renderJobs(currentTab);
     }
 
-    // Escape HTML special chars
     function escapeHtml(text) {
       if(!text) return "";
       return text.replace(/&/g, "&amp;")
@@ -424,7 +432,6 @@
       return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
-    // Add Job button click
     addJobBtn.onclick = () => {
       editingJobId = null;
       jobForm.reset();
@@ -432,7 +439,6 @@
       modalBg.classList.add("active");
     };
 
-    // Modal close handlers
     modalCloseBtn.onclick = () => {
       modalBg.classList.remove("active");
     };
@@ -442,7 +448,6 @@
       }
     };
 
-    // Handle tab switching
     tabButtons.forEach(btn => {
       btn.onclick = () => {
         tabButtons.forEach(b => b.classList.remove("active"));
@@ -452,7 +457,6 @@
       };
     });
 
-    // Handle form submit
     jobForm.onsubmit = e => {
       e.preventDefault();
 
@@ -475,11 +479,9 @@
       }
 
       if(editingJobId) {
-        // Edit existing job
         const index = jobs.findIndex(j => j.id === editingJobId);
         if(index !== -1) jobs[index] = newJob;
       } else {
-        // Add new job
         jobs.push(newJob);
       }
 
@@ -488,13 +490,11 @@
       renderJobs(currentTab);
     };
 
-    // Logout button click
     logoutBtn.onclick = () => {
       localStorage.removeItem('loggedInUser');
       window.location.href = 'login.html';
     };
 
-    // Initial load
     loadJobs();
     renderJobs(currentTab);
   })();
