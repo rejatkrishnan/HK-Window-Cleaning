@@ -195,23 +195,10 @@
       color: #444;
       font-size: 0.9rem;
       user-select: none;
-      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
-      position: fixed;
-      width: 100%;
-      bottom: 0;
-      left: 0;
-      z-index: 500;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
     }
 
-    footer a {
-      color: #0056b3;
-      text-decoration: none;
-    }
-
-    footer a:hover {
-      text-decoration: underline;
-    }
-
+    /* Responsive */
     @media (max-width: 900px) {
       main {
         padding: 2rem 1.5rem;
@@ -231,7 +218,7 @@
       menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
     }
 
-    window.onclick = function (event) {
+    window.onclick = function(event) {
       const menu = document.getElementById('menu');
       if (!event.target.closest('.menu-icon') && !event.target.closest('#menu')) {
         menu.style.display = 'none';
@@ -299,9 +286,8 @@
   </main>
 
   <footer>
-    &copy; 2025 HK Window Pros. All rights reserved.
-    <br>📞 (555) 123-4567
-    <br>✉️ <a href="mailto:info@hkwindowpros.com">info@hkwindowpros.com</a>
+    &copy; 2025 HK Window Pros. All rights reserved.<br>
+    Contact us: (651) 555-1234 | hkwindowpros@example.com
   </footer>
 </body>
 
