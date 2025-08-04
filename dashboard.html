@@ -1,308 +1,688 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>HK Window Pros</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
-  <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f4f8ff;
-      color: #333;
-      line-height: 1.6;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dashboard | HK Window Pros</title>
+<style>
+  body, html {
+    height: 100%;
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #f0f6ff;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: linear-gradient(90deg, #007BFF, #0056b3);
+    color: white;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+  }
+  header #userDisplay {
+    font-weight: 700;
+    font-size: 1rem;
+    font-style: italic;
+  }
+  button.logout-btn {
+    background: #e03c3c;
+    border: none;
+    color: white;
+    padding: 0.5rem 1.2rem;
+    border-radius: 5px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  button.logout-btn:hover {
+    background: #a32a2a;
+  }
 
-    header {
-      background: linear-gradient(90deg, #007BFF, #0056b3);
-      color: white;
-      padding: 1rem;
-      position: relative;
-    }
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 2rem;
+    max-width: 900px;
+    margin: auto;
+  }
 
-    .header-container {
-      max-width: 1100px;
-      margin: auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-    }
+  .tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .tab-btn {
+    padding: 0.5rem 1rem;
+    background: #ddd;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #0056b3;
+  }
+  .tab-btn.active {
+    background: #1a40af;
+    color: white;
+  }
 
-    .logo-title a {
-      display: inline-flex;
-      align-items: center;
-      gap: 1rem;
-      text-decoration: none;
-      user-select: none;
-      color: white;
-    }
+  #jobsContainer {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(26,64,175,0.15);
+    padding: 1rem 1.5rem;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
 
-    .logo-title img {
-      height: 80px;
-      width: auto;
-    }
+  .job-item {
+    padding: 1rem 0.7rem;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .job-item:last-child {
+    border-bottom: none;
+  }
+  .job-name {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #003f7f;
+    margin: 0;
+  }
+  .job-details {
+    font-size: 0.9rem;
+    color: #555;
+    margin: 0.2rem 0 0 0;
+  }
+  .job-info {
+    max-width: 70%;
+  }
+  .job-actions button {
+    margin-left: 0.5rem;
+    padding: 0.3rem 0.7rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .btn-edit {
+    background: #007BFF;
+    color: white;
+  }
+  .btn-move {
+    background: #28a745;
+    color: white;
+  }
+  .btn-delete {
+    background: #dc3545;
+    color: white;
+  }
 
-    .logo-title h1 {
-      margin: 0;
-      font-weight: 700;
-      font-size: 2rem;
-    }
+  /* Color code jobs */
+  .job-item.pending {
+    background-color: #f8d7da; /* red-ish */
+  }
+  .job-item.in-progress {
+    background-color: #fff3cd; /* yellow-ish */
+  }
+  .job-item.completed {
+    background-color: #d4edda; /* green-ish */
+  }
 
-    .menu-icon {
-      font-size: 1.8rem;
-      cursor: pointer;
-      display: block;
-    }
+  /* Modal Styles */
+  #modalBg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right:0;
+    bottom:0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
 
-    nav {
-      display: none;
-      position: absolute;
-      top: 70px;
-      right: 1rem;
-      background-color: white;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      border-radius: 8px;
-      overflow: hidden;
-      z-index: 1000;
-      width: 180px;
-    }
+    /* IMPORTANT: Hide pointer events and opacity for no blocking */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  #modalBg.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  #modal {
+    background: white;
+    padding: 1.5rem 2rem;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 450px;
+    box-sizing: border-box;
+    position: relative;
+  }
+  #modal h2 {
+    margin-top: 0;
+    color: #1a40af;
+    margin-bottom: 1rem;
+  }
+  #jobForm label {
+    display: block;
+    margin-top: 0.8rem;
+    font-weight: 600;
+  }
+  #jobForm input, #jobForm select {
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 0.3rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+  #jobForm button {
+    margin-top: 1.2rem;
+    width: 100%;
+    padding: 0.7rem;
+    background: #1a40af;
+    color: white;
+    font-weight: 700;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  #jobForm button:hover {
+    background: #15327a;
+  }
+  #modalCloseBtn {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #888;
+  }
+  #modalCloseBtn:hover {
+    color: #333;
+  }
 
-    nav a {
-      display: block;
-      padding: 1rem 1.5rem;
-      text-decoration: none;
-      color: #333;
-      font-weight: 500;
-      border-bottom: 1px solid #eee;
-      transition: background-color 0.3s;
-    }
+  /* Jobs by day section */
+  #jobsByDay {
+    max-width: 900px;
+    margin: 2rem auto 3rem auto;
+    background: white;
+    padding: 1rem 1rem 1rem 1rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(26,64,175,0.15);
 
-    nav a:last-child {
-      border-bottom: none;
-    }
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
 
-    nav a:hover {
-      background-color: #f4f4f4;
-    }
+  .day-block {
+    flex: 1 1 12%; /* roughly 7 in a row with some spacing */
+    min-width: 120px;
+    max-width: 140px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 0.4rem 0.7rem 0.7rem 0.7rem;
+    box-sizing: border-box;
+    background: #fafafa;
+    font-size: 0.85rem;
+  }
+  .day-block h3 {
+    margin-top: 0.2rem;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    color: #1a40af;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 0.2rem;
+  }
+  .job-list-item {
+    margin-bottom: 0.6rem;
+    font-size: 0.8rem;
+    color: #333;
+  }
+  .job-list-item strong {
+    display: block;
+    margin-bottom: 0.1rem;
+  }
+  .no-jobs {
+    font-style: italic;
+    color: #999;
+  }
 
+  /* Responsive tweaks */
+  @media (max-width: 600px) {
+    .job-info {
+      max-width: 60%;
+    }
     main {
-      max-width: 900px;
-      margin: 3rem auto 5rem auto;
-      background: white;
-      padding: 2.5rem 3rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-      text-align: center;
+      padding: 1rem;
     }
-
-    main h2 {
-      margin-bottom: 1rem;
-      font-weight: 700;
-      color: #0056b3;
-      font-size: 2.5rem;
+    #jobsByDay {
+      padding: 1rem 0.5rem;
+      gap: 0.4rem;
     }
-
-    main p {
-      font-size: 1.2rem;
-      max-width: 700px;
-      margin: 0 auto 2rem auto;
-      color: #444;
+    .day-block {
+      flex: 1 1 45%;
+      min-width: 130px;
+      max-width: none;
+      font-size: 0.8rem;
+      padding: 0.3rem 0.5rem 0.5rem 0.5rem;
     }
-
-    .quote-button-container {
-      margin: 2rem 0 1rem 0;
-    }
-
-    .quote-button {
-      background-color: #007BFF;
-      color: white;
-      padding: 1rem 2.5rem;
-      font-size: 1.3rem;
-      font-weight: 700;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-      box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
-    }
-
-    .quote-button:hover {
-      background-color: #0056b3;
-      box-shadow: 0 6px 20px rgba(0, 86, 179, 0.6);
-    }
-
-    .quote-note {
-      font-style: italic;
-      color: #555;
+    .day-block h3 {
       font-size: 0.95rem;
-      margin-top: 0.8rem;
     }
-
-    .team-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 2.5rem;
-      margin-top: 3rem;
-    }
-
-    .team-member {
-      background: #e9f0ff;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0, 86, 179, 0.15);
-      width: 280px;
-      padding: 2rem 1.5rem;
-      text-align: center;
-      transition: transform 0.3s ease;
-    }
-
-    .team-member:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 25px rgba(0, 86, 179, 0.3);
-    }
-
-    .team-member img {
-      width: 140px;
-      height: 140px;
-      object-fit: cover;
-      border-radius: 50%;
-      margin-bottom: 1.2rem;
-      border: 5px solid #007BFF;
-      box-shadow: 0 0 15px rgba(0, 123, 255, 0.3);
-    }
-
-    .team-member h3 {
-      margin: 0.5rem 0 0.5rem 0;
-      font-weight: 700;
-      color: #003f7f;
-      font-size: 1.3rem;
-    }
-
-    .team-member p {
-      font-size: 1rem;
-      color: #333;
-      line-height: 1.4;
-    }
-
-    footer {
-      text-align: center;
-      padding: 1.2rem 1rem;
-      background-color: #e0e7ff;
-      color: #444;
-      font-size: 0.9rem;
-      user-select: none;
-      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
-      position: fixed;
-      width: 100%;
-      bottom: 0;
-      left: 0;
-      z-index: 500;
-    }
-
-    footer a {
-      color: #0056b3;
-      text-decoration: none;
-    }
-
-    footer a:hover {
-      text-decoration: underline;
-    }
-
-    @media (max-width: 900px) {
-      main {
-        padding: 2rem 1.5rem;
-        margin: 2rem 1rem 6rem 1rem;
-      }
-
-      .team-container {
-        flex-direction: column;
-        align-items: center;
-      }
-    }
-  </style>
-
-  <script>
-    function toggleMenu() {
-      const menu = document.getElementById('menu');
-      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-    }
-
-    window.onclick = function (event) {
-      const menu = document.getElementById('menu');
-      if (!event.target.closest('.menu-icon') && !event.target.closest('#menu')) {
-        menu.style.display = 'none';
-      }
-    }
-  </script>
+  }
+</style>
 </head>
-
 <body>
-  <header>
-    <div class="header-container">
-      <div class="logo-title">
-        <a href="index.html">
-          <img src="logo.png" alt="HK Window Pros Logo" />
-          <h1>HK Window Pros</h1>
-        </a>
-      </div>
-      <div class="menu-icon" onclick="toggleMenu()">☰</div>
-      <nav id="menu">
-        <a href="index.html">Home</a>
-        <a href="quote.html">Get a Quote</a>
-        <a href="login.html">Login</a>
-      </nav>
-    </div>
-  </header>
 
-  <main>
-    <h2>Welcome to HK Window Pros</h2>
-    <p>
-      At HK Window Pros, we’re dedicated to delivering crystal-clear views with unmatched professionalism. Founded by
-      passionate students, we combine expertise, reliability, and a strong community commitment to brighten your home.
-    </p>
+<header>
+  <h1>Dashboard</h1>
+  <div id="userDisplay"></div>
+  <button class="logout-btn" id="logoutBtn">Logout</button>
+</header>
 
-    <div class="quote-button-container">
-      <button class="quote-button" onclick="window.location.href='quote.html'">Get a Free Quote Now</button>
-      <p class="quote-note">
-        * Quote estimator is for residential properties only. Commercial clients, please
-        <a href="contact.html" style="color:#0056b3; text-decoration: underline;">contact us</a> for a custom estimate.
-      </p>
-    </div>
+<main>
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="pending">Pending</button>
+    <button class="tab-btn" data-tab="in progress">In Progress</button>
+    <button class="tab-btn" data-tab="completed">Completed</button>
+  </div>
 
-    <div class="team-container">
-      <div class="team-member">
-        <img src="you.jpg" alt="Rejat Krishnan" />
-        <h3>Rejat Krishnan</h3>
-        <p>
-          Hi! I'm Rejat, an undergraduate at Penn State entering my sophomore year, majoring in Mechanical Engineering
-          and Business. I bring the same precision and problem-solving skills from engineering, combined with a sharp
-          business mindset, to provide top-quality window cleaning services. My commitment is to deliver spotless
-          results with reliability and professionalism every time.
-        </p>
-      </div>
+  <div id="jobsContainer">
+    <!-- Jobs will be listed here -->
+  </div>
 
-      <div class="team-member">
-        <img src="cofounder.jpg" alt="Nick Hafner" />
-        <h3>Nick Hafner</h3>
-        <p>
-          Hi! I’m Nick, a sophomore studying Mechanical Engineering with a Business minor at the University of Minnesota.
-          I bring a blend of technical expertise and practical business knowledge to our window cleaning services,
-          ensuring every job is done with precision and professionalism. I’m passionate about delivering spotless results
-          and excellent customer satisfaction.
-        </p>
-      </div>
-    </div>
-  </main>
+  <button id="addJobBtn" style="margin-top:1rem; padding:0.7rem 1.2rem; font-weight: 700; background:#1a40af; color:white; border:none; border-radius:6px; cursor:pointer;">
+    + Add Job
+  </button>
+</main>
 
-  <footer>
-    &copy; 2025 HK Window Pros. All rights reserved.
-    <br>📞 <a href="tel:+15551234567">(555) 123-4567</a>
-    <br>✉️ <a href="mailto:info@hkwindowpros.com">info@hkwindowpros.com</a>
-  </footer>
+<!-- Modal for Add/Edit Job -->
+<div id="modalBg" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div id="modal">
+    <button id="modalCloseBtn" aria-label="Close modal">&times;</button>
+    <h2 id="modalTitle">Add Job</h2>
+    <form id="jobForm">
+      <label for="customerName">Customer Name</label>
+      <input type="text" id="customerName" name="customerName" required />
+
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required />
+
+      <label for="phone">Phone Number</label>
+      <input type="tel" id="phone" name="phone" required />
+
+      <label for="status">Status</label>
+      <select id="status" name="status" required>
+        <option value="pending">Pending</option>
+        <option value="in progress">In Progress</option>
+        <option value="completed">Completed</option>
+      </select>
+
+      <label for="date">Date</label>
+      <input type="date" id="date" name="date" required />
+
+      <label for="time">Time</label>
+      <input type="time" id="time" name="time" required />
+
+      <label for="pay">Pay ($)</label>
+      <input type="number" id="pay" name="pay" min="0" step="0.01" required />
+
+      <label for="windows">Windows</label>
+      <input type="number" id="windows" name="windows" min="0" step="1" required />
+
+      <label for="location">Location</label>
+      <input type="text" id="location" name="location" placeholder="Address or 'TBD'" />
+
+      <button type="submit">Save Job</button>
+    </form>
+  </div>
+</div>
+
+<!-- Jobs by day of the week listing -->
+<section id="jobsByDay" aria-label="Jobs grouped by day of the week">
+  <!-- This will be populated by JS -->
+</section>
+
+<script>
+  (function(){
+    // Check if logged in, else redirect to login
+    const loggedInUser = localStorage.getItem('loggedInUser');
+    if(!loggedInUser) {
+      window.location.href = 'login.html';
+      return;
+    }
+
+    // DOM Elements
+    const userDisplay = document.getElementById('userDisplay');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const jobsContainer = document.getElementById('jobsContainer');
+    const addJobBtn = document.getElementById('addJobBtn');
+    const modalBg = document.getElementById('modalBg');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+    const jobForm = document.getElementById('jobForm');
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const jobsByDaySection = document.getElementById('jobsByDay');
+
+    // Shared localStorage key for jobs
+    const jobsKey = 'hkJobsShared';
+
+    let currentTab = 'pending';
+    let jobs = [];
+    let editingJobId = null;
+
+    // Display logged in user
+    userDisplay.textContent = `Logged in as: ${capitalize(loggedInUser)}`;
+
+    // Load jobs from localStorage
+    function loadJobs() {
+      const stored = localStorage.getItem(jobsKey);
+      jobs = stored ? JSON.parse(stored) : [];
+    }
+
+    // Save jobs to localStorage
+    function saveJobs() {
+      localStorage.setItem(jobsKey, JSON.stringify(jobs));
+    }
+
+    // Render jobs by status with color coding
+    function renderJobs(status) {
+      jobsContainer.innerHTML = "";
+      const filtered = jobs.filter(j => j.status === status);
+      if(filtered.length === 0) {
+        jobsContainer.innerHTML = `<p style="text-align:center; color:#555; margin-top:2rem;">No ${capitalize(status)} jobs.</p>`;
+        return;
+      }
+      filtered.forEach(job => {
+        const div = document.createElement("div");
+        div.className = "job-item";
+        // Add class for color coding
+        if(job.status === "pending") div.classList.add("pending");
+        else if(job.status === "in progress") div.classList.add("in-progress");
+        else if(job.status === "completed") div.classList.add("completed");
+
+        div.innerHTML = `
+          <div class="job-info">
+            <p class="job-name">${escapeHtml(job.customerName)}</p>
+            <p class="job-details">
+              Status: <strong>${capitalize(job.status)}</strong> | Date: ${job.date} | Time: ${convertTo12Hour(job.time)}<br/>
+              Pay: $${Number(job.pay).toFixed(2)} | Windows: ${job.windows}<br/>
+              Location: ${escapeHtml(job.location || "TBD")}<br/>
+              Email: ${escapeHtml(job.email)} | Phone: ${escapeHtml(job.phone)}
+            </p>
+          </div>
+          <div class="job-actions">
+            <button class="btn-edit">Edit</button>
+            ${job.status !== "completed" ? `<button class="btn-move">${job.status === "pending" ? "Start" : "Complete"}</button>` : ""}
+            <button class="btn-delete" style="background:#dc3545;">Delete</button>
+          </div>
+        `;
+
+        div.querySelector(".btn-edit").onclick = () => openEditModal(job.id);
+        div.querySelector(".btn-delete").onclick = () => {
+          if(confirm("Are you sure you want to delete this job?")) {
+            jobs = jobs.filter(j => j.id !== job.id);
+            saveJobs();
+            renderJobs(currentTab);
+            renderJobsByDay();
+          }
+        };
+        const moveBtn = div.querySelector(".btn-move");
+        if(moveBtn) {
+          moveBtn.onclick = () => {
+            moveJobStatus(job.id);
+            renderJobsByDay();
+          };
+        }
+
+        jobsContainer.appendChild(div);
+      });
+    }
+
+    // Open modal for editing job
+    function openEditModal(id) {
+      editingJobId = id;
+      const job = jobs.find(j => j.id === id);
+      if(!job) return;
+
+      jobForm.customerName.value = job.customerName;
+      jobForm.email.value = job.email;
+      jobForm.phone.value = job.phone;
+      jobForm.status.value = job.status;
+      jobForm.date.value = job.date;
+      jobForm.time.value = job.time;
+      jobForm.pay.value = job.pay;
+      jobForm.windows.value = job.windows;
+      jobForm.location.value = job.location || "";
+
+      modalBg.classList.add("active");
+    }
+
+    // Move job status (pending -> in progress -> completed)
+    function moveJobStatus(id) {
+      const job = jobs.find(j => j.id === id);
+      if(!job) return;
+      if(job.status === "pending") job.status = "in progress";
+      else if(job.status === "in progress") job.status = "completed";
+      saveJobs();
+      renderJobs(currentTab);
+    }
+
+    // Escape HTML special chars
+    function escapeHtml(text) {
+      if(!text) return "";
+      return text.replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;")
+                 .replace(/"/g, "&quot;")
+                 .replace(/'/g, "&#039;");
+    }
+
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    // Convert 24-hour time "HH:mm" to 12-hour time with AM/PM
+    function convertTo12Hour(time24) {
+      if(!time24) return "";
+      let [hour, minute] = time24.split(":").map(Number);
+      const ampm = hour >= 12 ? "PM" : "AM";
+      hour = hour % 12;
+      hour = hour ? hour : 12; // 0 => 12
+      return `${hour}:${minute.toString().padStart(2,'0')} ${ampm}`;
+    }
+
+    // Add Job button click
+    addJobBtn.onclick = () => {
+      editingJobId = null;
+      jobForm.reset();
+      jobForm.status.value = "pending";
+      modalBg.classList.add("active");
+    };
+
+    // Modal close handlers
+    modalCloseBtn.onclick = () => {
+      modalBg.classList.remove("active");
+    };
+    modalBg.onclick = e => {
+      if(e.target === modalBg) {
+        modalBg.classList.remove("active");
+      }
+    };
+
+    // Handle tab switching
+    tabButtons.forEach(btn => {
+      btn.onclick = () => {
+        tabButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentTab = btn.getAttribute("data-tab");
+        renderJobs(currentTab);
+      };
+    });
+
+    // Handle form submit
+    jobForm.onsubmit = e => {
+      e.preventDefault();
+
+      const newJob = {
+        id: editingJobId || Date.now().toString(),
+        customerName: jobForm.customerName.value.trim(),
+        email: jobForm.email.value.trim(),
+        phone: jobForm.phone.value.trim(),
+        status: jobForm.status.value,
+        date: jobForm.date.value,
+        time: jobForm.time.value,
+        pay: parseFloat(jobForm.pay.value),
+        windows: parseInt(jobForm.windows.value),
+        location: jobForm.location.value.trim(),
+      };
+
+      if(!newJob.customerName || !newJob.email || !newJob.phone || !newJob.status || !newJob.date || !newJob.time || isNaN(newJob.pay) || isNaN(newJob.windows)) {
+        alert("Please fill all fields correctly.");
+        return;
+      }
+
+      if(editingJobId) {
+        // Edit existing job
+        const index = jobs.findIndex(j => j.id === editingJobId);
+        if(index !== -1) jobs[index] = newJob;
+      } else {
+        // Add new job
+        jobs.push(newJob);
+      }
+
+      saveJobs();
+      modalBg.classList.remove("active");
+      renderJobs(currentTab);
+      renderJobsByDay();
+    };
+
+    // Logout button click
+    logoutBtn.onclick = () => {
+      localStorage.removeItem('loggedInUser');
+      window.location.href = 'login.html';
+    };
+
+    // Utility: get day name from date string
+    function getDayOfWeek(dateStr) {
+      const date = new Date(dateStr + "T00:00:00");
+      return date.toLocaleDateString(undefined, { weekday: 'long' });
+    }
+
+    // Utility: format date as MM/DD/YYYY
+    function formatDate(date) {
+      const d = new Date(date + "T00:00:00");
+      return d.toLocaleDateString();
+    }
+
+    // Find the Monday of the week for a given date
+    function getWeekStartDate(date) {
+      const d = new Date(date + "T00:00:00");
+      const day = d.getDay(); // 0=Sun,1=Mon...
+      const diff = (day === 0 ? -6 : 1) - day; // Mon is start of week
+      d.setDate(d.getDate() + diff);
+      return d;
+    }
+
+    // Add days to date, return yyyy-mm-dd string
+    function addDays(dateObj, days) {
+      const d = new Date(dateObj);
+      d.setDate(d.getDate() + days);
+      return d.toISOString().slice(0,10);
+    }
+
+    // Render jobs grouped by day of the week below main content, horizontally with all days shown
+    function renderJobsByDay() {
+      jobsByDaySection.innerHTML = "";
+
+      if(jobs.length === 0) {
+        // Show current week days with no jobs
+        const today = new Date();
+        const weekStart = getWeekStartDate(today.toISOString().slice(0,10));
+        for(let i=0; i<7; i++) {
+          const dayDate = addDays(weekStart, i);
+          const dayName = new Date(dayDate).toLocaleDateString(undefined, { weekday: 'long' });
+          const dayBlock = document.createElement("div");
+          dayBlock.className = "day-block";
+          dayBlock.innerHTML = `<h3>${dayName} — ${formatDate(dayDate)}</h3><p class="no-jobs">No jobs</p>`;
+          jobsByDaySection.appendChild(dayBlock);
+        }
+        return;
+      }
+
+      // Find min and max job dates to determine week range to display
+      const datesSorted = jobs.map(j => j.date).sort();
+      const minDate = datesSorted[0];
+
+      // Get week start (Monday) for minDate
+      let weekStart = getWeekStartDate(minDate);
+
+      // Build array of 7 days for that week
+      const weekDays = [];
+      for(let i=0; i<7; i++) {
+        weekDays.push(addDays(weekStart, i));
+      }
+
+      // Group jobs by date
+      const jobsByDate = {};
+      jobs.forEach(job => {
+        if(!jobsByDate[job.date]) jobsByDate[job.date] = [];
+        jobsByDate[job.date].push(job);
+      });
+
+      weekDays.forEach(dayDate => {
+        const dayName = getDayOfWeek(dayDate);
+        const jobsForDate = jobsByDate[dayDate] || [];
+
+        const dayBlock = document.createElement("div");
+        dayBlock.className = "day-block";
+        dayBlock.innerHTML = `<h3>${dayName} — ${formatDate(dayDate)}</h3>`;
+
+        if(jobsForDate.length === 0) {
+          const noJobs = document.createElement("p");
+          noJobs.className = "no-jobs";
+          noJobs.textContent = "No jobs";
+          dayBlock.appendChild(noJobs);
+        } else {
+          jobsForDate.forEach(job => {
+            const time12h = convertTo12Hour(job.time);
+
+            const jobDiv = document.createElement("div");
+            jobDiv.className = "job-list-item";
+            jobDiv.innerHTML = `
+              <strong>${escapeHtml(job.customerName)}</strong> (${capitalize(job.status)})<br/>
+              Time: ${time12h} | Pay: $${Number(job.pay).toFixed(2)} | Windows: ${job.windows}<br/>
+              Location: ${escapeHtml(job.location || "TBD")}<br/>
+              Email: ${escapeHtml(job.email)} | Phone: ${escapeHtml(job.phone)}
+            `;
+            dayBlock.appendChild(jobDiv);
+          });
+        }
+
+        jobsByDaySection.appendChild(dayBlock);
+      });
+    }
+
+    // Initial load
+    loadJobs();
+    renderJobs(currentTab);
+    renderJobsByDay();
+  })();
+</script>
+
 </body>
-
 </html>
