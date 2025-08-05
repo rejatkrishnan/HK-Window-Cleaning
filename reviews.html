@@ -17,10 +17,77 @@
       align-items: center;
       padding: 2rem 1rem 4rem;
     }
+    header {
+      background: linear-gradient(90deg, #007BFF, #0056b3);
+      color: white;
+      padding: 1rem;
+      position: relative;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .header-container {
+      max-width: 1100px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    .logo-title a {
+      display: inline-flex;
+      align-items: center;
+      gap: 1rem;
+      text-decoration: none;
+      user-select: none;
+      color: white;
+    }
+    .logo-title img {
+      height: 50px;
+      width: auto;
+    }
+    .logo-title h1 {
+      margin: 0;
+      font-weight: 700;
+      font-size: 1.5rem;
+    }
+    .menu-icon {
+      font-size: 1.8rem;
+      cursor: pointer;
+      display: block;
+      user-select: none;
+    }
+    nav {
+      display: none;
+      position: absolute;
+      top: 60px;
+      right: 1rem;
+      background-color: white;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      overflow: hidden;
+      z-index: 1000;
+      width: 180px;
+    }
+    nav a {
+      display: block;
+      padding: 1rem 1.5rem;
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+      border-bottom: 1px solid #eee;
+      transition: background-color 0.3s;
+    }
+    nav a:last-child {
+      border-bottom: none;
+    }
+    nav a:hover {
+      background-color: #f4f4f4;
+    }
     h1 {
       color: #0056b3;
       margin-bottom: 1rem;
       text-align: center;
+      width: 100%;
     }
     form {
       background: white;
@@ -30,6 +97,7 @@
       max-width: 500px;
       width: 100%;
       margin-bottom: 2rem;
+      box-sizing: border-box;
     }
     label {
       font-weight: 700;
@@ -46,6 +114,7 @@
       font-family: inherit;
       resize: vertical;
       min-height: 60px;
+      box-sizing: border-box;
     }
     textarea {
       min-height: 80px;
@@ -60,6 +129,7 @@
     .star {
       color: #ccc;
       transition: color 0.2s;
+      outline: none;
     }
     .star.selected, .star:hover, .star.hovered {
       color: #f4b400; /* gold */
@@ -77,6 +147,7 @@
       width: 100%;
       box-shadow: 0 5px 15px rgba(0,123,255,0.4);
       transition: background-color 0.3s;
+      user-select: none;
     }
     button:hover {
       background-color: #0056b3;
@@ -133,6 +204,7 @@
       cursor: pointer;
       font-size: 0.8rem;
       transition: background-color 0.2s;
+      user-select: none;
     }
     .delete-btn:hover {
       background: #ab000d;
@@ -157,13 +229,33 @@
   </style>
 </head>
 <body>
+  <header>
+    <div class="header-container">
+      <div class="logo-title">
+        <a href="index.html" aria-label="HK Window Pros Home">
+          <img src="logo.png" alt="HK Window Pros Logo" />
+          <h1>HK Window Pros</h1>
+        </a>
+      </div>
+      <div class="menu-icon" tabindex="0" role="button" aria-label="Toggle menu" onclick="toggleMenu()" onkeydown="if(event.key==='Enter'||event.key===' ')toggleMenu()">
+        ☰
+      </div>
+      <nav id="menu" role="menu" aria-label="Primary navigation menu">
+        <a href="index.html" role="menuitem" tabindex="-1">Home</a>
+        <a href="quote.html" role="menuitem" tabindex="-1">Get a Quote</a>
+        <a href="reviews.html" role="menuitem" tabindex="-1">Reviews</a>
+        <a href="login.html" role="menuitem" tabindex="-1">Login</a>
+      </nav>
+    </div>
+  </header>
+
   <h1>Customer Reviews</h1>
   <form id="reviewForm" aria-label="Submit a review form">
     <label for="name">Name (optional)</label>
-    <input type="text" id="name" name="name" placeholder="Your name or leave blank for Anonymous" maxlength="50" />
+    <input type="text" id="name" name="name" placeholder="Your name or leave blank for Anonymous" maxlength="50" autocomplete="name" />
 
-    <label>Rating <span aria-hidden="true" style="color:red;">*</span></label>
-    <div class="stars" role="radiogroup" aria-labelledby="rating-label">
+    <label id="rating-label">Rating <span aria-hidden="true" style="color:red;">*</span></label>
+    <div class="stars" role="radiogroup" aria-labelledby="rating-label" tabindex="0">
       <span class="star" data-value="1" role="radio" aria-checked="false" tabindex="0" aria-label="1 star">&#9733;</span>
       <span class="star" data-value="2" role="radio" aria-checked="false" tabindex="-1" aria-label="2 stars">&#9733;</span>
       <span class="star" data-value="3" role="radio" aria-checked="false" tabindex="-1" aria-label="3 stars">&#9733;</span>
@@ -193,10 +285,25 @@
   // Admin emails (lowercase) - change as needed
   const admins = ['rejat@example.com', 'nick@example.com'];
 
-  // Helper: format timestamp to readable date
-  function formatDate(timestamp) {
-    const d = new Date(timestamp);
-    return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  // Hamburger menu toggle
+  function toggleMenu() {
+    const menu = document.getElementById('menu');
+    if (menu.style.display === 'block') {
+      menu.style.display = 'none';
+      // Reset tabindex for accessibility
+      Array.from(menu.querySelectorAll('a')).forEach(a => a.tabIndex = -1);
+    } else {
+      menu.style.display = 'block';
+      Array.from(menu.querySelectorAll('a')).forEach(a => a.tabIndex = 0);
+    }
+  }
+  // Hide menu on clicking outside
+  window.onclick = function (event) {
+    const menu = document.getElementById('menu');
+    if (!event.target.closest('.menu-icon') && !event.target.closest('#menu')) {
+      menu.style.display = 'none';
+      Array.from(menu.querySelectorAll('a')).forEach(a => a.tabIndex = -1);
+    }
   }
 
   // Star rating UI logic
@@ -218,11 +325,13 @@
       if (e.key === "ArrowRight" || e.key === "ArrowUp") {
         e.preventDefault();
         if (selectedRating < 5) selectedRating++;
+        else selectedRating = 1;
         updateStars();
         stars[selectedRating - 1].focus();
       } else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
         e.preventDefault();
         if (selectedRating > 1) selectedRating--;
+        else selectedRating = 5;
         updateStars();
         stars[selectedRating - 1].focus();
       } else if (e.key === "Enter" || e.key === " ") {
@@ -241,8 +350,10 @@
 
   function updateStars() {
     stars.forEach((star) => {
-      star.classList.toggle('selected', parseInt(star.dataset.value) <= selectedRating);
-      star.setAttribute('aria-checked', parseInt(star.dataset.value) === selectedRating ? 'true' : 'false');
+      const val = parseInt(star.dataset.value);
+      star.classList.toggle('selected', val <= selectedRating);
+      star.setAttribute('aria-checked', val === selectedRating ? 'true' : 'false');
+      star.tabIndex = val === selectedRating ? 0 : -1;
     });
   }
 
@@ -276,8 +387,10 @@
       const date = formatDate(review.created_at);
       const starsHTML = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
 
+      // Show delete button only if user_email matches admin emails
+      // For now, you may want to extend login/auth to get user_email
       const isAdmin = admins.includes((review.user_email || '').toLowerCase());
-      // Create review element
+
       const div = document.createElement('div');
       div.classList.add('review-item');
       div.innerHTML = `
@@ -316,6 +429,13 @@
       .replace(/'/g, "&#039;");
   }
 
+  // Format date to readable string
+  function formatDate(timestamp) {
+    if (!timestamp) return '';
+    const d = new Date(timestamp);
+    return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
   // Form submit handler
   document.getElementById('reviewForm').addEventListener('submit', async e => {
     e.preventDefault();
@@ -332,7 +452,7 @@
       return;
     }
 
-    // You can optionally add user_email if you implement login; for now set null
+    // If you add login/auth later, put user_email here, else null
     const user_email = null;
 
     try {
@@ -345,7 +465,7 @@
       }]);
       if (error) throw error;
 
-      // Reset form
+      // Reset form & rating
       selectedRating = 0;
       updateStars();
       e.target.reset();
