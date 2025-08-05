@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Customer Reviews | HK Window Pros</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Roboto', sans-serif; margin: 0; background-color: #f4f8ff; color: #333; }
+    header { background: linear-gradient(90deg, #007BFF, #0056b3); padding: 1rem; color: white; text-align: center; }
+    main { max-width: 800px; margin: 2rem auto; background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    h2 { color: #0056b3; text-align: center; }
+    form { margin-bottom: 2rem; }
+    label { display: block; margin-top: 1rem; font-weight: bold; }
+    input, textarea, button { width: 100%; padding: 0.8rem; margin-top: 0.5rem; border-radius: 6px; border: 1px solid #ccc; font-size: 1rem; box-sizing: border-box; }
+    button { background-color: #007BFF; color: white; border: none; font-weight: 700; cursor: pointer; margin-top: 1rem; }
+    button:hover { background-color: #0056b3; }
+    .stars { display: flex; gap: 5px; font-size: 1.5rem; cursor: pointer; color: #ccc; }
+    .stars span.active { color: gold; }
+    .review { background: #f0f6ff; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #d0e2ff; position: relative; }
+    .review h4 { margin: 0 0 0.3rem 0; }
+    .review p { margin: 0.3rem 0 0 0; }
+    .delete-btn { background: red; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; position: absolute; right: 10px; top: 10px; }
+    .delete-btn:hover { background: darkred; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>HK Window Pros - Customer Reviews</h1>
+  </header>
+
+  <main>
+    <h2>Leave a Review</h2>
+    <form id="reviewForm">
+      <label for="name">Name (optional):</label>
+      <input type="text" id="name" placeholder="Leave blank for anonymous" />
+
+      <label>Rating:</label>
+      <div class="stars" id="starRating">
+        <span data-value="1">&#9733;</span>
+        <span data-value="2">&#9733;</span>
+        <span data-value="3">&#9733;</span>
+        <span data-value="4">&#9733;</span>
+        <span data-value="5">&#9733;</span>
+      </div>
+
+      <label for="review">Your Review:</label>
+      <textarea id="review" rows="4" required></textarea>
+
+      <button type="submit">Submit Review</button>
+    </form>
+
+    <h2>What Our Customers Say</h2>
+    <div id="reviewsList"></div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://xwdtpqyphfhhnfpadhpv.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh3ZHRwcXlwaGZoaG5mcGFkaHB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQyNTY0MjIsImV4cCI6MjA2OTgzMjQyMn0.dP_7pajnInXt0p5YJES8yVQcZCP81S4V-rP5ozkTHPQ";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const ADMIN_NAMES = ["Rejat Krishnan", "Nick Hafner"];
+    let selectedRating = 0;
+    let currentUserName = "";
+
+    // Handle star selection
+    document.querySelectorAll("#starRating span").forEach(star => {
+      star.addEventListener("click", () => {
+        selectedRating = parseInt(star.dataset.value);
+        document.querySelectorAll("#starRating span").forEach(s => {
+          s.classList.toggle("active", parseInt(s.dataset.value) <= selectedRating);
+        });
+      });
+    });
+
+    // Load reviews
+    async function loadReviews() {
+      const { data, error } = await supabaseClient
+        .from("reviews")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Error loading reviews:", error);
+        return;
+      }
+
+      renderReviews(data);
+    }
+
+    // Render reviews
+    function renderReviews(data) {
+      const reviewsList = document.getElementById("reviewsList");
+      reviewsList.innerHTML = "";
+
+      data.forEach(review => {
+        const div = document.createElement("div");
+        div.className = "review";
+        const starsHtml = "&#9733;".repeat(review.rating) + "&#9734;".repeat(5 - review.rating);
+        div.innerHTML = `
+          <h4>${review.name || "Anonymous"} <span style="color:gold">${starsHtml}</span></h4>
+          <p>${review.text}</p>
+          ${ADMIN_NAMES.includes(currentUserName) ? `<button class="delete-btn" onclick="deleteReview(${review.id})">Delete</button>` : ""}
+        `;
+        reviewsList.appendChild(div);
+      });
+    }
+
+    // Delete review
+    async function deleteReview(id) {
+      const { error } = await supabaseClient.from("reviews").delete().eq("id", id);
+      if (error) {
+        console.error("Error deleting review:", error);
+      }
+    }
+
+    // Submit review
+    document.getElementById("reviewForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("name").value.trim() || "Anonymous";
+      const text = document.getElementById("review").value.trim();
+
+      if (!selectedRating) {
+        alert("Please select a star rating.");
+        return;
+      }
+
+      const { error } = await supabaseClient
+        .from("reviews")
+        .insert([{ name, text, rating: selectedRating }]);
+
+      if (error) {
+        console.error("Error adding review:", error);
+        alert("Error submitting review. Please try again.");
+        return;
+      }
+
+      document.getElementById("name").value = "";
+      document.getElementById("review").value = "";
+      selectedRating = 0;
+      document.querySelectorAll("#starRating span").forEach(s => s.classList.remove("active"));
+    });
+
+    // Ask for admin name if deleting
+    window.addEventListener("load", () => {
+      currentUserName = prompt("Enter your name (admins can delete reviews):") || "";
+      loadReviews();
+
+      // Subscribe to real-time changes
+      supabaseClient
+        .channel('reviews-changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'reviews' }, payload => {
+          loadReviews();
+        })
+        .subscribe();
+    });
+  </script>
+</body>
+</html>
